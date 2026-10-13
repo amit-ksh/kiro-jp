@@ -187,6 +187,10 @@ importers:
         version: 5.9.3
 
   packages/content:
+    dependencies:
+      '@packages/learning-core':
+        specifier: workspace:*
+        version: link:../learning-core
     devDependencies:
       typescript:
         specifier: 5.9.3

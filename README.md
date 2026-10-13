@@ -29,6 +29,7 @@ Email verification uses a code. Settings password changes and recovery share the
 ```sh
 pnpm typecheck
 pnpm test
+pnpm check:content
 pnpm build:landing
 pnpm export:android
 # Admin-only fixed synthetic probe; reserves real service capacity and Gemini
@@ -39,6 +40,8 @@ npx eas-cli build -p android --profile preview
 ```
 
 Use a development client for native SQLite/audio checks. A browser render is not proof of Android storage, recording, font scaling or link behavior. Standalone APKs must launch without Metro/Expo Go. Live provider and Qloo checks use authorized keys and stay incomplete when no service access is configured.
+
+The first source-checked text lesson is `requests` version 1: 水・茶・本・円, a small hiragana set and をください. Started sessions snapshot their version/support settings; fixed answers, hint use, drafts and resume progress persist in account-isolated SQLite and the owned cloud journal. Novel sentences remain awaiting assessment while that capability is connected. Separate initial meaning/reading tracks and due times exist; the scheduled-review runner and permanent opportunity reconciliation remain later build gates. See `devpost/build-evidence.md` for actual native checks and remaining work.
 
 ## Privacy and source
 

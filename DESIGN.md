@@ -24,4 +24,4 @@ Initial UI previews are labelled as build-in-progress where activities are not c
 
 ## Verification boundary
 
-Native screenshot evidence must come from an actual Android device or emulator, including font scaling and dark theme. Android tooling is not yet configured on this host. Browser checks validate the separate landing only and cannot establish native layout/storage/speech correctness.
+Native screenshot evidence must come from an actual Android device or emulator, including font scaling and dark theme. The task-local Android 15 emulator and early signed APK are configured; account/onboarding/Home evidence is recorded in devpost/build-evidence.md. Each later learning surface needs its own native check. Browser checks validate the separate landing only and cannot establish native layout/storage/speech correctness.

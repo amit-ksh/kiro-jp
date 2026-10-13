@@ -20,6 +20,8 @@ import type * as lib_email from "../lib/email.js";
 import type * as lib_ownership from "../lib/ownership.js";
 import type * as profile from "../profile.js";
 import type * as profileValues from "../profileValues.js";
+import type * as study from "../study.js";
+import type * as studyValues from "../studyValues.js";
 
 import type {
   ApiFromModules,
@@ -40,6 +42,8 @@ declare const fullApi: ApiFromModules<{
   "lib/ownership": typeof lib_ownership;
   profile: typeof profile;
   profileValues: typeof profileValues;
+  study: typeof study;
+  studyValues: typeof studyValues;
 }>;
 
 /**

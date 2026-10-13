@@ -1,3 +1,6 @@
 export * from "./profile.ts";
 export * from "./placement.ts";
 export * from "./auth-identity.ts";
+export * from "./lesson.ts";
+export * from "./study.ts";
+export * from "./content-check.ts";

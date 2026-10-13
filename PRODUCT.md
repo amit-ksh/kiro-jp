@@ -28,7 +28,7 @@ Short daily sessions on Android, with partial effort preserved and prepared stud
 
 ## Capabilities and Constraints
 
-The approved spec and checklist define one complete shared MVP for both events. Initial content is a focused seven-template N5/N4 inventory, not a complete JLPT course. Use available free quotas, with no automatic paid fallback. Higher levels, full mock tests, continuous voice, pitch-accent scoring, subscriptions, iOS and social login are deferred. Deployable signing/domain/service access are setup values, not established proof of working integrations.
+The approved spec and checklist define one complete shared MVP for both events. Initial content is a focused seven-template N5/N4 inventory, not a complete JLPT course. The learner approved a US$10 total Gemini development/demo budget, enforced by reservations. Other providers remain free-only, with no automatic paid fallback. Higher levels, full mock tests, continuous voice, pitch-accent scoring, subscriptions, iOS and social login are deferred. Hosted reset links and public distribution remain pending.
 
 ## Brand Commitments
 
@@ -36,7 +36,7 @@ The user requires the palette and overall layout character in references/j-image
 
 ## Evidence on Hand
 
-Approved devpost/scope.md, devpost/prd.md and revised devpost/spec.md; the learner-reviewed build sequence in devpost/checklist.md; supplied UI references. Source research exists, but no native-speaker reviewer, finished app, live integration proof or public release is claimed.
+Approved scope, PRD/spec and build sequence; supplied UI references; installed early Android foundation; synchronized synthetic accounts; three bundled placement clips; two real Gateway-routed synthetic provider probes; owned immutable study-journal checks. These do not prove the full learning/chat/speech/review loop. Qloo access is pending, and no native-speaker reviewer, finished app or public release is claimed.
 
 ## Product Principles
 

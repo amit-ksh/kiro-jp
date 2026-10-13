@@ -1,3 +1,4 @@
+export { requestsLesson } from "./requests.ts";
 export const interests = ["Shrines", "Manga", "Anime", "Food", "Travel", "Music", "Japanese places"] as const;
 export const lessonCatalog = [
   { id: "requests", title: "A polite request", band: "early-n5", kanji: ["水", "茶", "本", "円"], pattern: "[item] + をください", outcome: "Request something politely", themes: ["Food", "Manga", "Travel"], prerequisite: undefined },
