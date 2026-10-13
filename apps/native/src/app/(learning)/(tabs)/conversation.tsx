@@ -1,0 +1,2 @@
+import { Body, Panel, Screen, Title } from "../../../components/ui";
+export default function Conversation() { return <Screen title="Talk about your world."><Panel><Title>One conversation, your topic</Title><Body>The live tutor connection is the next build step. Your saved interests will inform suggestions, and the topic you choose in chat will come first.</Body><Body muted>No Qloo result or generated reply is being simulated here.</Body></Panel></Screen>; }

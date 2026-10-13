@@ -1,0 +1,16 @@
+{
+  "cli": { "version": ">=16.0.0", "appVersionSource": "local" },
+  "build": {
+    "development": { "developmentClient": true, "distribution": "internal", "android": { "buildType": "apk" } },
+    "preview": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "env": {
+        "EXPO_PUBLIC_CONVEX_URL": "https://trustworthy-crane-399.convex.cloud",
+        "EXPO_PUBLIC_CONVEX_SITE_URL": "https://trustworthy-crane-399.convex.site",
+        "EXPO_PUBLIC_APP_LINK_HOST": "kiro-jp.vercel.app"
+      }
+    },
+    "production": { "android": { "buildType": "app-bundle" } }
+  }
+}

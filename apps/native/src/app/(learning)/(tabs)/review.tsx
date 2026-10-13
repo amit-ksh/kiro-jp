@@ -1,0 +1,2 @@
+import { Body, Panel, Screen, Title } from "../../../components/ui";
+export default function Review() { return <Screen title="Bring it back." subtitle="Meaning and word-reading reviews"><Panel><Title>Begin learning to build your queue</Title><Body>After a lesson, material will return for spaced review. This first account/setup build has no learned items or due reviews yet.</Body></Panel></Screen>; }

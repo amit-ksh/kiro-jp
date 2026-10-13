@@ -1,0 +1,22 @@
+{
+  "id": "placement-desire",
+  "text": "おちゃをのみたいです。",
+  "meaning": "I want to drink tea.",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "routedThrough": "Cloudflare AI Gateway",
+  "operationId": "placement-audio-v1-placement-desire",
+  "mime": "audio/wav",
+  "seconds": 2.64,
+  "sampleRate": 24000,
+  "sha256": "60c40d204f1ab84d992d74b6050bf862627c21ca832cc64e6438fb233b37c7ad",
+  "createdAt": "2026-10-13T15:42:03.663Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "checkedAt": "2026-10-13T15:45:30.692Z",
+    "kana": "おちゃをのみたいです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

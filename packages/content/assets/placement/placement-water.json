@@ -1,0 +1,22 @@
+{
+  "id": "placement-water",
+  "text": "みずをください。",
+  "meaning": "Water, please.",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "routedThrough": "Cloudflare AI Gateway",
+  "operationId": "placement-audio-v1-placement-water",
+  "mime": "audio/wav",
+  "seconds": 2,
+  "sampleRate": 24000,
+  "sha256": "dc4060efd3d4c70691f361c722ab985cdc863cb450b0e4bf6bb4ede4d6fa865d",
+  "createdAt": "2026-10-13T15:41:56.946Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "checkedAt": "2026-10-13T15:45:30.685Z",
+    "kana": "みずをください",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

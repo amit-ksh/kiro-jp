@@ -1,0 +1,21 @@
+{
+  "name": "japanese-learning-app",
+  "private": true,
+  "packageManager": "pnpm@10.33.4",
+  "engines": { "node": ">=20.20.0" },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:android": "pnpm --filter native-app start",
+    "dev:landing": "pnpm --filter web-app dev",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "node --test --experimental-strip-types tests/*.test.ts",
+    "build:landing": "pnpm --filter web-app build",
+    "export:android": "pnpm --filter native-app exec expo export --platform android",
+    "config:local": "node scripts/configure-local.mjs",
+    "setup:backend": "node scripts/setup-backend.mjs",
+    "prepare:placement-audio": "node scripts/prepare-placement-audio.mjs",
+    "format": "prettier --write apps packages scripts tests"
+  },
+  "devDependencies": { "prettier": "3.8.3", "turbo": "2.9.6", "typescript": "5.9.3", "@types/node": "^24.0.0" }
+}

@@ -1,0 +1,1 @@
+{ "extends": "../learning-core/tsconfig.json", "include": ["src"] }

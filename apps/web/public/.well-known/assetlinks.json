@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.kiro.japanesestudy",
+      "sha256_cert_fingerprints": ["3D:07:88:90:1F:50:B8:8B:1E:B4:72:45:6E:97:5B:25:C3:7A:64:4E:86:1D:B5:5F:B1:D3:8D:E9:82:40:61:A1"]
+    }
+  }
+]

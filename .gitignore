@@ -1,0 +1,16 @@
+/devpost/learner-profile.md
+.env
+.env.*
+!.env.example
+/.lavish/
+/starter-japanese/
+node_modules/
+.turbo/
+.next/
+.expo/
+dist/
+out/
+*.tsbuildinfo
+.expo-config-check.json
+/.android-sdk/
+/.android-runtime/
