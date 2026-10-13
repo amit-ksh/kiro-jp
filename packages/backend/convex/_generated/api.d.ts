@@ -10,9 +10,12 @@
 
 import type * as account from "../account.js";
 import type * as aiBudget from "../aiBudget.js";
+import type * as aiProbe from "../aiProbe.js";
+import type * as aiQuota from "../aiQuota.js";
 import type * as auth from "../auth.js";
 import type * as emailLimits from "../emailLimits.js";
 import type * as http from "../http.js";
+import type * as lib_ai_providers from "../lib/ai/providers.js";
 import type * as lib_email from "../lib/email.js";
 import type * as lib_ownership from "../lib/ownership.js";
 import type * as profile from "../profile.js";
@@ -27,9 +30,12 @@ import type {
 declare const fullApi: ApiFromModules<{
   account: typeof account;
   aiBudget: typeof aiBudget;
+  aiProbe: typeof aiProbe;
+  aiQuota: typeof aiQuota;
   auth: typeof auth;
   emailLimits: typeof emailLimits;
   http: typeof http;
+  "lib/ai/providers": typeof lib_ai_providers;
   "lib/email": typeof lib_email;
   "lib/ownership": typeof lib_ownership;
   profile: typeof profile;

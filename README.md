@@ -4,11 +4,11 @@ An Android Expo app and a static Next.js landing page, adapted from the requeste
 
 ## Current build
 
-The first slice is in progress: accounts, verification/recovery, account-scoped SQLite, saved onboarding, predefined placement and Home/session previews. Lesson, tutor, speech, spaced-review and release work remain subsequent slices. No live authentication, signed APK or complete learning journey is claimed yet.
+The first slice is in progress: email/password accounts, account-scoped SQLite, saved onboarding, predefined placement and Home/session previews. Live account checks and an installed standalone APK have passed; verification/recovery are temporarily disabled. Both configured AI providers passed a fixed synthetic Gateway probe. Lesson/tutor, spoken practice, spaced review and final release remain in progress or subsequent slices; no complete learning journey is claimed yet. See `devpost/build-evidence.md` for the exact observed checks.
 
 ## Development
 
-Use Node 24 (or a compatible Node version at least 20.20) and pnpm 10.33.4.
+Use Node 24 (or Node 22.16+) and pnpm 10.33.4. AI SDK server actions use Convex's configured Node 22 runtime; account/profile mutations retain the default Convex runtime.
 
 ```sh
 pnpm install
@@ -31,6 +31,9 @@ pnpm typecheck
 pnpm test
 pnpm build:landing
 pnpm export:android
+# Admin-only fixed synthetic probe; reserves real service capacity and Gemini
+# spend, so configure the approved budget before running it:
+pnpm check:ai-gateway
 # From apps/native after EAS project setup:
 npx eas-cli build -p android --profile preview
 ```

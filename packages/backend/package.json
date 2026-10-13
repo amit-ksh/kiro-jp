@@ -1,6 +1,25 @@
 {
-  "name": "@packages/backend", "version": "0.1.0", "private": true,
-  "scripts": { "dev": "convex dev", "setup": "convex dev --until-success", "typecheck": "tsc --noEmit -p convex", "codegen": "convex codegen" },
-  "dependencies": { "@convex-dev/auth": "0.0.96", "@auth/core": "^0.41.0", "convex": "^1.35.1", "@packages/learning-core": "workspace:*", "@packages/content": "workspace:*" },
-  "devDependencies": { "typescript": "5.9.3" }
+  "name": "@packages/backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "convex dev",
+    "setup": "convex dev --until-success",
+    "typecheck": "tsc --noEmit -p convex",
+    "codegen": "convex codegen"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "4.0.95",
+    "@ai-sdk/openai-compatible": "3.0.68",
+    "@auth/core": "^0.41.0",
+    "@convex-dev/auth": "0.0.96",
+    "@packages/content": "workspace:*",
+    "@packages/learning-core": "workspace:*",
+    "ai": "7.0.139",
+    "convex": "^1.35.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
 }
