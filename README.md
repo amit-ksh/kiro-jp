@@ -4,7 +4,7 @@ An Android Expo app and a static Next.js landing page, adapted from the requeste
 
 ## Current build
 
-The first slice is in progress: email/password accounts, account-scoped SQLite, saved onboarding, predefined placement and Home/session previews. Live account checks and an installed standalone APK have passed; verification/recovery are temporarily disabled. Both configured AI providers passed a fixed synthetic Gateway probe. Lesson/tutor, spoken practice, spaced review and final release remain in progress or subsequent slices; no complete learning journey is claimed yet. See `devpost/build-evidence.md` for the exact observed checks.
+The foundation slice passed: email/password accounts, account-scoped SQLite, saved onboarding, predefined placement and Home/session previews. The updated standalone APK preserved accounts/setup through upgrade and played its bundled placement clips offline; verification/recovery are temporarily disabled. Both configured AI providers passed a fixed synthetic Gateway probe. Lesson/tutor, spoken practice, spaced review and final release remain subsequent slices; no complete learning journey is claimed yet. See `devpost/build-evidence.md` for the exact observed checks.
 
 ## Development
 

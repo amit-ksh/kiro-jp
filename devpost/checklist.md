@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- Foundation acceptance now has an installed updated APK: unchanged certificate, upgrade-preserved account/setup, native password signup, hidden recovery/change controls, all three bundled placement players offline, twelve original answers surviving restart and reconnecting to the same owned profile, an adjustable recommendation and saved Home. Latest static export passed. Full slice-1 evidence is in `build-evidence.md`; deferred mail/verified-link gates remain open by the learner's explicit instruction. No learner hands-on checkpoint was inferred.
+
 - While the updated first-slice APK remained in the EAS queue, performed the agreed provider reliability preflight without accepting slice 2. Added an AI SDK adapter plus admin-only fixed synthetic probe; both configured providers returned validated Japanese through Gateway. Full tutor/target-evidence/Qloo acceptance remains outstanding.
 - AI SDK 7 and its adapters require Node 22+, so pinned the package versions, set the workspace floor to Node 22.16 and configured Convex Node actions to Node 22. Live probe reported Node 22.23.2. Auth/profile mutations retain the default runtime. This is a compatibility correction preserving the approved stack.
 - Adapter verification passed 16 domain/transport tests, all six workspace typechecks and native/web lint. OpenRouter's actual successful Gateway route is `/openrouter/chat/completions`; there was no need to retry the alternate documented route. Atomic project capacity deduplication passed. Full lesson/chat, tool use and provider Japanese-quality rubric checks are still required.
