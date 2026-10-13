@@ -11,6 +11,8 @@ Checked October 13, 2026 against first-party Qloo documentation and the working 
 
 ## Documented integration facts
 
+**Build follow-up, October 13:** The learner has submitted the key request and authorized documentation-based implementation with live testing later. The supplied guide was read through its `.md` endpoint (updated October 7). It confirms the hackathon host, `X-Api-Key`, GET Insights and separate entity/tag lookup. The linked Search Entities Markdown/OpenAPI reference was also read. The linked Tags Markdown reference was unavailable; tag item fields still require provisioned-response validation. Missing access must expose unavailable personalization and checked ordinary themes; it must not produce invented Qloo IDs or count as a passed live integration.
+
 Hackathon-issued keys require `https://hackathon.api.qloo.com`, fail against staging/production, and require **GET** Insights calls. Numeric quotas are unpublished and adjustable per user; keys deactivate after judging. [Hackathon developer guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide). Keep the host configurable for the provisioned environment. Authenticate through the `X-Api-Key` header. [Authentication](https://docs.qloo.com/reference/api-onboarding).
 
 | Operation | Exact route and useful inputs | Documented response envelope |

@@ -458,6 +458,8 @@ Workers AI currently includes 10,000 neurons/day shared across models; recogniti
 
 ### Qloo
 
+**Current integration status — 2026-10-13:** The learner submitted the organizer's key request form and authorized implementation against the official developer guide while waiting. The guide's Markdown endpoint was read directly; it confirms the hackathon host, GET Insights, `X-Api-Key`, supported lookup endpoints and private server caching. Implement/document the adapter and test synthetic response contracts now; keep live search/tag/Insights and tutor-tool evidence explicitly pending until the key arrives. Missing access uses ordinary checked lesson themes with Qloo unavailable status, never invented entities or a simulated live recommendation. The final shared MVP still requires the real Qloo integration.
+
 For hackathon-issued keys, use configurable base `https://hackathon.api.qloo.com`, `X-Api-Key`, and GET Insights. Other keys must use their provisioned environment; do not silently retry against unrelated hosts. Calls:
 
 - `/search?query=<favorite>&types=<allowed type>&take=5` → `results[]`; normalize `entity_id/name/subtype`, optional descriptions/tags.
