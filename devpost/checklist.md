@@ -14,7 +14,7 @@ The learning kernel appears in slice 2, immediately after account/setup. Every s
 
 ## Slices
 
-- [ ] **1. Foundation, accounts, onboarding and Home, with an early APK**
+- [x] **1. Foundation, accounts, onboarding and Home, with an early APK**
   Becomes usable: An Android learner can create an email/password account, return to a remembered session, complete saved setup and a predefined level check, choose interests, and reach Home with a level-appropriate session preview. At the learner's explicit request, email verification, password recovery and Settings password changes are temporarily disabled until their sender is ready. The local landing explains the Android app.
   Why now: Establishes the real learner identity and starting point that own every later attempt. Auth, email delivery, Android links, and starter compatibility are early reliability risks; scaffolding belongs inside this usable behavior.
   PRD ref: `prd.md > The Core Journey` steps 1–3; `Onboarding Screens`; `Account Access and Recovery` ACC-1–ACC-3; `Onboarding, Placement, and Preferences` ONB-1–ONB-4; `Home and Daily Plan` HOME-1–HOME-3; `Look and Feel`.
