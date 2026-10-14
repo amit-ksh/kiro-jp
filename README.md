@@ -52,4 +52,6 @@ In Lessons, **Prepare lesson for offline study** downloads the immutable lesson 
 
 Private environment files, learner profile, local runtime state and starter staging directory are ignored. No passwords are stored in SQLite. Accounts use different local database files and server functions derive ownership from Convex Auth. No separate old-password credential writer exists. No paid fallback is enabled.
 
+Local storage upgrades run transactionally through schema version 4 and preserve earlier profile, study and review data. A newer unsupported or incompatible store is retained with update/retry guidance; the app does not reset it or create an empty replacement. Content, review algorithms and database schema use separate versions.
+
 The starter is Apache-2.0; retain its `LICENSE`. Japanese curriculum is original authoring with source checks and asset/license records before publication. There is no claim of native-speaker review, official JLPT certification, complete course coverage or third-party endorsements.

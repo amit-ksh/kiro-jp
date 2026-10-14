@@ -18,6 +18,7 @@ import {
   writeLocalProfile,
   type LocalProfile,
 } from "./database";
+import { AccountStorageError } from "./accountSchema";
 
 type ProfilePatch =
   | Partial<LearningProfile>
@@ -94,12 +95,14 @@ export function ProfileProvider({
           ? "pending"
           : "saved",
       );
-    })().catch(() => {
+    })().catch((cause) => {
       if (!cancelled && epoch === lifecycle.current) {
         setAwaitingInitialCloud(true);
         setLoading(false);
         setError(
-          "Local storage couldn't open. Try loading your saved setup again.",
+          cause instanceof AccountStorageError
+            ? cause.message
+            : "Local storage couldn't open. Try loading your saved setup again.",
         );
         setSyncState("error");
       }

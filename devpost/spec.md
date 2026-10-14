@@ -340,6 +340,8 @@ Convex owns shared records; SQLite mirrors only the current account's required c
 
 Indexes cover owner+event ID, owner+track, owner+track+opportunity ID, owner+opportunity status/closure cursor, owner+parent resolution for deferred events, owner+due date, owner+session/chat, request ID/status, package/version, and owner+change cursor. Every query/mutation/action verifies owner; background actions take internally derived IDs. Opportunity closure, track changes, and dedupe receipts commit atomically. Deferred receipt classification is revisioned and emitted through `sync.pull`; duplicate pushes return its current stored status. Data migration versions cover SQLite schema, content, assessment, scheduler, and sync protocol separately. A scheduler migration must preserve closed resolutions and earned evidence; it may explicitly version future open opportunities rather than reinterpret the past.
 
+The native store currently uses SQLite schema version 4. Its forward-only migrations preserve the prior v1 profile/drafts, v2 study/outbox metadata and v3 review history; v4 adds lookup/outbox indexes only. Schema structure/integrity checks run before opening the repository. A newer unsupported schema is refused before schema/journal writes, and incompatible/corrupt files remain available for recovery. Each upgrade's DDL and version changes commit together or roll back together. No migration regenerates closures, rewrites answers, changes original dates or awards mastery. An app update is required to read a future schema; the current app must never reset its version number to an older value.
+
 ## Internal Contracts
 
 These are planned callable surfaces, not an assertion they exist:
