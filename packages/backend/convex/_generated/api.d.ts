@@ -12,6 +12,8 @@ import type * as account from "../account.js";
 import type * as aiBudget from "../aiBudget.js";
 import type * as aiProbe from "../aiProbe.js";
 import type * as aiQuota from "../aiQuota.js";
+import type * as assessment from "../assessment.js";
+import type * as assessmentAI from "../assessmentAI.js";
 import type * as auth from "../auth.js";
 import type * as conversation from "../conversation.js";
 import type * as conversationAI from "../conversationAI.js";
@@ -42,6 +44,8 @@ declare const fullApi: ApiFromModules<{
   aiBudget: typeof aiBudget;
   aiProbe: typeof aiProbe;
   aiQuota: typeof aiQuota;
+  assessment: typeof assessment;
+  assessmentAI: typeof assessmentAI;
   auth: typeof auth;
   conversation: typeof conversation;
   conversationAI: typeof conversationAI;

@@ -25,6 +25,7 @@ import {
 import { SentenceView } from "../../features/lessons/SentenceView";
 import { useStudyTime } from "../../features/lessons/useStudyTime";
 import { LessonConversation } from "../../features/conversation/LessonConversation";
+import { SentenceFeedback } from "../../features/lessons/SentenceFeedback";
 
 export default function Lesson() {
   const { sessionId = "" } = useLocalSearchParams<{ sessionId: string }>();
@@ -35,8 +36,8 @@ export default function Lesson() {
     [study.events, sessionId],
   );
   const projection = useMemo(
-    () => sessionProjection(requestsLesson, events),
-    [events],
+    () => sessionProjection(requestsLesson, events, study.checked),
+    [events, study.checked],
   );
   const step = projection.next,
     snapshot = events.find((event) => event.kind === "started")?.context;
@@ -52,7 +53,13 @@ export default function Lesson() {
   const lastAttempt = projection.attempts
     .filter((attempt) => attempt.event.stepId === step.id)
     .slice(-1)[0];
-  const visibleFeedback = feedback ?? lastAttempt?.assessment ?? null;
+  const visibleFeedback =
+    step.kind === "exercise"
+      ? ((lastAttempt && study.checked[lastAttempt.event.eventId]) ??
+        feedback ??
+        lastAttempt?.assessment ??
+        null)
+      : null;
   const draft = study.drafts[`${sessionId}:${step.id}`] ?? "";
   const savedHints = events.filter(
     (event) => event.kind === "studied" && event.stepId === step.id,
@@ -207,8 +214,8 @@ export default function Lesson() {
                 {snapshot.theme.toLowerCase()}.
               </Body>
               <Body muted>
-                These text exercises are ready offline. Word audio, recording
-                and the live tutor are being connected in the next checkpoints.
+                These text exercises are ready offline. The tutor opens after
+                your lesson; speaking practice is being connected next.
               </Body>
               <Button
                 label="Begin learning"
@@ -423,7 +430,10 @@ export default function Lesson() {
                 Your answer:{" "}
                 {lastAttempt?.event.input || input || "I don't know"}
               </Body>
-              <Body>Expected: {visibleFeedback.expected}</Body>
+              <Body>
+                {exercise?.kind === "sentence" ? "Example" : "Expected"}:{" "}
+                {visibleFeedback.expected}
+              </Body>
               <Body>{visibleFeedback.explanation}</Body>
               {visibleFeedback.inputScript === "romaji" &&
                 exercise?.facet === "reading" && (
@@ -462,7 +472,8 @@ export default function Lesson() {
                 .
               </Body>
               <Body>
-                Speaking: not practised. Finishing text exercises does not award mastery.
+                Speaking: not practised. Finishing text exercises does not award
+                mastery.
               </Body>
               <Body style={{ fontSize: 23, fontWeight: "700" }}>
                 {requestsLesson.grammar.pattern}
@@ -501,9 +512,12 @@ export default function Lesson() {
                   />
                 </View>
               ))}
-                <LessonConversation sessionId={sessionId} theme={snapshot.theme}/>
-                <Button
-                  label="Return to my daily plan"
+              <LessonConversation
+                sessionId={sessionId}
+                theme={snapshot.theme}
+              />
+              <Button
+                label="Return to my daily plan"
                 onPress={() => router.replace("/(learning)/(tabs)")}
               />
             </>
@@ -511,6 +525,7 @@ export default function Lesson() {
           {error && <Message>{error}</Message>}
         </Panel>
       </View>
+      <SentenceFeedback sessionId={sessionId} />
       <Button
         label="Save and return Home"
         secondary

@@ -1,27 +1,31 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useMutation, useQuery } from "convex/react";
 import * as Crypto from "expo-crypto";
 import type { SQLiteDatabase } from "expo-sqlite";
 import { api } from "@packages/backend/convex/_generated/api";
 import type { FunctionReturnType } from "convex/server";
-import { localDayAt, validateStudyEvent, type StudyEvent } from "@packages/learning-core";
+import { localDayAt, validateStudyEvent, type StudyEvent, type Assessment } from "@packages/learning-core";
 import { requestsLesson } from "@packages/content";
 import { openAccountDatabase } from "./database";
 
 type EventInput = Pick<StudyEvent, "sessionId" | "kind" | "stepId"> & Partial<Pick<StudyEvent, "input" | "support" | "dontKnow" | "context" | "spans">>;
 export type CachedChat = NonNullable<FunctionReturnType<typeof api.conversation.get>>;
 type SavedPhrases = FunctionReturnType<typeof api.references.list>;
-type State = { events: StudyEvent[]; phrases: SavedPhrases; chats: Record<string, CachedChat>; cacheChat: (chat: CachedChat) => Promise<void>; drafts: Record<string, string>; saveDraft: (sessionId: string, stepId: string, input: string) => Promise<void>; loading: boolean; pending: number; error: string; append: (input: EventInput) => Promise<StudyEvent>; retry: () => void };
+type SentenceFeedback = Record<string, FunctionReturnType<typeof api.assessment.list>[number]>;
+type State = { events: StudyEvent[]; sentenceFeedback:SentenceFeedback; checked:Record<string,Assessment>; phrases: SavedPhrases; chats: Record<string, CachedChat>; cacheChat: (chat: CachedChat) => Promise<void>; drafts: Record<string, string>; saveDraft: (sessionId: string, stepId: string, input: string) => Promise<void>; loading: boolean; pending: number; error: string; append: (input: EventInput) => Promise<StudyEvent>; retry: () => void };
 const Context = createContext<State | null>(null);
 export function StudyProvider({ accountId, cloudReady, children }: { accountId: string; cloudReady: boolean; children: ReactNode }) {
   const [events, setEvents] = useState<StudyEvent[]>([]), [loading, setLoading] = useState(true), [cursor, setCursor] = useState(0), [pending, setPending] = useState(0), [error, setError] = useState(""), [retryCount, setRetryCount] = useState(0);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [chats, setChats] = useState<Record<string, CachedChat>>({});
   const [phrases, setPhrases] = useState<SavedPhrases>([]);
+  const [sentenceFeedback,setSentenceFeedback]=useState<SentenceFeedback>({});
+  const checked=useMemo(()=>Object.fromEntries(Object.entries(sentenceFeedback).flatMap(([id,row])=>row.status==="ready"&&row.assessment?[[id,row.assessment as Assessment]]:[])),[sentenceFeedback]);
   const dbRef = useRef<SQLiteDatabase | null>(null), epochRef = useRef(0), serial = useRef(Promise.resolve()), deviceId = useRef(""), sequence = useRef(0), syncing = useRef(false);
   const remote = useQuery(api.study.changes, cloudReady && !loading ? { afterCursor: cursor } : "skip");
   const push = useMutation(api.study.push);
   const remotePhrases = useQuery(api.references.list, cloudReady && !loading ? {} : "skip");
+  const remoteSentences = useQuery(api.assessment.list,cloudReady&&!loading?{}:"skip");
   const enqueue = useCallback((work: () => Promise<void>) => { const next = serial.current.then(work); serial.current = next.catch(() => {}); return next; }, []);
   const refresh = useCallback(async (db: SQLiteDatabase, epoch: number) => {
     const rows = await db.getAllAsync<{ body: string; acknowledged: number }>("SELECT body, acknowledged FROM study_events ORDER BY rowid");
@@ -40,15 +44,18 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
       const savedDrafts = await db.getAllAsync<{ id: string; body: string }>("SELECT id, body FROM drafts WHERE id LIKE 'answer:%'");
       const savedChats = await db.getAllAsync<{ key: string; value: string }>("SELECT key, value FROM study_metadata WHERE key LIKE 'chat:%'");
       const savedPhrases = await db.getFirstAsync<{ value: string }>("SELECT value FROM study_metadata WHERE key='saved-phrases'");
+      const savedSentences=await db.getFirstAsync<{value:string}>("SELECT value FROM study_metadata WHERE key='sentence-feedback'");
       if (epoch !== epochRef.current) return;
       deviceId.current = device.value; sequence.current = Number(lastSequence?.value ?? 0); dbRef.current = db;
       setDrafts(Object.fromEntries(savedDrafts.map(draft => [draft.id.slice(7), draft.body])));
       setChats(Object.fromEntries(savedChats.map(chat => [chat.key.slice(5), JSON.parse(chat.value) as CachedChat])));
       setPhrases(savedPhrases ? JSON.parse(savedPhrases.value) as SavedPhrases : []);
+      setSentenceFeedback(savedSentences?JSON.parse(savedSentences.value) as SentenceFeedback:{});
       await refresh(db, epoch); if (epoch === epochRef.current) { setCursor(Number(savedCursor?.value ?? 0)); setLoading(false); }
     })().catch(() => { if (epoch === epochRef.current) { setLoading(false); setError("Study storage couldn't open. Your account remains saved; restart to try again."); } });
     return () => { epochRef.current = epoch + 1; syncing.current = false; const db = owned; if (db) void serial.current.then(async () => { if (dbRef.current === db) dbRef.current = null; await db.closeAsync(); }); };
   }, [accountId, refresh]);
+  useEffect(()=>{if(!remoteSentences||loading)return;const epoch=epochRef.current;void enqueue(async()=>{const db=dbRef.current;if(!db||epoch!==epochRef.current)return;const stored=await db.getFirstAsync<{value:string}>("SELECT value FROM study_metadata WHERE key='sentence-feedback'");const merged={...(stored?JSON.parse(stored.value) as SentenceFeedback:{}),...Object.fromEntries(remoteSentences.map(row=>[row.eventId,row]))};await db.runAsync("INSERT INTO study_metadata (key,value) VALUES ('sentence-feedback',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",JSON.stringify(merged));if(epoch===epochRef.current)setSentenceFeedback(merged);}).catch(()=>{if(epoch===epochRef.current)setError("Sentence feedback is saved online. Reconnect to cache it here.");});},[remoteSentences,loading,enqueue]);
   useEffect(() => {
     if (!remotePhrases || loading) return;
     const epoch = epochRef.current;
@@ -118,6 +125,6 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
     })().catch(() => { if (epoch === epochRef.current) setError("Saved on this phone. Study synchronization will retry when you reconnect."); }).finally(() => { if (epoch === epochRef.current) { syncing.current = false; } });
   }, [cloudReady, loading, pending, retryCount, events, enqueue, refresh, push]);
   useEffect(() => { const timer = setInterval(() => setRetryCount(count => count + 1), 30_000); return () => clearInterval(timer); }, []);
-  return <Context.Provider value={{ events, phrases, chats, cacheChat, drafts, saveDraft, loading, pending, error, append, retry: () => setRetryCount(count => count + 1) }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ events, sentenceFeedback, checked, phrases, chats, cacheChat, drafts, saveDraft, loading, pending, error, append, retry: () => setRetryCount(count => count + 1) }}>{children}</Context.Provider>;
 }
 export function useStudy() { const state = useContext(Context); if (!state) throw new Error("StudyProvider is required."); return state; }

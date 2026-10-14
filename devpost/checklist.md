@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- October 14 follow-up: source-bound assessment now resolves novel grammar answers after synchronization, preserves independent/assisted/error/pending classifications and original dates, and caches feedback for references. Live correct/error/romaji checks and the actual native pending-to-accepted flow pass; same-millisecond ordering is covered. The complete slice 2 gate remains open for Qloo and learner feedback.
+
 - October 14: verified intermediate tutor checkpoint (see `build-evidence.md > Tutor checkpoint — October 14 continuation`). Real Gemini/OpenRouter lesson-linked text flows, finish-pending recap evidence, original-day conversation effort and checked phrase saving pass. Slice 2 remains open for real Qloo access, context-cache/provenance/disambiguation, novel lesson-sentence assessment and its learner hands-on checkpoint; later slices remain required. No duplicate EAS job was created.
 
 - Slice 2 is in progress: authored the original source-checked requests lesson (four kanji, three kana, fifteen fixed/own-sentence exercises), shared grading/retry/evidence rules and owned immutable study-event journal. Twenty-five domain/transport tests, the content gate, six workspace typechecks and native lint passed. Live synthetic uploads proved account isolation, concurrent deduplication, immutable-ID rejection and unattempted-advance rejection. This is partial technical evidence; full native lesson, tutor, novel-answer assessment and Qloo acceptance remain open.

@@ -6,3 +6,4 @@ export * from "./study.ts";
 export * from "./content-check.ts";
 export * from "./conversation.ts";
 export * from "./readings.ts";
+export * from "./sentence-assessment.ts";

@@ -34,10 +34,10 @@ export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, no
   const step = lessonSteps(lesson).find(item => item.id === event.stepId) ?? (exerciseForStep(lesson, event.stepId) ? { kind: "exercise" } : undefined);
   if (!step || (event.kind === "started" && (event.stepId !== "goal" || !event.context)) || (event.kind === "attempted" && step.kind !== "exercise") || (event.kind === "savedPhrase" && !lesson.grammar.examples.some(example => example.id === event.input)) || (event.context && event.context.theme.length > 120)) throw new Error("Invalid lesson step.");
 }
-export function sessionProjection(lesson: PreparedLesson, source: readonly StudyEvent[]) {
+export function sessionProjection(lesson: PreparedLesson, source: readonly StudyEvent[], checked: Readonly<Record<string, Assessment>> = {}) {
   const events = [...source].sort((a, b) => a.occurredAt - b.occurredAt || a.deviceId.localeCompare(b.deviceId) || a.sequence - b.sequence || a.eventId.localeCompare(b.eventId));
   const advanced = new Set(events.filter(event => event.kind === "advanced").map(event => event.stepId));
-  const attempts: { event: StudyEvent; assessment: Assessment }[] = [];
+  const attempts: { event: StudyEvent; assessment: Assessment; support: SupportFlag[] }[] = [];
   const exposed = new Set<string>();
   const savedSupport = new Map<string, Set<SupportFlag>>();
   for (const event of events) {
@@ -47,8 +47,10 @@ export function sessionProjection(lesson: PreparedLesson, source: readonly Study
     if (event.kind !== "attempted") continue;
     const support = [...new Set([...event.support, ...(savedSupport.get(exercise.id) ?? [])])];
     if (exposed.has(exercise.id) && !support.includes("correctionRetry")) support.push("correctionRetry");
-    const assessment = assessFixed(exercise, event.input ?? "", support, event.dontKnow);
-    attempts.push({ event, assessment });
+    const fixed = assessFixed(exercise, event.input ?? "", support, event.dontKnow);
+    const candidate = checked[event.eventId];
+    const assessment = fixed.outcome === "pending" && candidate && candidate.expected === fixed.expected && candidate.normalized === fixed.normalized ? { ...candidate, outcome: candidate.outcome === "independent" && support.length ? "assisted" as const : candidate.outcome } : fixed;
+    attempts.push({ event, assessment, support });
     // Every feedback screen exposes the expected answer; any later try is practice.
     exposed.add(exercise.id);
   }
@@ -73,8 +75,8 @@ export function sessionProjection(lesson: PreparedLesson, source: readonly Study
   const grammarState = demonstrated?.assessment.outcome ?? (grammarAttempts.some(attempt => attempt.assessment.outcome === "pending") ? "pending" : "notObserved");
   return { events, steps, advanced, attempts, next, initiallyLearned, grammarState, finishedText: steps.filter(step => step.kind !== "recap").every(step => advanced.has(step.id)), meaningfulDays: [...new Set(attempts.filter(attempt => attempt.assessment.outcome !== "pending").map(attempt => attempt.event.localDay))], spans: events.flatMap(event => event.spans) };
 }
-export function initialReviewTracks(lesson: PreparedLesson, events: readonly StudyEvent[]) {
-  const projection = sessionProjection(lesson, events);
+export function initialReviewTracks(lesson: PreparedLesson, events: readonly StudyEvent[], checked: Readonly<Record<string,Assessment>> = {}) {
+  const projection = sessionProjection(lesson, events, checked);
   const tracks: { id: string; facet: "meaning" | "reading" | "grammar"; targetId: string; stage: number; introducedAt: number; dueAt: number }[] = [];
   for (const wordId of projection.initiallyLearned) {
     const meaning = projection.events.find(event => event.kind === "advanced" && event.stepId === `meaning-${wordId}`);

@@ -5,12 +5,13 @@ import { useStudy } from "../../data/StudyProvider";
 import { Body, Button, Panel, Screen, Title } from "../../components/ui";
 import { SentenceView } from "../../features/lessons/SentenceView";
 import { LessonConversation } from "../../features/conversation/LessonConversation";
+import { SentenceFeedback } from "../../features/lessons/SentenceFeedback";
 export default function Reference() {
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
-  const { events } = useStudy();
+  const { events, checked } = useStudy();
   const session = events.filter((event) => event.sessionId === sessionId);
   const context = session.find((event) => event.kind === "started")?.context;
-  const projection = sessionProjection(requestsLesson, session);
+  const projection = sessionProjection(requestsLesson, session, checked);
   return (
     <Screen title="Keep it with you." subtitle="Your session reference">
       <Panel>
@@ -20,8 +21,14 @@ export default function Reference() {
           {projection.initiallyLearned.length} kanji introduced · grammar{" "}
           {projection.grammarState}. Speaking remains unpractised.
         </Body>
-        {sessionId && <LessonConversation sessionId={sessionId} theme={context?.theme ?? "Everyday Japanese"}/>}
+        {sessionId && (
+          <LessonConversation
+            sessionId={sessionId}
+            theme={context?.theme ?? "Everyday Japanese"}
+          />
+        )}
       </Panel>
+      {sessionId && <SentenceFeedback sessionId={sessionId} />}
       {requestsLesson.words.map((word) => (
         <Panel key={word.id}>
           <Title>

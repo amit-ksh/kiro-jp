@@ -14,9 +14,9 @@ export default function Home() {
   const unfinishedChat = Object.values(study.chats).sort((a,b)=>b.conversation.updatedAt-a.conversation.updatedAt).find(chat=>chat.segments.some(segment=>segment.segmentId===chat.conversation.currentSegmentId && segment.state==="active"));
   const today = localDayAt(Date.now(), new Date().getTimezoneOffset());
   const milliseconds = activeMilliseconds(study.events.flatMap(event => event.spans), today);
-  const meaningful = study.events.some(event => event.kind === "conversationTurn" && event.localDay === today && event.input === "meaningful") || sessions.some(session => sessionProjection(requestsLesson, study.events.filter(event => event.sessionId === session.sessionId)).meaningfulDays.includes(today));
+  const meaningful = study.events.some(event => event.kind === "conversationTurn" && event.localDay === today && event.input === "meaningful") || sessions.some(session => sessionProjection(requestsLesson, study.events.filter(event => event.sessionId === session.sessionId),study.checked).meaningfulDays.includes(today));
   const tracks = new Map<string, ReturnType<typeof initialReviewTracks>[number]>();
-  for (const session of [...sessions].reverse()) for (const track of initialReviewTracks(requestsLesson, study.events.filter(event => event.sessionId === session.sessionId))) if (!tracks.has(track.id)) tracks.set(track.id, track);
+  for (const session of [...sessions].reverse()) for (const track of initialReviewTracks(requestsLesson, study.events.filter(event => event.sessionId === session.sessionId),study.checked)) if (!tracks.has(track.id)) tracks.set(track.id, track);
   const due = [...tracks.values()].filter(track => track.dueAt <= Date.now()).length;
   return <Screen title="A little Japanese, today." subtitle={`${bandLabel(profile.acceptedBand)} · ${profile.dailyMinutes}-minute daily goal`}>
     <Panel><Body muted>Today&apos;s study</Body><Title>{(milliseconds / 60_000).toFixed(1)} / {profile.dailyMinutes} minutes</Title><Body>{meaningful ? "Today's streak day earned through meaningful practice." : "Complete a review, lesson exercise or Japanese conversation turn to earn today's streak day."}</Body><Body muted>Active time after study interactions; idle and network waiting are excluded.</Body></Panel>
