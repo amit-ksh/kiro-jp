@@ -7,6 +7,7 @@ import type { FunctionReturnType } from "convex/server";
 import { localDayAt, validateStudyEvent, type StudyEvent, type Assessment } from "@packages/learning-core";
 import { requestsLesson } from "@packages/content";
 import { openAccountDatabase, accountTransaction } from "./database";
+import { pendingStudyBatchSql } from "./studyOutbox";
 
 type EventInput = Pick<StudyEvent, "sessionId" | "kind" | "stepId"> & Partial<Pick<StudyEvent, "input" | "support" | "dontKnow" | "context" | "spans">>;
 export type CachedChat = NonNullable<FunctionReturnType<typeof api.conversation.get>>;
@@ -117,7 +118,7 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
     const epoch = epochRef.current; syncing.current = true;
     void (async () => {
       let batch: StudyEvent[] = [];
-      await enqueue(async () => { if (epoch === epochRef.current && dbRef.current) { const rows = await dbRef.current.getAllAsync<{ body: string }>("SELECT body FROM study_events WHERE acknowledged=0 AND (json_extract(body,'$.kind') != 'reviewActivity' OR EXISTS (SELECT 1 FROM study_metadata WHERE key='review-ready:' || json_extract(study_events.body,'$.stepId'))) ORDER BY rowid LIMIT 50"); batch = rows.map(row => JSON.parse(row.body)); } });
+      await enqueue(async () => { if (epoch === epochRef.current && dbRef.current) { const rows = await dbRef.current.getAllAsync<{ body: string }>(pendingStudyBatchSql); batch = rows.map(row => JSON.parse(row.body)); } });
       if (!batch.length || epoch !== epochRef.current) return;
       const receipts = await push({ events: batch });
       await enqueue(async () => {

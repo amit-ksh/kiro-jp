@@ -1,5 +1,11 @@
 # Build evidence — 2026-10-13
 
+## Review listening upload dependency — October 14
+
+Found that the outbox waited for acknowledged tracks for `reviewActivity`, while newer review `audioActivity` could upload too early. The shared local batch query now gates both against the exact account's `review-ready:<trackId>` marker. It retains blocked rows and permits unrelated lesson/reference activity to upload. Ready rows keep original insertion order and the existing 50-row limit; the query never rewrites event IDs, dates, spans or answers. The existing retry interval picks up newly acknowledged tracks.
+
+All 102 tests pass. Three new real SQLite cases cover exact-track versus wrong-track release, original event/date/span bytes, restart, a 123-event multibatch queue with blocked rows, identical replay after a lost acknowledgement, and separate account markers. Affected native TypeScript/uncached lint and Android export passed: 1,292 modules, 46 assets, Hermes `index-574d81d36559844d69e5dd289965a0d9.hbc` (3.7 MB). Actual Android replayed the checked water clip from the saved review; cloud verification found exactly one new listening activity and unchanged earlier study events, review attempts and all eight permanent closures. The card already had its server acknowledgement; the missing-marker path is established by the real SQLite tests, not claimed as a native fault injection. No inference, backend behavior change or APK build was needed. Real Qloo access remains absent on the latest configuration check.
+
 ## Forward-only local storage upgrades — October 14
 
 Replaced unconditional schema creation/version assignment with explicit migrations matching the actually shipped v1 account, v2 study and v3 review tables. Version 4 adds session/pending-event indexes without changing learning records. Opening validates the known table columns/primary keys and SQLite quick-check result. Unsupported newer stores are refused before any schema/journal write; incompatible or unreadable stores are retained rather than recreated. Migration DDL and version changes share a transaction, so interruption rolls back the upgrade. Account opening remains serialized, and the existing recovery screen shows a clear update/retry message without deleting local work.
