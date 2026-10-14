@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- October 14: prepared the first four word-audio candidates and an eleven-script inventory while Qloo access remains pending. WAV/CLI checks pass; language consistency, native playback/recording, Whisper access and the full spoken journey remain required. See the audio-preparation checkpoint in build evidence.
+
 - October 14: cultural provenance, ambiguous-favorite confirmation and dislike/restore controls now cross the owned backend and Android UI. Synthetic/native checks pass without awarding study credit. Real Qloo results and the learner's early hands-on report remain required; slice 2 stays unchecked.
 
 - October 14: added private decoded Qloo context reuse with a 24-hour expiry and dislike-sensitive keys. Synthetic contract checks cover reuse, refresh and missing-key behavior; all 43 shared tests pass. This does not satisfy real Qloo access or the slice-2 learner checkpoint.

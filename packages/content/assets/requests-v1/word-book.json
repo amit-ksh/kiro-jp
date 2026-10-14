@@ -1,0 +1,21 @@
+{
+  "id": "word-book",
+  "kind": "word",
+  "text": "ほん",
+  "display": "本",
+  "meaning": "book",
+  "lessonId": "requests",
+  "lessonVersion": 1,
+  "scriptHash": "09e473c3774a840b599ab96787b44bfcb26a116cd476577a001b6b776cd11a22",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-requests-v1-word-book-09e473c3774a",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.2,
+  "sampleRate": 24000,
+  "sha256": "e2d9986546aa65b4385749f5aaa5309f8912aece4c400044635fe927518fcbf4",
+  "createdAt": "2026-10-14T01:36:28.205Z",
+  "languageCheck": "pending",
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

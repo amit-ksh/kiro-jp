@@ -15,6 +15,7 @@
     "config:local": "node scripts/configure-local.mjs",
     "setup:backend": "node scripts/setup-backend.mjs",
     "prepare:placement-audio": "node scripts/prepare-placement-audio.mjs",
+    "prepare:lesson-audio": "node --experimental-strip-types scripts/prepare-lesson-audio.mjs",
     "check:ai-gateway": "node scripts/check-ai-gateway.mjs",
     "check:content": "node --experimental-strip-types scripts/check-content.ts",
     "format": "prettier --write apps packages scripts tests"

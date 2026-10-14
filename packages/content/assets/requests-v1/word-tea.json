@@ -1,0 +1,21 @@
+{
+  "id": "word-tea",
+  "kind": "word",
+  "text": "おちゃ",
+  "display": "お茶",
+  "meaning": "tea",
+  "lessonId": "requests",
+  "lessonVersion": 1,
+  "scriptHash": "f25c2f15884cf44f06cd0f9cc271b7ffc54d2d04593a270b998de3b1e8e09c58",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-requests-v1-word-tea-f25c2f15884c",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.28,
+  "sampleRate": 24000,
+  "sha256": "98bf903bbf4fc26ff935e114c2f7f190d0d8f4888ee07f3a75422c0d54285129",
+  "createdAt": "2026-10-14T01:36:24.868Z",
+  "languageCheck": "pending",
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

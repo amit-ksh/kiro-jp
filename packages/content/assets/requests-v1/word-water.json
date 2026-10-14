@@ -1,0 +1,21 @@
+{
+  "id": "word-water",
+  "kind": "word",
+  "text": "みず",
+  "display": "水",
+  "meaning": "water",
+  "lessonId": "requests",
+  "lessonVersion": 1,
+  "scriptHash": "62a170903c8e5daca0f211a60a8ec49a32cf45e2405bec9d07d70f9bbd4f0b56",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-requests-v1-word-water-62a170903c8e",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.28,
+  "sampleRate": 24000,
+  "sha256": "5f6057de6c864e99b11659ba2b9e200068ca7b8b589fcba85da00127fd6519e7",
+  "createdAt": "2026-10-14T01:36:21.832Z",
+  "languageCheck": "pending",
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "word-yen",
+  "kind": "word",
+  "text": "えん",
+  "display": "円",
+  "meaning": "yen",
+  "lessonId": "requests",
+  "lessonVersion": 1,
+  "scriptHash": "2600cdd3490ce4b412f987e9eee8b4c950fab2512935493bacdee648c8024cd4",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-requests-v1-word-yen-2600cdd3490c",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 0.96,
+  "sampleRate": 24000,
+  "sha256": "4e5fe4de74ece1176a5ab6fc26adef4ed5f0b1a5039590862e0c80f3b44d0785",
+  "createdAt": "2026-10-14T01:36:30.887Z",
+  "languageCheck": "pending",
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}
