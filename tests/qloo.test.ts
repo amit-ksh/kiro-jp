@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import type { QlooCacheEntry } from "../packages/backend/convex/lib/qloo.ts";
+import { chooseCulturalCandidate } from "../packages/learning-core/src/culture.ts";
 import {
   createQlooSession,
   decodeEntities,
@@ -15,6 +16,86 @@ const entity = {
   subtype: "urn:entity:book",
   properties: { description: "A synthetic context." },
 };
+test("ambiguous identities require a saved choice, and provenance names resolved signals", async () => {
+  const other = {
+    ...entity,
+    entity_id: "synthetic-book-other",
+    name: "Another synthetic book",
+  };
+  const transport: typeof fetch = async (input) =>
+    Response.json(
+      new URL(String(input)).pathname === "/search"
+        ? {
+            success: true,
+            results: [
+              entity,
+              other,
+              { ...entity, subtype: "urn:entity:place" },
+            ],
+          }
+        : { success: true, results: { entities: [entity] } },
+    );
+  const config = {
+    baseUrl: "https://hackathon.api.qloo.com",
+    apiKey: "synthetic-key",
+  };
+  const ambiguous = createQlooSession(config, transport);
+  assert.equal(
+    (await ambiguous.resolveFavorite("Book title", "urn:entity:book"))
+      .requiresChoice,
+    true,
+  );
+  assert.equal(ambiguous.context.candidates[0]!.items.length, 2);
+  await assert.rejects(() =>
+    ambiguous.recommendCulturalContexts(
+      "urn:entity:book",
+      [entity.entity_id],
+      [],
+    ),
+  );
+  assert.throws(() =>
+    chooseCulturalCandidate(ambiguous.context, "Book title", "invented-id"),
+  );
+  assert.throws(() =>
+    chooseCulturalCandidate(
+      ambiguous.context,
+      "Another query",
+      entity.entity_id,
+    ),
+  );
+  const choice = chooseCulturalCandidate(
+    ambiguous.context,
+    "  BOOK TITLE ",
+    entity.entity_id,
+  );
+  const confirmed = createQlooSession(config, transport, undefined, [choice]);
+  assert.equal(
+    (await confirmed.resolveFavorite("Book title", "urn:entity:book"))
+      .requiresChoice,
+    false,
+  );
+  await confirmed.recommendCulturalContexts(
+    "urn:entity:book",
+    [entity.entity_id],
+    [],
+  );
+  assert.deepEqual(confirmed.context.recommendations[0]!.inputs, [
+    "Synthetic book",
+  ]);
+  assert.equal(
+    confirmed.context.recommendations[0]!.entity.id,
+    entity.entity_id,
+  );
+  assert(Number.isFinite(confirmed.context.recommendations[0]!.checkedAt));
+  const wrongType = createQlooSession(config, transport, undefined, [
+    { ...choice, entity: { ...choice.entity, type: "urn:entity:place" } },
+  ]);
+  assert.equal(
+    (await wrongType.resolveFavorite("Book title", "urn:entity:book"))
+      .requiresChoice,
+    true,
+  );
+});
 test("documented entity and Insights envelopes are distinct and malformed types are ignored", () => {
   assert.equal(decodeEntities([entity])[0]!.type, "urn:entity:book");
   assert.deepEqual(

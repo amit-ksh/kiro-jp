@@ -18,6 +18,7 @@ import { useProfile } from "../../data/ProfileProvider";
 import { useStudy } from "../../data/StudyProvider";
 import { useStudyTime } from "../../features/lessons/useStudyTime";
 import { SavedPhrases } from "../../features/conversation/SavedPhrases";
+import { CulturalContext } from "../../features/conversation/CulturalContext";
 import {
   Body,
   Button,
@@ -341,6 +342,14 @@ export default function Chat() {
           {message.reply ? (
             <>
               {phrase(message.reply)}
+              <CulturalContext
+                message={message}
+                canDiscuss={segment.state === "active"}
+                onTopic={(topic) => {
+                  void study.saveDraft(draftKey, "chat-message", topic);
+                  scroll.current?.scrollToEnd({ animated: true });
+                }}
+              />
               <Button
                 label="Review this reply"
                 secondary

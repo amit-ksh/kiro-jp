@@ -19,6 +19,8 @@ import type * as conversation from "../conversation.js";
 import type * as conversationAI from "../conversationAI.js";
 import type * as conversationJobs from "../conversationJobs.js";
 import type * as conversationValues from "../conversationValues.js";
+import type * as culture from "../culture.js";
+import type * as cultureValues from "../cultureValues.js";
 import type * as emailLimits from "../emailLimits.js";
 import type * as http from "../http.js";
 import type * as lib_ai_providers from "../lib/ai/providers.js";
@@ -52,6 +54,8 @@ declare const fullApi: ApiFromModules<{
   conversationAI: typeof conversationAI;
   conversationJobs: typeof conversationJobs;
   conversationValues: typeof conversationValues;
+  culture: typeof culture;
+  cultureValues: typeof cultureValues;
   emailLimits: typeof emailLimits;
   http: typeof http;
   "lib/ai/providers": typeof lib_ai_providers;

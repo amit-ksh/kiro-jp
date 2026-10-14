@@ -58,7 +58,7 @@ export const run = internalAction({
       args,
     );
     if (!claimed) return;
-    const { job, segment, messages, profile } = claimed;
+    const { job, segment, messages, profile, choices } = claimed;
     const receipts: GatewayReceipt[] = [];
     const configured = process.env.AI_CONVERSATION_PROVIDER ?? "gemini";
     const provider: ConversationProvider =
@@ -90,6 +90,7 @@ export const run = internalAction({
             });
           },
         },
+        choices,
       );
     } catch {
       qloo = createQlooSession({ baseUrl: "" });
@@ -189,7 +190,7 @@ export const run = internalAction({
             }),
             execute: async ({ query, type }) => {
               const result = await qloo.resolveFavorite(query, type);
-              return { ...result, requiresChoice: result.items.length > 1 };
+              return result;
             },
           }),
           findInterestTags: tool({
@@ -264,6 +265,7 @@ export const run = internalAction({
         jobId: job._id,
         claim: job.claim,
         reply,
+        culture: qloo.context,
         trace: JSON.stringify({
           provider,
           receipts,

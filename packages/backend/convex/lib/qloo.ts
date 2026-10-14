@@ -1,19 +1,14 @@
 "use node";
-export const culturalTypes = [
-  "urn:entity:place",
-  "urn:entity:book",
-  "urn:entity:tv_show",
-  "urn:entity:movie",
-  "urn:entity:artist",
-] as const;
+import {
+  culturalEntityTypes,
+  culturalQueryKey,
+  type CulturalChoice,
+  type CulturalEntity as Entity,
+  type CulturalSnapshot,
+} from "@packages/learning-core";
+export const culturalTypes = culturalEntityTypes;
 export type CulturalType = (typeof culturalTypes)[number];
-export interface CulturalEntity {
-  id: string;
-  name: string;
-  type: CulturalType;
-  description?: string;
-  disambiguation?: string;
-}
+export type CulturalEntity = Entity;
 export interface InterestTag {
   id: string;
   name: string;
@@ -100,6 +95,7 @@ export function createQlooSession(
   config: QlooConfig,
   transport: typeof fetch = fetch,
   cache?: QlooCache,
+  choices: readonly CulturalChoice[] = [],
 ) {
   const root = config.baseUrl.replace(/\/$/u, "");
   if (
@@ -114,6 +110,8 @@ export function createQlooSession(
   const entities = new Set<string>(),
     tags = new Set<string>(),
     recommendations: CulturalEntity[] = [];
+  const names = new Map<string, string>();
+  const context: CulturalSnapshot = { candidates: [], recommendations: [] };
   let calls = 0;
   const traces: {
     operation: string;
@@ -133,6 +131,7 @@ export function createQlooSession(
       return { status: "notConfigured", items: [], inputs };
     const cacheKey = cache?.key(
       JSON.stringify([
+        "decoded-context-v2",
         root,
         operation,
         config.tagIdField ?? "",
@@ -212,6 +211,7 @@ export function createQlooSession(
   return {
     traces,
     recommendations,
+    context,
     async resolveFavorite(query: string, type: CulturalType) {
       if (!query.trim() || query.length > 120 || !culturalTypes.includes(type))
         throw new Error("Invalid cultural search.");
@@ -220,20 +220,44 @@ export function createQlooSession(
         "/search",
         { query: query.trim(), types: type, take: "5" },
         [query],
-        (data) => decodeEntities(data.results),
+        (data) =>
+          decodeEntities(data.results).filter((item) => item.type === type),
       );
+      const selected = choices.find(
+        (choice) =>
+          culturalQueryKey(choice.query) === culturalQueryKey(query) &&
+          choice.entity.type === type,
+      );
+      const chosen = selected
+        ? result.items.filter((item) => item.id === selected.entity.id)
+        : [];
       const exact = result.items.filter(
         (item) => item.name.toLowerCase() === query.trim().toLowerCase(),
       );
       // Ambiguous search results are suggestions, not a confirmed favorite.
       const confirmed =
-        result.items.length === 1
-          ? result.items
-          : exact.length === 1
-            ? exact
-            : [];
-      confirmed.forEach((item) => entities.add(item.id));
-      return result;
+        chosen.length === 1
+          ? chosen
+          : result.items.length === 1
+            ? result.items
+            : exact.length === 1
+              ? exact
+              : [];
+      confirmed.forEach((item) => {
+        entities.add(item.id);
+        names.set(item.id, item.name);
+      });
+      const requiresChoice = result.items.length > 1 && !confirmed.length;
+      if (
+        requiresChoice &&
+        !context.candidates.some(
+          (candidate) =>
+            culturalQueryKey(candidate.query) === culturalQueryKey(query) &&
+            candidate.type === type,
+        )
+      )
+        context.candidates.push({ query, type, items: result.items });
+      return { ...result, requiresChoice };
     },
     async findInterestTags(query: string): Promise<QlooResult<InterestTag>> {
       if (!query.trim() || query.length > 120)
@@ -251,7 +275,10 @@ export function createQlooSession(
         [query],
         (data) => decodeTags(record(data.results).tags, config.tagIdField!),
       );
-      result.items.forEach((item) => tags.add(item.id));
+      result.items.forEach((item) => {
+        tags.add(item.id);
+        names.set(item.id, item.name);
+      });
       return result;
     },
     async recommendCulturalContexts(
@@ -286,6 +313,7 @@ export function createQlooSession(
         (data) =>
           decodeEntities(record(data.results).entities).filter(
             (item) =>
+              item.type === type &&
               !dislikes.includes(item.id) &&
               !dislikes.some(
                 (dislike) => dislike.toLowerCase() === item.name.toLowerCase(),
@@ -294,6 +322,22 @@ export function createQlooSession(
         JSON.stringify([...dislikes].sort()),
       );
       recommendations.push(...result.items);
+      if (result.status === "ready") {
+        const inputs = [...entityIds, ...tagIds].map(
+          (id) => names.get(id) ?? "a confirmed interest",
+        );
+        for (const entity of result.items)
+          if (
+            !context.recommendations.some(
+              (item) => item.entity.id === entity.id,
+            )
+          )
+            context.recommendations.push({
+              entity,
+              inputs,
+              checkedAt: result.checkedAt,
+            });
+      }
       return result;
     },
   };

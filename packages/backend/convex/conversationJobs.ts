@@ -13,6 +13,7 @@ import {
 } from "@packages/learning-core";
 import { requestsLesson } from "@packages/content";
 import { assessmentValue, replyValue } from "./conversationValues";
+import { culturalSnapshotValue } from "./cultureValues";
 async function storeEvidence(
   ctx: MutationCtx,
   segment: Doc<"conversationSegments">,
@@ -149,6 +150,10 @@ export const claim = internalMutation({
       .query("learnerProfiles")
       .withIndex("by_user", (q) => q.eq("userId", job.userId))
       .unique();
+    const choices = await ctx.db
+      .query("culturalSelections")
+      .withIndex("by_user", (q) => q.eq("userId", job.userId))
+      .take(20);
     return {
       job: { ...job, claim },
       segment,
@@ -157,6 +162,10 @@ export const claim = internalMutation({
           job.sourceMessageIds.includes(message.messageId) && !message.stale,
       ),
       profile: profile?.data ?? null,
+      choices: choices.map((choice) => ({
+        query: choice.query,
+        entity: choice.entity,
+      })),
     };
   },
 });
@@ -165,6 +174,7 @@ export const settle = internalMutation({
     jobId: v.id("conversationJobs"),
     claim: v.number(),
     reply: v.optional(replyValue),
+    culture: v.optional(culturalSnapshotValue),
     recap: v.optional(v.string()),
     recapAssessments: v.optional(v.array(assessmentValue)),
     trace: v.string(),
@@ -257,6 +267,7 @@ export const settle = internalMutation({
         intent: "practice",
         support: [],
         reply: args.reply,
+        culture: args.culture,
         stale: disposition !== "append",
       });
     // A ended segment's late response stays as a draft. It cannot update goals.
