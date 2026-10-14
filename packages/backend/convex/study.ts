@@ -30,8 +30,9 @@ export const push = mutation({ args: { events: v.array(studyEventValue) }, handl
       if (canonical(previous.event) !== canonical(event)) throw new ConvexError("A saved activity ID cannot be replaced with another answer.");
       receipts.push({ eventId: event.eventId, cursor: previous.cursor }); continue;
     }
-    if(event.kind==="reviewActivity") {
-      const track=await ctx.db.query("reviewTracks").withIndex("by_user_track",q=>q.eq("userId",userId).eq("track.id",event.stepId)).unique();
+    if(event.kind==="reviewActivity" || (event.kind === "audioActivity" && event.lessonId === "review")) {
+      const trackId = event.kind === "reviewActivity" ? event.stepId : event.stepId.slice(7);
+      const track=await ctx.db.query("reviewTracks").withIndex("by_user_track",q=>q.eq("userId",userId).eq("track.id",trackId)).unique();
       if(!track)throw new ConvexError("Prepare this owned review card before syncing its study time.");
     } else if (event.kind === "conversationActivity" || (event.kind === "audioActivity" && event.lessonId === "conversation")) {
       const segment = await ctx.db.query("conversationSegments").withIndex("by_user_segment", q => q.eq("userId", userId).eq("segmentId", event.sessionId)).unique();

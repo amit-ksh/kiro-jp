@@ -18,12 +18,14 @@ export function AudioPlay({
   sessionId,
   conversation = false,
   reference = false,
+  reviewTrackId,
 }: {
   source: AudioSource;
   label: string;
   sessionId: string;
   conversation?: boolean;
   reference?: boolean;
+  reviewTrackId?: string;
 }) {
   const player = useAudioPlayer(null, { updateInterval: 100 }),
     status = useAudioPlayerStatus(player),
@@ -64,8 +66,10 @@ export function AudioPlay({
     "listening",
     status.playing && !status.isBuffering && !speech.recording,
     conversation,
-    Math.max(0, status.duration - status.currentTime) * 1000 / (slow ? 0.75 : 1),
+    (Math.max(0, status.duration - status.currentTime) * 1000) /
+      (slow ? 0.75 : 1),
     reference,
+    reviewTrackId,
   );
   useEffect(() => registerPlayer(player), [player]);
   useFocusEffect(

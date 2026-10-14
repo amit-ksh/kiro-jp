@@ -39,16 +39,47 @@ test("audio effort retains original days and unions overlaps without awarding re
   validateStudyEvent(spoken, requestsLesson, end + 86400000);
   const conversation = { ...spoken, lessonId: "conversation", stepId: "chat" };
   validateStudyEvent(conversation, requestsLesson, end + 86400000);
-  assert.throws(() => validateStudyEvent({ ...conversation, input: "meaningful" }, requestsLesson, end));
-  assert.throws(() => validateStudyEvent({ ...conversation, support: ["transcriptEdited"] }, requestsLesson, end));
+  assert.throws(() =>
+    validateStudyEvent(
+      { ...conversation, input: "meaningful" },
+      requestsLesson,
+      end,
+    ),
+  );
+  assert.throws(() =>
+    validateStudyEvent(
+      { ...conversation, support: ["transcriptEdited"] },
+      requestsLesson,
+      end,
+    ),
+  );
   const reference = { ...event, lessonId: "reference", stepId: "reference" };
   validateStudyEvent(reference, requestsLesson, end);
-  assert.throws(()=>validateStudyEvent({...reference,input:"speaking"},requestsLesson,end));
-  const review = {...event,kind:"reviewActivity" as const,lessonId:"review",stepId:"requests:1:water:meaning",input:undefined};
-  validateStudyEvent(review,requestsLesson,end);
-  assert.throws(()=>validateStudyEvent({...review,input:"meaningful"},requestsLesson,end));
-  assert.throws(()=>validateStudyEvent({...review,spans:[]},requestsLesson,end));
-  assert.deepEqual(sessionProjection(requestsLesson,[review]).meaningfulDays,[]);
+  assert.throws(() =>
+    validateStudyEvent(
+      { ...reference, input: "speaking" },
+      requestsLesson,
+      end,
+    ),
+  );
+  const review = {
+    ...event,
+    kind: "reviewActivity" as const,
+    lessonId: "review",
+    stepId: "requests:1:water:meaning",
+    input: undefined,
+  };
+  validateStudyEvent(review, requestsLesson, end);
+  assert.throws(() =>
+    validateStudyEvent({ ...review, input: "meaningful" }, requestsLesson, end),
+  );
+  assert.throws(() =>
+    validateStudyEvent({ ...review, spans: [] }, requestsLesson, end),
+  );
+  assert.deepEqual(
+    sessionProjection(requestsLesson, [review]).meaningfulDays,
+    [],
+  );
   const projection = sessionProjection(requestsLesson, [event, spoken]);
   assert.equal(activeMilliseconds(projection.spans, "2026-10-13"), 10000);
   assert.equal(activeMilliseconds(projection.spans, "2026-10-14"), 10000);
@@ -72,11 +103,83 @@ test("audio effort retains original days and unions overlaps without awarding re
 });
 test("using an edited transcript retains assistance even after the answer is revised", () => {
   const occurredAt = Date.UTC(2026, 9, 14, 4);
-  const base: StudyEvent = { eventId: "speech-help-0001", sessionId: "speech-session-0001", deviceId: "speech-device-0001", sequence: 1, lessonId: requestsLesson.id, lessonVersion: 1, occurredAt, localDay: "2026-10-14", timezone: "UTC", offsetMinutes: 0, kind: "studied", stepId: "request-own", support: ["transcriptEdited"], spans: [] };
+  const base: StudyEvent = {
+    eventId: "speech-help-0001",
+    sessionId: "speech-session-0001",
+    deviceId: "speech-device-0001",
+    sequence: 1,
+    lessonId: requestsLesson.id,
+    lessonVersion: 1,
+    occurredAt,
+    localDay: "2026-10-14",
+    timezone: "UTC",
+    offsetMinutes: 0,
+    kind: "studied",
+    stepId: "request-own",
+    support: ["transcriptEdited"],
+    spans: [],
+  };
   validateStudyEvent(base, requestsLesson, occurredAt);
-  const revised: StudyEvent = { ...base, eventId: "speech-answer-0001", sequence: 2, occurredAt: occurredAt + 1, kind: "attempted", input: "hon o kudasai", support: [] };
-  const result = sessionProjection(requestsLesson, [base, revised]).attempts[0]!;
+  const revised: StudyEvent = {
+    ...base,
+    eventId: "speech-answer-0001",
+    sequence: 2,
+    occurredAt: occurredAt + 1,
+    kind: "attempted",
+    input: "hon o kudasai",
+    support: [],
+  };
+  const result = sessionProjection(requestsLesson, [base, revised])
+    .attempts[0]!;
   assert.equal(result.assessment.outcome, "assisted");
   assert(result.support.includes("transcriptEdited"));
   assert.equal(result.assessment.kanaEvidence, false);
+});
+
+test("review model listening preserves effort separately from review answers and rejects speaking claims", () => {
+  const end = Date.UTC(2026, 9, 14, 9);
+  const event: StudyEvent = {
+    eventId: "review-audio-event-0001",
+    sessionId: "review-audio-run-0001",
+    deviceId: "audio-device-0001",
+    sequence: 1,
+    lessonId: "review",
+    lessonVersion: 1,
+    occurredAt: end,
+    localDay: "2026-10-14",
+    offsetMinutes: 0,
+    timezone: "UTC",
+    kind: "audioActivity",
+    stepId: "review:requests:1:water:reading",
+    input: "listening",
+    support: [],
+    spans: splitStudySpan(end - 2500, end, 0),
+  };
+  validateStudyEvent(event, requestsLesson, end);
+  const projection = sessionProjection(requestsLesson, [
+    event,
+    { ...event, eventId: "review-audio-event-0002", sequence: 2 },
+  ]);
+  assert.equal(activeMilliseconds(projection.spans, "2026-10-14"), 2500);
+  assert.deepEqual(projection.attempts, []);
+  assert.deepEqual(projection.meaningfulDays, []);
+  assert.deepEqual(projection.initiallyLearned, []);
+  assert.equal(projection.grammarState, "notObserved");
+  for (const patch of [
+    { input: "speaking" },
+    { stepId: "review:" },
+    { stepId: "recap" },
+    { support: ["testedAnswer"] },
+    { spans: [] },
+    { lessonVersion: 2 },
+    { dontKnow: false },
+  ]) {
+    assert.throws(() =>
+      validateStudyEvent(
+        { ...event, ...patch } as StudyEvent,
+        requestsLesson,
+        end,
+      ),
+    );
+  }
 });

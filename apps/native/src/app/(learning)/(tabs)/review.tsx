@@ -12,6 +12,7 @@ import { useReviews, type ReviewQuestion } from "../../../data/ReviewProvider";
 import { useStudy } from "../../../data/StudyProvider";
 import { useStudyTime } from "../../../features/lessons/useStudyTime";
 import { ReviewFeedback } from "../../../features/review/ReviewFeedback";
+import { ReviewAudio } from "../../../features/review/ReviewAudio";
 import { SentenceFeedbackHistory } from "../../../features/review/SentenceFeedbackHistory";
 import {
   Body,
@@ -338,6 +339,7 @@ export default function Review() {
                   </Body>
                 )}
                 <Button label="Next review" busy={busy} onPress={next} />
+                <ReviewAudio key={question.eventId} track={track} sessionId={run.id} />
               </>
             )}
           </Panel>

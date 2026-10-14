@@ -2,16 +2,43 @@ import { router, useLocalSearchParams } from "expo-router";
 import { requestsLesson } from "@packages/content";
 import { sessionProjection } from "@packages/learning-core";
 import { useStudy } from "../../data/StudyProvider";
-import { Body, Button, Panel, Screen, Title } from "../../components/ui";
+import {
+  Body,
+  Button,
+  Panel,
+  Screen,
+  Title,
+  Loading,
+} from "../../components/ui";
 import { SentenceView } from "../../features/lessons/SentenceView";
 import { LessonConversation } from "../../features/conversation/LessonConversation";
 import { SentenceFeedback } from "../../features/lessons/SentenceFeedback";
+import { AudioPlay } from "../../features/speech/AudioPlay";
+import { lessonAudio } from "../../features/speech/lesson-audio";
 export default function Reference() {
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
-  const { events, checked } = useStudy();
+  const { events, checked, loading } = useStudy();
   const session = events.filter((event) => event.sessionId === sessionId);
-  const context = session.find((event) => event.kind === "started")?.context;
+  const started = session.find((event) => event.kind === "started");
+  const context = started?.context;
   const projection = sessionProjection(requestsLesson, session, checked);
+  if (loading) return <Loading label="Opening your saved reference…" />;
+  if (
+    !started ||
+    started.lessonId !== requestsLesson.id ||
+    started.lessonVersion !== requestsLesson.version
+  )
+    return (
+      <Screen title="Your session reference">
+        <Panel>
+          <Body>
+            This session reference is not available on this account. Open a
+            saved lesson from Home.
+          </Body>
+          <Button label="Return" onPress={() => router.back()} />
+        </Panel>
+      </Screen>
+    );
   return (
     <Screen title="Keep it with you." subtitle="Your session reference">
       <Panel>
@@ -19,7 +46,7 @@ export default function Reference() {
         <Body>{context?.theme ?? "Everyday Japanese"}</Body>
         <Body>
           {projection.initiallyLearned.length} kanji introduced · grammar{" "}
-          {projection.grammarState}. Speaking remains unpractised.
+          {projection.grammarState}. Speaking practice is tracked separately.
         </Body>
         {sessionId && (
           <LessonConversation
@@ -39,11 +66,21 @@ export default function Reference() {
             {context?.romaji ? ` · ${word.romaji[0]}` : ""}
           </Body>
           <Body>{word.mnemonic}</Body>
+          <AudioPlay
+            source={lessonAudio[`word-${word.id}`]!}
+            label={`${word.word} word`}
+            sessionId={sessionId}
+          />
           <SentenceView
             sentence={word.example}
             romaji={context?.romaji ?? true}
             readings={context?.furigana ?? true}
             translation={context?.translations ?? true}
+          />
+          <AudioPlay
+            source={lessonAudio[word.example.id]!}
+            label={word.example.text}
+            sessionId={sessionId}
           />
         </Panel>
       ))}
@@ -54,7 +91,8 @@ export default function Reference() {
         <Body>{requestsLesson.grammar.mistake}</Body>
         <Body muted>
           Original AI-assisted content, source-checked against Japan Foundation
-          materials. Audio is not yet available for these lesson examples.
+          materials. Model audio has separate transcript and file checks; no
+          native-speaker quality review is claimed.
         </Body>
         <Button label="Return" onPress={() => router.back()} />
       </Panel>

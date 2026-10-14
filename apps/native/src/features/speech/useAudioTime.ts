@@ -11,6 +11,7 @@ export function useAudioTime(
   conversation = false,
   limitMillis = 30000,
   reference = false,
+  reviewTrackId?: string,
 ) {
   const { append } = useStudy(),
     focused = useIsFocused(),
@@ -34,7 +35,13 @@ export function useAudioTime(
           .current({
             sessionId,
             kind: "audioActivity",
-            stepId: reference ? "reference" : conversation ? "chat" : "recap",
+            stepId: reviewTrackId
+              ? `review:${reviewTrackId}`
+              : reference
+                ? "reference"
+                : conversation
+                  ? "chat"
+                  : "recap",
             input: mode,
             spans: splitStudySpan(
               start,
@@ -57,5 +64,13 @@ export function useAudioTime(
       clearInterval(timer);
       listener.remove();
     };
-  }, [sessionId, mode, running, focused, conversation, reference]);
+  }, [
+    sessionId,
+    mode,
+    running,
+    focused,
+    conversation,
+    reference,
+    reviewTrackId,
+  ]);
 }

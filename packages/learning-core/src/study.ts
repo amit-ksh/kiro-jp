@@ -33,6 +33,10 @@ export function validateStudyStamp(event: Pick<StudyEvent, "eventId" | "sessionI
 }
 export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, now: number) {
   validateStudyStamp(event, now);
+  if(event.kind === "audioActivity" && event.lessonId === "review") {
+    if(event.lessonVersion !== 1 || !event.stepId.startsWith("review:") || event.stepId.length <= 7 || event.stepId.length > 240 || event.input !== "listening" || !event.spans.length || event.support.length || event.context || event.dontKnow !== undefined) throw new Error("Invalid review audio activity.");
+    return;
+  }
   if(event.kind === "reviewActivity") {
     if(event.lessonId!=="review"||event.lessonVersion!==1||!event.stepId||event.stepId.length>240||event.input!==undefined||!event.spans.length||event.support.length||event.context||event.dontKnow!==undefined)throw new Error("Invalid review activity.");
     return;
