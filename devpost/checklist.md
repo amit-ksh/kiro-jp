@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- Interrupted-cache checks found that unchanged study query data did not retry a failed local save. Added explicit/periodic cache retries, shared atomic incoming-page writers, monotonic cursors and a server-confirmed account synchronization gate. File-backed SQLite and Android restart evidence are in `build-evidence.md`; broader revoked-session/device stress and the learner checkpoint remain open.
+
 - Added the checked offline grammar index and sentence-to-pattern links as a verified incremental part of references. Its library listening protocol validates the exact checked version/clip without fabricating a study session. Only the first pattern is implemented; this does not complete slice 5 or its remaining content/import gates. Evidence and current open checks are recorded in `build-evidence.md`.
 
 - October 14 upload dependency: review-listening time now waits for the exact server-acknowledged review track, matching answer-practice activity. Three real SQLite tests cover waiting/unblocking, restart, 50-row batches and account isolation; all 102 tests and affected native types/lint/export pass. Actual native playback synchronized one listening event without changing earlier records or closures. Remaining auth-quarantine and broader end-to-end fault/learner gates stay open. See `build-evidence.md > Review listening upload dependency — October 14`.

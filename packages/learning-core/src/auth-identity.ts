@@ -14,3 +14,31 @@ export function localSessionFromToken(token: string | null, expectedIssuer: stri
 export function localAccountFromToken(token: string | null, expectedIssuer: string): string | null {
   return localSessionFromToken(token, expectedIssuer)?.split("|")[0] ?? null;
 }
+
+export function accountCacheAccess(input: {
+  subject: string | null;
+  currentId: string | null | undefined;
+  rememberedId: string | null | undefined;
+  connected: boolean;
+  serverLoading: boolean;
+  serverAuthenticated: boolean;
+}):
+  | { state: "reconnect" }
+  | { state: "connect" }
+  | { state: "ready"; accountId: string; cloudReady: boolean } {
+  const { subject, currentId, rememberedId } = input;
+  if (
+    !subject || currentId === null ||
+    (currentId !== undefined && currentId !== subject) ||
+    (input.connected && !input.serverLoading && !input.serverAuthenticated)
+  ) return { state: "reconnect" };
+  if (currentId !== subject && rememberedId !== subject)
+    return { state: "connect" };
+  return {
+    state: "ready",
+    accountId: subject,
+    // Remembered local identity permits offline study, never cloud upload.
+    cloudReady: input.connected && !input.serverLoading &&
+      input.serverAuthenticated && currentId === subject,
+  };
+}

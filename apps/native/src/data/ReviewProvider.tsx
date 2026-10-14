@@ -26,6 +26,7 @@ import {
 } from "@packages/learning-core";
 import { openAccountDatabase, accountTransaction } from "./database";
 import { useStudy } from "./StudyProvider";
+import { cacheReviewPage } from "./syncCache";
 import {
   prepareDailySession,
   type ReviewQuestion,
@@ -299,33 +300,10 @@ export function ReviewProvider({
     void enqueue(async () => {
       const db = dbRef.current;
       if (!db || generation !== epoch.current) return;
-      await accountTransaction(db, async (tx) => {
-        for (const row of remote.changes) {
-          await tx.runAsync(
-            "INSERT OR IGNORE INTO review_changes(cursor,body) VALUES(?,?)",
-            row.cursor,
-            JSON.stringify(row.change),
-          );
-          if (row.change.kind === "attempt")
-            await tx.runAsync(
-              "INSERT INTO review_events(event_id,body,acknowledged) VALUES(?,?,1) ON CONFLICT(event_id) DO UPDATE SET acknowledged=1",
-              row.change.event.eventId,
-              JSON.stringify(row.change.event),
-            );
-          if (row.change.track)
-            await tx.runAsync(
-              "INSERT OR IGNORE INTO study_metadata(key,value) VALUES(?, '1')",
-              `review-ready:${row.change.track.id}`,
-            );
-        }
-        await tx.runAsync(
-          "INSERT INTO study_metadata(key,value) VALUES('review-cursor',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
-          String(remote.nextCursor),
-        );
-      });
+      const nextCursor = await cacheReviewPage(remote, work => accountTransaction(db, work));
       if (generation !== epoch.current) return;
       await refresh(db, generation);
-      setCursor(remote.nextCursor);
+      setCursor(nextCursor);
       setError("");
     }).catch((cause) => {
       if (__DEV__)

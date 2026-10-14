@@ -8,6 +8,7 @@ import { localDayAt, validateStudyEvent, type StudyEvent, type Assessment } from
 import { requestsLesson } from "@packages/content";
 import { openAccountDatabase, accountTransaction } from "./database";
 import { pendingStudyBatchSql } from "./studyOutbox";
+import { cacheStudyPage } from "./syncCache";
 
 type EventInput = Pick<StudyEvent, "sessionId" | "kind" | "stepId"> & Partial<Pick<StudyEvent, "input" | "support" | "dontKnow" | "context" | "spans">>;
 export type CachedChat = NonNullable<FunctionReturnType<typeof api.conversation.get>>;
@@ -56,12 +57,12 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
     })().catch(() => { if (epoch === epochRef.current) { setLoading(false); setError("Study storage couldn't open. Your account remains saved; restart to try again."); } });
     return () => { epochRef.current = epoch + 1; syncing.current = false; const db = owned; if (db) void serial.current.then(async () => { if (dbRef.current === db) dbRef.current = null; await db.closeAsync(); }); };
   }, [accountId, refresh]);
-  useEffect(()=>{if(!remoteSentences||loading)return;const epoch=epochRef.current;void enqueue(async()=>{const db=dbRef.current;if(!db||epoch!==epochRef.current)return;const stored=await db.getFirstAsync<{value:string}>("SELECT value FROM study_metadata WHERE key='sentence-feedback'");const merged={...(stored?JSON.parse(stored.value) as SentenceFeedback:{}),...Object.fromEntries(remoteSentences.map(row=>[row.eventId,row]))};await db.runAsync("INSERT INTO study_metadata (key,value) VALUES ('sentence-feedback',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",JSON.stringify(merged));if(epoch===epochRef.current)setSentenceFeedback(merged);}).catch(()=>{if(epoch===epochRef.current)setError("Sentence feedback is saved online. Reconnect to cache it here.");});},[remoteSentences,loading,enqueue]);
+  useEffect(()=>{if(!remoteSentences||loading)return;const epoch=epochRef.current;void enqueue(async()=>{const db=dbRef.current;if(!db||epoch!==epochRef.current)return;const stored=await db.getFirstAsync<{value:string}>("SELECT value FROM study_metadata WHERE key='sentence-feedback'");const merged={...(stored?JSON.parse(stored.value) as SentenceFeedback:{}),...Object.fromEntries(remoteSentences.map(row=>[row.eventId,row]))};await db.runAsync("INSERT INTO study_metadata (key,value) VALUES ('sentence-feedback',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",JSON.stringify(merged));if(epoch===epochRef.current)setSentenceFeedback(merged);}).catch(()=>{if(epoch===epochRef.current)setError("Sentence feedback is saved online. Reconnect to cache it here.");});},[remoteSentences,loading,retryCount,enqueue]);
   useEffect(() => {
     if (!remotePhrases || loading) return;
     const epoch = epochRef.current;
     void enqueue(async () => { const db = dbRef.current; if (!db || epoch !== epochRef.current) return; await db.runAsync("INSERT INTO study_metadata (key,value) VALUES ('saved-phrases',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", JSON.stringify(remotePhrases)); if (epoch === epochRef.current) setPhrases(remotePhrases); }).catch(() => { if (epoch === epochRef.current) setError("Your references are saved online. Reconnect to cache them on this phone."); });
-  }, [remotePhrases, loading, enqueue]);
+  }, [remotePhrases, loading, retryCount, enqueue]);
   const cacheChat = useCallback(async (chat: CachedChat) => {
     const epoch = epochRef.current;
     await enqueue(async () => {
@@ -105,15 +106,11 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
     const epoch = epochRef.current;
     void enqueue(async () => {
       const db = dbRef.current; if (!db || epoch !== epochRef.current) return;
-      const nextCursor = remote[remote.length - 1]!.cursor;
-      await accountTransaction(db, async tx => {
-        for (const row of remote) { await tx.runAsync("INSERT INTO study_events (event_id,session_id,body,acknowledged) VALUES (?,?,?,1) ON CONFLICT(event_id) DO UPDATE SET acknowledged=1", row.event.eventId, row.event.sessionId, JSON.stringify(row.event)); }
-        await tx.runAsync("INSERT INTO study_metadata (key,value) VALUES ('cursor',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", String(nextCursor));
-      });
+      const nextCursor = await cacheStudyPage(remote, work => accountTransaction(db, work));
       if (epoch !== epochRef.current) return;
-      await refresh(db, epoch); setCursor(nextCursor);
+      await refresh(db, epoch); setCursor(nextCursor); setError("");
     }).catch(() => { if (epoch === epochRef.current) setError("Cloud activity couldn't be saved on this phone. Your local study is retained."); });
-  }, [remote, loading, enqueue, refresh]);
+  }, [remote, loading, retryCount, enqueue, refresh]);
   useEffect(() => {
     if (loading || !cloudReady || !pending || syncing.current) return;
     const epoch = epochRef.current; syncing.current = true;

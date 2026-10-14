@@ -56,4 +56,6 @@ Private environment files, learner profile, local runtime state and starter stag
 
 Local storage upgrades run transactionally through schema version 4 and preserve earlier profile, study and review data. A newer unsupported or incompatible store is retained with update/retry guidance; the app does not reset it or create an empty replacement. Content, review algorithms and database schema use separate versions.
 
+Incoming study/review pages commit their rows, delivery acknowledgements and cursor in one transaction. Failed writes retry the unchanged page; replay never moves the cursor backward or replaces an immutable event. A push receipt alone keeps a review provisional until its canonical page commits. Remembered identity permits offline study, while cloud synchronization waits for a connected server-confirmed matching account. A revoked or mismatched identity shows reconnection guidance and retains the original account's local work.
+
 The starter is Apache-2.0; retain its `LICENSE`. Japanese curriculum is original authoring with source checks and asset/license records before publication. There is no claim of native-speaker review, official JLPT certification, complete course coverage or third-party endorsements.
