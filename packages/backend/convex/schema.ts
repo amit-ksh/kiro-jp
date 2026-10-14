@@ -6,12 +6,16 @@ import { studyEventValue } from "./studyValues";
 import { goalValue, jobStateValue, replyValue, practiceStampValue, phraseValue } from "./conversationValues";
 import { supportValue } from "./studyValues";
 import { culturalEntityValue, culturalTypeValue, culturalSnapshotValue } from "./cultureValues";
+import { speechSourceValue, speechStatusValue, speechSegmentValue } from "./speechValues";
 export default defineSchema({
   ...authTables,
   accountEmailLimits: defineTable({ key: v.string(), lastRequestedAt: v.number(), day: v.string(), count: v.number() }).index("by_key", ["key"]),
   aiBudgets: defineTable({ provider: v.literal("gemini"), reservedMicros: v.number(), spentMicros: v.number() }).index("by_provider", ["provider"]),
   aiCostReservations: defineTable({ operationId: v.string(), model: v.string(), reservedMicros: v.number(), inputRate: v.number(), outputRate: v.number(), state: v.union(v.literal("pending"), v.literal("settled")), actualMicros: v.optional(v.number()), createdAt: v.number() }).index("by_operation", ["operationId"]),
   aiServiceReservations: defineTable({ operationId: v.string(), provider: v.literal("openrouter"), createdAt: v.number() }).index("by_operation", ["operationId"]).index("by_provider_time", ["provider", "createdAt"]),
+  speechReservations: defineTable({ operationId: v.string(), userId: v.id("users"), createdAt: v.number(), neurons: v.number() }).index("by_operation", ["operationId"]).index("by_time", ["createdAt"]).index("by_user_time", ["userId", "createdAt"]),
+  speechDeletions: defineTable({ userId: v.id("users"), recordingId: v.string(), createdAt: v.number() }).index("by_user_recording", ["userId", "recordingId"]).index("by_user_time", ["userId", "createdAt"]),
+  speechAttempts: defineTable({ userId: v.id("users"), recordingId: v.string(), source: speechSourceValue, sha256: v.string(), bytes: v.number(), durationMillis: v.optional(v.number()), status: speechStatusValue, attempt: v.number(), claim: v.number(), leaseUntil: v.optional(v.number()), storageId: v.optional(v.id("_storage")), createdAt: v.number(), updatedAt: v.number(), recognizedTranscript: v.optional(v.string()), segments: v.optional(v.array(speechSegmentValue)), learnerConfirmedText: v.optional(v.string()), wasEdited: v.optional(v.boolean()), confirmedAt: v.optional(v.number()), trace: v.string() }).index("by_user_recording", ["userId", "recordingId"]).index("by_user_updated", ["userId", "updatedAt"]).index("by_user_created", ["userId", "createdAt"]).index("by_storage", ["storageId"]),
   learnerProfiles: defineTable({ userId: v.id("users"), revision: v.number(), data: profileValue, updatedAt: v.number() }).index("by_user", ["userId"]),
   studyEvents: defineTable({ userId: v.id("users"), cursor: v.number(), event: studyEventValue }).index("by_user_cursor", ["userId", "cursor"]).index("by_user_event", ["userId", "event.eventId"]).index("by_user_session", ["userId", "event.sessionId"]).index("by_user_step_kind", ["userId", "event.sessionId", "event.stepId", "event.kind"]),
   studyCursors: defineTable({ userId: v.id("users"), cursor: v.number() }).index("by_user", ["userId"]),

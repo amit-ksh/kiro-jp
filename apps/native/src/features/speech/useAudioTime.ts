@@ -8,26 +8,32 @@ export function useAudioTime(
   sessionId: string,
   mode: "listening" | "speaking",
   running: boolean,
+  conversation = false,
+  limitMillis = 30000,
 ) {
   const { append } = useStudy(),
     focused = useIsFocused(),
     latest = useRef(append);
+  const limit = useRef(limitMillis);
+  limit.current = limitMillis;
   latest.current = append;
   useEffect(() => {
     if (!running || !focused || AppState.currentState !== "active") return;
     let wall = Date.now(),
       mono = performance.now(),
-      foreground = true;
+      foreground = true,
+      remaining = Math.min(30000, Math.max(0, limit.current));
     const flush = () => {
       const now = performance.now(),
-        milliseconds = Math.min(10000, Math.max(0, now - mono));
+        milliseconds = Math.min(remaining, 10000, Math.max(0, now - mono));
       if (foreground && milliseconds > 0) {
+        remaining -= milliseconds;
         const start = wall;
         void latest
           .current({
             sessionId,
             kind: "audioActivity",
-            stepId: "recap",
+            stepId: conversation ? "chat" : "recap",
             input: mode,
             spans: splitStudySpan(
               start,
@@ -50,5 +56,5 @@ export function useAudioTime(
       clearInterval(timer);
       listener.remove();
     };
-  }, [sessionId, mode, running, focused]);
+  }, [sessionId, mode, running, focused, conversation]);
 }

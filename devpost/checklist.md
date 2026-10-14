@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- October 14: Workers Free was explicitly confirmed by the learner, enabling the guarded Whisper implementation and live AAC/source-audio/silence checks. The existing Android emulator's unrelated system stalls required a smaller display and restart without a data wipe; account/progress returned. Native transcript controls and the complete speaking checkpoint remain subject to their own verification. No slice-2 Qloo or later-slice acceptance is inferred from these checks.
+
 - October 14: connected checked word/kana/sentence audio and account-local recording/replay while live Qloo access is pending. Native permission denial, a real AAC recording, offline restart/model playback and owned original-day audio-event sync pass; actual Japanese microphone quality, upload/Whisper/confirmation and the full speech gate remain open. The learner supplied the Workers AI token and confirmed Workers Free; configured that boundary without sending inference. Forty-eight shared tests pass. No later slice or learner check was marked complete.
 
 - October 14: prepared the first four word-audio candidates and an eleven-script inventory while Qloo access remains pending. WAV/CLI checks pass; language consistency, native playback/recording, Whisper access and the full spoken journey remain required. See the audio-preparation checkpoint in build evidence.

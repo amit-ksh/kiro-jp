@@ -16,10 +16,12 @@ export function AudioPlay({
   source,
   label,
   sessionId,
+  conversation = false,
 }: {
   source: AudioSource;
   label: string;
   sessionId: string;
+  conversation?: boolean;
 }) {
   const player = useAudioPlayer(null, { updateInterval: 100 }),
     status = useAudioPlayerStatus(player),
@@ -59,6 +61,8 @@ export function AudioPlay({
     sessionId,
     "listening",
     status.playing && !status.isBuffering && !speech.recording,
+    conversation,
+    Math.max(0, status.duration - status.currentTime) * 1000 / (slow ? 0.75 : 1),
   );
   useEffect(() => registerPlayer(player), [player]);
   useFocusEffect(

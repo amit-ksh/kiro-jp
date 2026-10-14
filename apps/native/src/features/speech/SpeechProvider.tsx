@@ -21,15 +21,22 @@ import { openAccountDatabase } from "../../data/database";
 import { useStudy } from "../../data/StudyProvider";
 import { stopAudioPlayers } from "./audio-focus";
 import { inspectRecording } from "@packages/learning-core";
+import { useRecognition } from "./useRecognition";
 export interface LocalRecording {
   id: string;
   sessionId: string;
+  conversationSegmentId?: string;
   cueId: string;
   uri: string;
   durationMillis: number;
   bytes: number;
   createdAt: number;
-  recognitionStatus: "pending" | "unavailable" | "ready";
+  recognitionStatus: "pending" | "uploading" | "queued" | "running" | "unavailable" | "ready" | "empty" | "deleted";
+  recognitionRequested?: boolean;
+  remoteUpdatedAt?: number;
+  attempt?: number;
+  transcriptDraft?: string;
+  confirmationPending?: boolean;
   recognizedTranscript?: string;
   learnerConfirmedText?: string;
   wasEdited?: boolean;
@@ -38,6 +45,7 @@ type Current = {
   recorder: AudioRecorder;
   id: string;
   sessionId: string;
+  conversationSegmentId?: string;
   cueId: string;
   db: SQLiteDatabase;
   directory: Directory;
@@ -50,9 +58,13 @@ type State = {
   loading: boolean;
   error: string;
   permissionDenied: boolean;
-  start: (sessionId: string, cueId: string) => Promise<void>;
+  start: (sessionId: string, cueId: string, conversationSegmentId?: string) => Promise<void>;
   stop: () => Promise<void>;
   remove: (id: string) => Promise<void>;
+  recognize: (id: string) => Promise<void>;
+  edit: (id: string, text: string) => Promise<void>;
+  confirm: (id: string, text: string) => Promise<void>;
+  online: boolean;
 };
 const Context = createContext<State | null>(null);
 export function SpeechProvider({ children }: { children: ReactNode }) {
@@ -80,6 +92,8 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
       .sort((a, b) => b.createdAt - a.createdAt);
     if (mounted.current && dbRef.current === db) setRecordings(records);
   }, []);
+  const recognition = useRecognition({ dbRef, recordings, refresh, loading });
+  const drainRecognition = recognition.drain;
   const stop = useCallback(async () => {
     requestVersion.current += 1;
     if (ending.current) return ending.current;
@@ -111,6 +125,7 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
         const record: LocalRecording = {
           id: owned.id,
           sessionId: owned.sessionId,
+          ...(owned.conversationSegmentId ? { conversationSegmentId: owned.conversationSegmentId } : {}),
           cueId: owned.cueId,
           uri: destination.uri,
           durationMillis: media.durationMillis,
@@ -189,9 +204,9 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
       mounted.current = false;
       directoryRef.current = null;
       dbRef.current = null;
-      void stop().finally(() => ownedDb?.closeAsync());
+      void stop().then(drainRecognition).finally(() => ownedDb?.closeAsync());
     };
-  }, [accountId, refresh, stop]);
+  }, [accountId, refresh, stop, drainRecognition]);
   useEffect(() => {
     const timer = setInterval(() => {
       const owned = current.current;
@@ -216,7 +231,7 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
       listener.remove();
     };
   }, [stop]);
-  const start = useCallback(async (sessionId: string, cueId: string) => {
+  const start = useCallback(async (sessionId: string, cueId: string, conversationSegmentId?: string) => {
     if (starting.current || current.current || ending.current) return;
     const turn = epoch.current;
     const request = ++requestVersion.current;
@@ -278,6 +293,7 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
           recorder,
           id: Crypto.randomUUID(),
           sessionId,
+          conversationSegmentId,
           cueId,
           db,
           directory,
@@ -315,6 +331,7 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
         `recording:${id}`,
       );
       if (!row) return;
+      await db.runAsync("INSERT OR IGNORE INTO study_metadata(key,value) VALUES(?,?)", `recording-delete:${id}`, "pending");
       stopAudioPlayers();
       const file = new File(directory, `${id}.m4a`);
       if (file.exists) file.delete();
@@ -338,6 +355,10 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
         start,
         stop,
         remove,
+        recognize: recognition.recognize,
+        edit: recognition.edit,
+        confirm: recognition.confirm,
+        online: recognition.online,
       }}
     >
       {children}

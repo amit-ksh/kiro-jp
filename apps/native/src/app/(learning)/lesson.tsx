@@ -137,6 +137,7 @@ export default function Lesson() {
             ? effectiveTiles.map((index) => exercise.tiles![index]).join("")
             : answer,
         support,
+        ...(study.drafts[`${sessionId}:${step.id}:speech-support`] === "transcriptEdited" && answer === draft ? { support: [...new Set([...support, "transcriptEdited" as const])] } : {}),
         dontKnow,
       });
       const assessed = sessionProjection(requestsLesson, [
@@ -348,6 +349,7 @@ export default function Lesson() {
                   secondary
                   onPress={() => {
                     time.pause();
+                    setInput("");
                     router.push({
                       pathname: "/(learning)/speech",
                       params: {

@@ -99,7 +99,7 @@ export default function Chat() {
             (flag) =>
               flag === "suggestedReply" ||
               flag === "wordBank" ||
-              flag === "patternHint",
+              flag === "patternHint" || flag === "transcriptEdited",
           )
         : [];
     } catch {
@@ -208,6 +208,10 @@ export default function Chat() {
   const composer =
     segment?.state === "active" ? (
       <View style={{ gap: 8 }}>
+        <Button label="Speak a reply" secondary disabled={busy || Boolean(segment.pendingJobId)} onPress={() => {
+          timing.pause();
+          router.push({ pathname: "/(learning)/speech", params: { conversationSegmentId: segment.segmentId } });
+        }}/>
         <Field
           label="Message your tutor"
           value={text}
