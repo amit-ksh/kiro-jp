@@ -9,6 +9,7 @@ import { culturalEntityValue, culturalTypeValue, culturalSnapshotValue } from ".
 import { speechSourceValue, speechStatusValue, speechSegmentValue } from "./speechValues";
 import { reviewAttemptValue, reviewReceiptValue, reviewTrackValue, reviewOpportunityValue, reviewChangeValue, reviewCardValue, reviewAssessmentResultValue } from "./reviewValues";
 export default defineSchema({
+  contentPackages: defineTable({lessonId:v.string(),version:v.number(),sha256:v.string(),files:v.array(v.object({assetId:v.string(),storageId:v.id("_storage")})),publishedAt:v.number()}).index("by_lesson_version",["lessonId","version"]),
   ...authTables,
   reviewTracks: defineTable({userId:v.id("users"),track:reviewTrackValue}).index("by_user_track",["userId","track.id"]).index("by_user_due",["userId","track.dueAt"]),
   reviewOpportunities: defineTable({userId:v.id("users"),opportunity:reviewOpportunityValue}).index("by_user_opportunity",["userId","opportunity.id"]),

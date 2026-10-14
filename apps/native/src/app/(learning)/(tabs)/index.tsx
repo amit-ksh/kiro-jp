@@ -12,6 +12,7 @@ import { lessonCatalog, requestsLesson } from "@packages/content";
 import { useStudy } from "../../../data/StudyProvider";
 import { useReviews } from "../../../data/ReviewProvider";
 import { useProfile } from "../../../data/ProfileProvider";
+import { useContent } from "../../../data/ContentProvider";
 import {
   Body,
   Button,
@@ -27,6 +28,7 @@ export default function Home() {
   const colors = useColors();
   const study = useStudy();
   const reviews = useReviews();
+  const content = useContent();
   const lesson = lessonCatalog[0];
   const sessions = study.events
     .filter((event) => event.kind === "started")
@@ -95,6 +97,34 @@ export default function Home() {
           excluded.
         </Body>
       </Panel>
+      {!content.online && (
+        <Panel>
+          <Title>Continue offline study</Title>
+          <Body>
+            {content.ready
+              ? "Your downloaded lesson, references and model audio are available. Reviews and progress save on this phone."
+              : "Prepared text exercises, references and saved reviews are available. Audio plays where already saved; prepare the complete lesson from Lessons when connected."}
+          </Body>
+          <Button
+            label="Continue offline study"
+            secondary
+            onPress={() =>
+              unfinished
+                ? router.push({
+                    pathname: "/(learning)/lesson",
+                    params: { sessionId: unfinished.sessionId },
+                  })
+                : due
+                  ? router.push("/(learning)/(tabs)/review")
+                  : router.push("/(learning)/session-preview")
+            }
+          />
+          <Body muted>
+            New AI replies and automatic transcripts need internet. Your
+            completed practice stays saved.
+          </Body>
+        </Panel>
+      )}
       <Panel>
         <Title>{lesson.title}</Title>
         <Body>

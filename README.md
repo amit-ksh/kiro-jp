@@ -4,7 +4,7 @@ An Android Expo app and a static Next.js landing page, adapted from the requeste
 
 ## Current build
 
-The foundation slice passed: email/password accounts, account-scoped SQLite, saved onboarding, predefined placement and Home/session previews. The updated standalone APK preserved accounts/setup through upgrade and played its bundled placement clips offline; verification/recovery are temporarily disabled. Both configured AI providers passed a fixed synthetic Gateway probe. Lesson/tutor, spoken practice, spaced review and final release remain subsequent slices; no complete learning journey is claimed yet. See `devpost/build-evidence.md` for the exact observed checks.
+The development client includes the first checked lesson, Gateway-routed conversations and sentence feedback, discrete recording/transcription, permanent spaced-review closures, daily review-to-lesson continuation and offline content preparation. Actual Android checks cover restart, offline answers/audio, reconnection and account isolation. The existing standalone APK is an earlier foundation build, not this complete code state. Real Qloo access, the remaining starter lessons, WaniKani import, full progress/data controls, learner hands-on checks and the final standalone release remain open. Verification/recovery are temporarily disabled. See `devpost/build-evidence.md` for the exact observed checks; the full MVP is not yet complete.
 
 ## Development
 
@@ -30,6 +30,7 @@ Email verification uses a code. Settings password changes and recovery share the
 pnpm typecheck
 pnpm test
 pnpm check:content
+pnpm content:package --check
 pnpm build:landing
 pnpm export:android
 # Admin-only fixed synthetic probe; reserves real service capacity and Gemini
@@ -41,7 +42,11 @@ npx eas-cli build -p android --profile preview
 
 Use a development client for native SQLite/audio checks. A browser render is not proof of Android storage, recording, font scaling or link behavior. Standalone APKs must launch without Metro/Expo Go. Live provider and Qloo checks use authorized keys and stay incomplete when no service access is configured.
 
-The first source-checked text lesson is `requests` version 1: 水・茶・本・円, a small hiragana set and をください. Started sessions snapshot their version/support settings; fixed answers, hint use, drafts and resume progress persist in account-isolated SQLite and the owned cloud journal. Novel sentences remain awaiting assessment while that capability is connected. Separate initial meaning/reading tracks and due times exist; the scheduled-review runner and permanent opportunity reconciliation remain later build gates. See `devpost/build-evidence.md` for actual native checks and remaining work.
+The first source-checked lesson is `requests` version 1: 水・茶・本・円, a small hiragana group and `[item] + をください`. Fixed-answer practice works locally; novel sentences queue owned feedback and retain their prior schedule while unassessed. Meaning, word reading, kana, grammar and speaking evidence remain separate. Acknowledged review closures are permanent; late stale attempts retain effort without erasing earned advancement.
+
+In Lessons, **Prepare lesson for offline study** downloads the immutable lesson snapshot and all 11 checked model-audio clips. Every required file must pass size/SHA-256 checks before the account's Downloaded marker commits. Cancellation/failure retains a previous ready package. Startup verifies saved files again; Home offers offline continuation. Checked public model audio may be cached across accounts, while downloaded markers, answers and progress stay account scoped. This first package is about 0.8 MB; the other six approved templates are still pending.
+
+`pnpm content:package --prepare` regenerates the checked manifest after a deliberate content-version change. Inspect that change, deploy the backend, then use `pnpm content:package --publish` with the matching private development deploy key. Publication is administrator only, validates all storage hashes/sizes/types and is idempotent for an existing immutable version. No model inference is performed. Never edit a published version's lesson or audio in place; create a new version. The publisher's normal `--check` path needs no credentials or network access.
 
 ## Privacy and source
 

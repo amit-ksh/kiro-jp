@@ -32,6 +32,56 @@ const checks: Record<
   "price-yen": require("../../../../../packages/content/assets/requests-v1/price-yen.json"),
 };
 const preparing = new Map<number, Promise<AudioSource>>();
+export async function cachePreparedModelAudio(id: string, uri: string) {
+  const record = checks[id];
+  if (
+    !record?.languageCheck.matches ||
+    record.languageCheck.audioHash !== record.sha256
+  )
+    throw new Error("Unchecked model audio.");
+  const source = new File(uri),
+    hash = Array.from(
+      new Uint8Array(
+        await Crypto.digest(
+          Crypto.CryptoDigestAlgorithm.SHA256,
+          await source.bytes(),
+        ),
+      ),
+    )
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  if (hash !== record.sha256)
+    throw new Error("Prepared model audio checksum changed.");
+  const directory = new Directory(Paths.document, "model-audio");
+  directory.create({ intermediates: true, idempotent: true });
+  const target = new File(directory, `${record.sha256}.wav`);
+  if (target.exists) {
+    const previous = Array.from(
+      new Uint8Array(
+        await Crypto.digest(
+          Crypto.CryptoDigestAlgorithm.SHA256,
+          await target.bytes(),
+        ),
+      ),
+    )
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    if (previous === record.sha256) return;
+    target.delete();
+  }
+  const staged = new File(
+    directory,
+    `${record.sha256}-${Crypto.randomUUID()}.part`,
+  );
+  let moved = false;
+  try {
+    source.copy(staged);
+    staged.move(target);
+    moved = true;
+  } finally {
+    if (!moved && staged.exists) staged.delete();
+  }
+}
 export async function persistentAudioSource(
   source: AudioSource,
 ): Promise<AudioSource> {
