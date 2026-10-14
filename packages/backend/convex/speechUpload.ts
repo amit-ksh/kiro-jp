@@ -82,3 +82,24 @@ export const upload = httpAction(async (ctx, request) => {
     );
   }
 });
+export const modelAudio = httpAction(async (ctx, request) => {
+  const userId = await getAuthUserId(ctx);
+  if (!userId) return reply(401, "SIGN_IN_REQUIRED");
+  const id = new URL(request.url).searchParams.get("id");
+  if (!id || !/^[a-z0-9]{16,64}$/.test(id)) return reply(400, "INVALID_AUDIO");
+  const owned = await ctx.runQuery(internal.readback.download, {
+    id: id as Id<"readbackAssets">,
+    userId,
+  });
+  if (!owned) return reply(404, "AUDIO_UNAVAILABLE");
+  const blob = await ctx.storage.get(owned.storageId);
+  if (!blob || blob.size !== owned.bytes || blob.size > 2 * 1024 * 1024)
+    return reply(404, "AUDIO_UNAVAILABLE");
+  return new Response(blob, {
+    headers: {
+      "Content-Type": "audio/wav",
+      "Content-Length": String(blob.size),
+      "Cache-Control": "private, no-store",
+    },
+  });
+});

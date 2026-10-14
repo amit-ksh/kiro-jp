@@ -41,6 +41,9 @@ test("audio effort retains original days and unions overlaps without awarding re
   validateStudyEvent(conversation, requestsLesson, end + 86400000);
   assert.throws(() => validateStudyEvent({ ...conversation, input: "meaningful" }, requestsLesson, end));
   assert.throws(() => validateStudyEvent({ ...conversation, support: ["transcriptEdited"] }, requestsLesson, end));
+  const reference = { ...event, lessonId: "reference", stepId: "reference" };
+  validateStudyEvent(reference, requestsLesson, end);
+  assert.throws(()=>validateStudyEvent({...reference,input:"speaking"},requestsLesson,end));
   const projection = sessionProjection(requestsLesson, [event, spoken]);
   assert.equal(activeMilliseconds(projection.spans, "2026-10-13"), 10000);
   assert.equal(activeMilliseconds(projection.spans, "2026-10-14"), 10000);

@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- October 14: Saved approved phrases now have on-demand Gateway TTS, an independent transcript consistency check, authenticated download and verified offline reuse. Both generations reserve the existing Gemini cap. A repeatable Expo Go cold-link handoff required a second intent before app JavaScript started; retain the independent standalone cold/offline gate. This incremental check does not substitute for real human speech quality, full SRS/offline reconciliation, real Qloo access or learner hands-on feedback.
+
 - October 14: Workers Free was explicitly confirmed by the learner, enabling the guarded Whisper implementation and live AAC/source-audio/silence checks. The existing Android emulator's unrelated system stalls required a smaller display and restart without a data wipe; account/progress returned. Native transcript controls and the complete speaking checkpoint remain subject to their own verification. No slice-2 Qloo or later-slice acceptance is inferred from these checks.
 
 - October 14: connected checked word/kana/sentence audio and account-local recording/replay while live Qloo access is pending. Native permission denial, a real AAC recording, offline restart/model playback and owned original-day audio-event sync pass; actual Japanese microphone quality, upload/Whisper/confirmation and the full speech gate remain open. The learner supplied the Workers AI token and confirmed Workers Free; configured that boundary without sending inference. Forty-eight shared tests pass. No later slice or learner check was marked complete.

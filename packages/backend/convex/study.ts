@@ -33,6 +33,10 @@ export const push = mutation({ args: { events: v.array(studyEventValue) }, handl
     if (event.kind === "conversationActivity" || (event.kind === "audioActivity" && event.lessonId === "conversation")) {
       const segment = await ctx.db.query("conversationSegments").withIndex("by_user_segment", q => q.eq("userId", userId).eq("segmentId", event.sessionId)).unique();
       if (!segment) throw new ConvexError("Study activity needs an owned conversation segment.");
+    } else if (event.kind === "audioActivity" && event.lessonId === "reference") {
+      const phraseId = ctx.db.normalizeId("savedPhrases",event.sessionId);
+      const phrase = phraseId ? await ctx.db.get(phraseId) : null;
+      if (!phrase || phrase.userId !== userId || phrase.status !== "approved") throw new ConvexError("Listening activity needs an owned checked reference.");
     } else {
     const session = await ctx.db.query("studySessions").withIndex("by_user_session", q => q.eq("userId", userId).eq("sessionId", event.sessionId)).unique();
     if (event.kind === "started") {

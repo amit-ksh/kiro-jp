@@ -87,7 +87,8 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
       const db = dbRef.current; if (!db || epoch !== epochRef.current) throw new Error("Study storage is not ready.");
       const now = Date.now(), offsetMinutes = new Date(now).getTimezoneOffset();
       const conversation = input.kind === "conversationActivity" || (input.kind === "audioActivity" && input.stepId === "chat");
-      const event: StudyEvent = { ...input, eventId: Crypto.randomUUID(), deviceId: deviceId.current, sequence: sequence.current + 1, lessonId: conversation ? "conversation" : requestsLesson.id, lessonVersion: conversation ? 1 : requestsLesson.version, occurredAt: now, localDay: localDayAt(now, offsetMinutes), timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, offsetMinutes, support: input.support ?? [], spans: input.spans ?? [] };
+      const reference = input.kind === "audioActivity" && input.stepId === "reference";
+      const event: StudyEvent = { ...input, eventId: Crypto.randomUUID(), deviceId: deviceId.current, sequence: sequence.current + 1, lessonId: reference ? "reference" : conversation ? "conversation" : requestsLesson.id, lessonVersion: conversation || reference ? 1 : requestsLesson.version, occurredAt: now, localDay: localDayAt(now, offsetMinutes), timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, offsetMinutes, support: input.support ?? [], spans: input.spans ?? [] };
       validateStudyEvent(event, requestsLesson, now);
       await db.withExclusiveTransactionAsync(async tx => { await tx.runAsync("INSERT INTO study_events (event_id,session_id,body) VALUES (?,?,?)", event.eventId, event.sessionId, JSON.stringify(event)); await tx.runAsync("INSERT INTO study_metadata (key,value) VALUES ('sequence',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", String(event.sequence)); });
       if (epoch !== epochRef.current) return;

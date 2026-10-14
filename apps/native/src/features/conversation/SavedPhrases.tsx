@@ -4,6 +4,7 @@ import { api } from "@packages/backend/convex/_generated/api";
 import { useStudy } from "../../data/StudyProvider";
 import { useProfile } from "../../data/ProfileProvider";
 import { Body, Button, Panel, Title } from "../../components/ui";
+import { PhraseAudio } from "../speech/PhraseAudio";
 export function SavedPhrases({ sourceIds }: { sourceIds?: string[] }) {
   const study = useStudy(),
     { profile } = useProfile(),
@@ -31,8 +32,13 @@ export function SavedPhrases({ sourceIds }: { sourceIds?: string[] }) {
                 : "Awaiting feedback · saved as a reference"}
           </Body>
           <Body muted>
-            {item.feedback} Model audio is unavailable for this phrase.
+            {item.feedback}
           </Body>
+          {item.status === "approved" && (() => {
+            const chat = Object.values(study.chats).find(chat => chat.messages.some(message=>item.sourceMessageIds.includes(message.messageId)));
+            const source = chat?.messages.find(message=>item.sourceMessageIds.includes(message.messageId));
+            return <PhraseAudio phraseId={item._id} practiceId={source?.segmentId ?? item._id} conversation={Boolean(source)}/>;
+          })()}
           {(item.status === "unavailable" || item.canRecheckRomaji) && (
             <Button
               label={

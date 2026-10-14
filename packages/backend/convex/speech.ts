@@ -506,7 +506,13 @@ export const sweepOrphans = internalMutation({
       .filter((q) => q.lt(q.field("_creationTime"), cutoff))
       .paginate({ cursor: args.cursor ?? null, numItems: 100 });
     for (const blob of page.page)
-      if (blob.contentType === "audio/mp4") {
+      if (blob.contentType === "audio/x-kiro-readback") {
+        const owner = await ctx.db
+          .query("readbackAssets")
+          .withIndex("by_storage", (q) => q.eq("storageId", blob._id))
+          .unique();
+        if (!owner) await ctx.storage.delete(blob._id);
+      } else if (blob.contentType === "audio/mp4") {
         const owner = await ctx.db
           .query("speechAttempts")
           .withIndex("by_storage", (q) => q.eq("storageId", blob._id))
