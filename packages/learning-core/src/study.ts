@@ -2,7 +2,7 @@ import { assessFixed, grammarIntervals, recallIntervals, type Assessment, type P
 export interface StudySpan { start: number; end: number; localDay: string; offsetMinutes: number; }
 export interface StudyEvent {
   eventId: string; sessionId: string; deviceId: string; sequence: number; lessonId: string; lessonVersion: number; occurredAt: number; localDay: string; timezone: string; offsetMinutes: number;
-  kind: "started" | "studied" | "attempted" | "advanced" | "activity" | "savedPhrase" | "conversationActivity" | "conversationTurn" | "audioActivity";
+  kind: "started" | "studied" | "attempted" | "advanced" | "activity" | "savedPhrase" | "conversationActivity" | "conversationTurn" | "audioActivity" | "reviewActivity";
   stepId: string; input?: string; dontKnow?: boolean; support: SupportFlag[]; spans: StudySpan[];
   context?: { theme: string; band: "foundations" | "early-n5" | "early-n4"; romaji: boolean; furigana: boolean; translations: boolean };
 }
@@ -33,6 +33,10 @@ export function validateStudyStamp(event: Pick<StudyEvent, "eventId" | "sessionI
 }
 export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, now: number) {
   validateStudyStamp(event, now);
+  if(event.kind === "reviewActivity") {
+    if(event.lessonId!=="review"||event.lessonVersion!==1||!event.stepId||event.stepId.length>240||event.input!==undefined||!event.spans.length||event.support.length||event.context||event.dontKnow!==undefined)throw new Error("Invalid review activity.");
+    return;
+  }
   if(event.kind === "audioActivity" && event.lessonId === "reference") {
     if(event.lessonVersion !== 1 || event.stepId !== "reference" || event.input !== "listening" || !event.spans.length || event.support.length || event.context || event.dontKnow!==undefined) throw new Error("Invalid reference audio activity.");
     return;

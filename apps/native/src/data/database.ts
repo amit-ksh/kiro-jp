@@ -10,7 +10,9 @@ export const databaseSchema = `
   CREATE TABLE IF NOT EXISTS drafts (id TEXT PRIMARY KEY, body TEXT NOT NULL, updated_at INTEGER NOT NULL);
   CREATE TABLE IF NOT EXISTS study_events (event_id TEXT PRIMARY KEY, session_id TEXT NOT NULL, body TEXT NOT NULL, acknowledged INTEGER NOT NULL DEFAULT 0);
   CREATE TABLE IF NOT EXISTS study_metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);
-  PRAGMA user_version = 2;
+  CREATE TABLE IF NOT EXISTS review_events (event_id TEXT PRIMARY KEY, body TEXT NOT NULL, acknowledged INTEGER NOT NULL DEFAULT 0);
+  CREATE TABLE IF NOT EXISTS review_changes (cursor INTEGER PRIMARY KEY, body TEXT NOT NULL);
+  PRAGMA user_version = 3;
 `;
 let opening = Promise.resolve();
 export async function openAccountDatabase(accountId: string) {
@@ -33,8 +35,16 @@ export async function readLocalProfile(db: SQLite.SQLiteDatabase): Promise<Local
   const row = await db.getFirstAsync<{ data: string; server_revision: number; local_revision: number; acknowledged_revision: number }>("SELECT * FROM profile WHERE id = 1");
   return row ? { data: JSON.parse(row.data), serverRevision: row.server_revision, localRevision: row.local_revision, acknowledgedRevision: row.acknowledged_revision } : null;
 }
+export async function accountTransaction(db: SQLite.SQLiteDatabase, task: Parameters<SQLite.SQLiteDatabase["withExclusiveTransactionAsync"]>[0]) {
+  // Expo opens a fresh connection for every exclusive transaction. The timeout
+  // set on the parent handle is not inherited by that connection.
+  await db.withExclusiveTransactionAsync(async tx=>{
+    await tx.execAsync("PRAGMA busy_timeout = 5000");
+    await task(tx);
+  });
+}
 export async function writeLocalProfile(db: SQLite.SQLiteDatabase, profile: LocalProfile) {
-  await db.withExclusiveTransactionAsync(async tx => {
+  await accountTransaction(db, async tx => {
     await tx.runAsync("INSERT INTO profile (id, data, server_revision, local_revision, acknowledged_revision) VALUES (1, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET data=excluded.data, server_revision=excluded.server_revision, local_revision=excluded.local_revision, acknowledged_revision=excluded.acknowledged_revision", JSON.stringify(profile.data), profile.serverRevision, profile.localRevision, profile.acknowledgedRevision);
   });
 }

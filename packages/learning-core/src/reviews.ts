@@ -412,8 +412,9 @@ export async function decideReview(
   };
 }
 export function hasStrongRecall(track: ReviewTrack, now: number) {
+  const threshold = track.card.facet === "grammar" ? grammarIntervals.length - 1 : 6;
   return (
-    track.stage >= 6 &&
+    track.stage >= threshold &&
     track.qualifyingDays.length >= 5 &&
     now - track.introducedAt >= 21 * 86_400_000
   );
@@ -440,4 +441,82 @@ export function orderReviewAttempts(events: readonly ReviewAttempt[]) {
     seen.add(event.eventId);
   }
   return ordered;
+}
+
+/** Replay server changes in cursor order, then overlay only unresolved local work. */
+export async function projectReviews(
+  changes: readonly ReviewChange[],
+  local: readonly { event: ReviewAttempt; acknowledged: boolean }[],
+  introductions: readonly { card: ReviewCard; introducedAt: number }[],
+  digest: ReviewDigest,
+) {
+  const tracks = new Map<string, ReviewTrack>(),
+    opportunities = new Map<string, ReviewOpportunity>(),
+    receipts = new Map<string, ReviewReceipt>();
+  const attempts = new Map<string, ReviewAttempt>(),
+    provisional = new Set<string>();
+  for (const change of changes) {
+    if (change.kind === "introduced") {
+      tracks.set(change.track.id, change.track);
+      opportunities.set(change.opportunity.id, change.opportunity);
+    } else {
+      attempts.set(change.event.eventId, change.event);
+      const old = receipts.get(change.receipt.eventId);
+      if (!old || change.receipt.revision > old.revision)
+        receipts.set(change.receipt.eventId, change.receipt);
+      if (change.track) tracks.set(change.track.id, change.track);
+      if (change.closed) opportunities.set(change.closed.id, change.closed);
+      if (change.next) opportunities.set(change.next.id, change.next);
+    }
+  }
+  for (const item of [...introductions].sort(
+    (a, b) =>
+      a.introducedAt - b.introducedAt || a.card.id.localeCompare(b.card.id),
+  ))
+    if (!tracks.has(item.card.id)) {
+      const initial = await introduceReview(
+        item.card,
+        item.introducedAt,
+        digest,
+      );
+      tracks.set(item.card.id, initial.track);
+      opportunities.set(initial.opportunity.id, initial.opportunity);
+      provisional.add(item.card.id);
+    }
+  for (const row of local) attempts.set(row.event.eventId, row.event);
+  const unresolved = local
+    .filter(
+      (row) =>
+        !row.acknowledged ||
+        receipts.get(row.event.eventId)?.status === "awaiting-parent",
+    )
+    .map((row) => row.event);
+  for (const event of orderReviewAttempts(unresolved)) {
+    const receipt = receipts.get(event.eventId);
+    if (receipt && !["awaiting-parent"].includes(receipt.status)) continue;
+    const track = tracks.get(event.trackId);
+    if (!track) continue;
+    const decision = await decideReview(
+      track,
+      opportunities.get(event.opportunityId),
+      event.parentEventId ? receipts.get(event.parentEventId) : undefined,
+      event,
+      digest,
+      (receipt?.revision ?? 0) + 1,
+    );
+    receipts.set(event.eventId, decision.receipt);
+    if (decision.track && decision.closed && decision.next) {
+      tracks.set(track.id, decision.track);
+      opportunities.set(decision.closed.id, decision.closed);
+      opportunities.set(decision.next.id, decision.next);
+      provisional.add(track.id);
+    }
+  }
+  return {
+    tracks: [...tracks.values()],
+    opportunities,
+    receipts,
+    attempts: [...attempts.values()],
+    provisional,
+  };
 }

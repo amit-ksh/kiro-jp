@@ -7,6 +7,7 @@ import { api } from "@packages/backend/convex/_generated/api";
 import { localAccountFromToken, localSessionFromToken } from "@packages/learning-core";
 import { ProfileProvider } from "../../data/ProfileProvider";
 import { StudyProvider } from "../../data/StudyProvider";
+import { ReviewProvider } from "../../data/ReviewProvider";
 import { Loading, Panel, Body, Screen, Button } from "../../components/ui";
 import { authNamespace, clearUsableTokens, flushRevocations, queueRevocation } from "./revocations";
 
@@ -77,7 +78,7 @@ export function LearningAccount({ children }: { children: ReactNode }) {
   if (!subject || current === null || (current && current.id !== subject) || (connection.isWebSocketConnected && !server.isLoading && !server.isAuthenticated)) return <Screen title="Reconnect your account"><Panel><Body>Sign in again to reconnect your progress. Study saved on this phone remains linked to its original account.</Body><Button label="Return to sign in" onPress={() => { void signOut(); }}/></Panel></Screen>;
   const id = current?.id ?? (remembered?.accountId === subject ? subject : null);
   if (!id) return <Loading label="Connect once to prepare your account for offline study." />;
-  return <ProfileProvider key={id} accountId={id} cloudReady={server.isAuthenticated}><StudyProvider accountId={id} cloudReady={server.isAuthenticated}>{children}</StudyProvider></ProfileProvider>;
+  return <ProfileProvider key={id} accountId={id} cloudReady={server.isAuthenticated}><StudyProvider accountId={id} cloudReady={server.isAuthenticated}><ReviewProvider cloudReady={server.isAuthenticated}>{children}</ReviewProvider></StudyProvider></ProfileProvider>;
 }
 export function useSignOut() {
   const control = useContext(Control); const token = useAuthToken();

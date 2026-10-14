@@ -8,6 +8,7 @@ import {
   orderReviewAttempts,
   hasStrongRecall,
   validateReviewAttempt,
+  projectReviews,
   type ReviewAttempt,
   type ReviewCard,
   type ReviewTrack,
@@ -318,6 +319,10 @@ test("mastery needs stage, distinct qualifying days and age; a current lapse cle
   assert.deepEqual(lapse.track!.independentDays, days);
   assert.deepEqual(lapse.track!.qualifyingDays, []);
   assert.equal(hasStrongRecall(lapse.track!, now), false);
+  const grammarStrong={...strong,stage:5,card:{...strong.card,facet:"grammar" as const}};
+  assert.equal(hasStrongRecall(grammarStrong,now),true);
+  assert.equal(hasStrongRecall({...grammarStrong,stage:4},now),false);
+  assert.equal(hasStrongRecall({...strong,stage:5},now),false);
 });
 test("forged parent snapshots, malformed dates, unsupported revisions and cycles cannot close a review", async () => {
   const { track, opportunity } = await root(),
@@ -345,4 +350,140 @@ test("forged parent snapshots, malformed dates, unsupported revisions and cycles
   assert.throws(() =>
     orderReviewAttempts([{ ...event, parentEventId: child.eventId }, child]),
   );
+});
+
+test("offline projections keep delivered answers until canonical pull and never replay acknowledged closures by occurrence time", async () => {
+  const initial = await root(),
+    parent = attempt(initial.track, initial.opportunity, "overlay-parent");
+  const first = await decideReview(
+      initial.track,
+      initial.opportunity,
+      undefined,
+      parent,
+      digest,
+    ),
+    child = attempt(first.track!, first.next!, "overlay-child");
+  const introduced = { kind: "introduced" as const, ...initial };
+  const local = [
+    { event: parent, acknowledged: false },
+    { event: child, acknowledged: false },
+  ];
+  const offline = await projectReviews([introduced], local, [], digest);
+  assert.equal(offline.tracks[0]!.stage, 2);
+  assert(offline.provisional.has(card.id));
+  const partially = await projectReviews(
+    [introduced, { kind: "attempt", event: parent, ...first }],
+    local,
+    [],
+    digest,
+  );
+  assert.equal(partially.tracks[0]!.stage, 2);
+  assert(partially.provisional.has(card.id));
+  const second = await decideReview(
+    first.track!,
+    first.next,
+    first.receipt,
+    child,
+    digest,
+  );
+  const acknowledged = await projectReviews(
+    [
+      introduced,
+      { kind: "attempt", event: parent, ...first },
+      { kind: "attempt", event: child, ...second },
+    ],
+    local.map((row) => ({ ...row, acknowledged: true })),
+    [],
+    digest,
+  );
+  assert.equal(acknowledged.tracks[0]!.stage, 2);
+  assert.equal(acknowledged.provisional.size, 0);
+  const stale = attempt(
+    initial.track,
+    initial.opportunity,
+    "old-overlay",
+    "sui",
+    initial.opportunity.dueAt - 1,
+  );
+  const merged = await projectReviews(
+    [
+      introduced,
+      { kind: "attempt", event: parent, ...first },
+      { kind: "attempt", event: child, ...second },
+    ],
+    [{ event: stale, acknowledged: false }],
+    [],
+    digest,
+  );
+  assert.equal(merged.tracks[0]!.stage, 2);
+  assert.equal(merged.receipts.get(stale.eventId)!.status, "stale-practice");
+});
+
+test("canonical conflicting closure replaces only an unacknowledged branch and retains each attempt", async () => {
+  const initial = await root(),
+    local = attempt(initial.track, initial.opportunity, "divergent-local");
+  const branch = await decideReview(
+      initial.track,
+      initial.opportunity,
+      undefined,
+      local,
+      digest,
+    ),
+    child = attempt(branch.track!, branch.next!, "divergent-child");
+  const winnerEvent = attempt(
+      initial.track,
+      initial.opportunity,
+      "remote-winner",
+      "sui",
+    ),
+    winner = await decideReview(
+      initial.track,
+      initial.opportunity,
+      undefined,
+      winnerEvent,
+      digest,
+    );
+  const projection = await projectReviews(
+    [
+      { kind: "introduced", ...initial },
+      { kind: "attempt", event: winnerEvent, ...winner },
+    ],
+    [
+      { event: child, acknowledged: false },
+      { event: local, acknowledged: false },
+    ],
+    [],
+    digest,
+  );
+  assert.equal(projection.tracks[0]!.stage, 0);
+  assert.equal(projection.attempts.length, 3);
+  assert.equal(projection.provisional.size, 0);
+  assert.equal(
+    projection.receipts.get(local.eventId)!.status,
+    "stale-practice",
+  );
+  assert.equal(
+    projection.receipts.get(child.eventId)!.status,
+    "stale-practice",
+  );
+});
+
+test("a cached lesson introduction creates provisional offline cards without changing a server-owned introduction", async () => {
+  const initial = await root();
+  const offline = await projectReviews(
+    [],
+    [],
+    [{ card, introducedAt: start }],
+    digest,
+  );
+  assert.equal(offline.tracks[0]!.opportunityId, initial.opportunity.id);
+  assert(offline.provisional.has(card.id));
+  const returned = await projectReviews(
+    [{ kind: "introduced", ...initial }],
+    [],
+    [{ card, introducedAt: start + 86400000 }],
+    digest,
+  );
+  assert.equal(returned.tracks[0]!.introducedAt, start);
+  assert.equal(returned.provisional.size, 0);
 });

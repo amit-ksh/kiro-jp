@@ -6,7 +6,7 @@ import { api } from "@packages/backend/convex/_generated/api";
 import type { FunctionReturnType } from "convex/server";
 import { localDayAt, validateStudyEvent, type StudyEvent, type Assessment } from "@packages/learning-core";
 import { requestsLesson } from "@packages/content";
-import { openAccountDatabase } from "./database";
+import { openAccountDatabase, accountTransaction } from "./database";
 
 type EventInput = Pick<StudyEvent, "sessionId" | "kind" | "stepId"> & Partial<Pick<StudyEvent, "input" | "support" | "dontKnow" | "context" | "spans">>;
 export type CachedChat = NonNullable<FunctionReturnType<typeof api.conversation.get>>;
@@ -88,9 +88,10 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
       const now = Date.now(), offsetMinutes = new Date(now).getTimezoneOffset();
       const conversation = input.kind === "conversationActivity" || (input.kind === "audioActivity" && input.stepId === "chat");
       const reference = input.kind === "audioActivity" && input.stepId === "reference";
-      const event: StudyEvent = { ...input, eventId: Crypto.randomUUID(), deviceId: deviceId.current, sequence: sequence.current + 1, lessonId: reference ? "reference" : conversation ? "conversation" : requestsLesson.id, lessonVersion: conversation || reference ? 1 : requestsLesson.version, occurredAt: now, localDay: localDayAt(now, offsetMinutes), timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, offsetMinutes, support: input.support ?? [], spans: input.spans ?? [] };
+      const review = input.kind === "reviewActivity";
+      const event: StudyEvent = { ...input, eventId: Crypto.randomUUID(), deviceId: deviceId.current, sequence: sequence.current + 1, lessonId: review ? "review" : reference ? "reference" : conversation ? "conversation" : requestsLesson.id, lessonVersion: conversation || reference || review ? 1 : requestsLesson.version, occurredAt: now, localDay: localDayAt(now, offsetMinutes), timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, offsetMinutes, support: input.support ?? [], spans: input.spans ?? [] };
       validateStudyEvent(event, requestsLesson, now);
-      await db.withExclusiveTransactionAsync(async tx => { await tx.runAsync("INSERT INTO study_events (event_id,session_id,body) VALUES (?,?,?)", event.eventId, event.sessionId, JSON.stringify(event)); await tx.runAsync("INSERT INTO study_metadata (key,value) VALUES ('sequence',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", String(event.sequence)); });
+      await accountTransaction(db, async tx => { await tx.runAsync("INSERT INTO study_events (event_id,session_id,body) VALUES (?,?,?)", event.eventId, event.sessionId, JSON.stringify(event)); await tx.runAsync("INSERT INTO study_metadata (key,value) VALUES ('sequence',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", String(event.sequence)); });
       if (epoch !== epochRef.current) return;
       sequence.current = event.sequence; created = event; await refresh(db, epoch);
     });
@@ -103,7 +104,7 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
     void enqueue(async () => {
       const db = dbRef.current; if (!db || epoch !== epochRef.current) return;
       const nextCursor = remote[remote.length - 1]!.cursor;
-      await db.withExclusiveTransactionAsync(async tx => {
+      await accountTransaction(db, async tx => {
         for (const row of remote) { await tx.runAsync("INSERT INTO study_events (event_id,session_id,body,acknowledged) VALUES (?,?,?,1) ON CONFLICT(event_id) DO UPDATE SET acknowledged=1", row.event.eventId, row.event.sessionId, JSON.stringify(row.event)); }
         await tx.runAsync("INSERT INTO study_metadata (key,value) VALUES ('cursor',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", String(nextCursor));
       });
@@ -116,12 +117,12 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
     const epoch = epochRef.current; syncing.current = true;
     void (async () => {
       let batch: StudyEvent[] = [];
-      await enqueue(async () => { if (epoch === epochRef.current && dbRef.current) { const rows = await dbRef.current.getAllAsync<{ body: string }>("SELECT body FROM study_events WHERE acknowledged=0 ORDER BY rowid LIMIT 50"); batch = rows.map(row => JSON.parse(row.body)); } });
+      await enqueue(async () => { if (epoch === epochRef.current && dbRef.current) { const rows = await dbRef.current.getAllAsync<{ body: string }>("SELECT body FROM study_events WHERE acknowledged=0 AND (json_extract(body,'$.kind') != 'reviewActivity' OR EXISTS (SELECT 1 FROM study_metadata WHERE key='review-ready:' || json_extract(study_events.body,'$.stepId'))) ORDER BY rowid LIMIT 50"); batch = rows.map(row => JSON.parse(row.body)); } });
       if (!batch.length || epoch !== epochRef.current) return;
       const receipts = await push({ events: batch });
       await enqueue(async () => {
         const db = dbRef.current; if (!db || epoch !== epochRef.current) return;
-        await db.withExclusiveTransactionAsync(async tx => { for (const receipt of receipts) await tx.runAsync("UPDATE study_events SET acknowledged=1 WHERE event_id=?", receipt.eventId); });
+        await accountTransaction(db, async tx => { for (const receipt of receipts) await tx.runAsync("UPDATE study_events SET acknowledged=1 WHERE event_id=?", receipt.eventId); });
         await refresh(db, epoch); setError("");
       });
     })().catch(() => { if (epoch === epochRef.current) setError("Saved on this phone. Study synchronization will retry when you reconnect."); }).finally(() => { if (epoch === epochRef.current) { syncing.current = false; } });

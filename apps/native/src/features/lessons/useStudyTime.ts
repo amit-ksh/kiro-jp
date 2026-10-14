@@ -4,7 +4,7 @@ import { useFocusEffect } from "expo-router";
 import { splitStudySpan } from "@packages/learning-core";
 import { useStudy } from "../../data/StudyProvider";
 // Interaction opens a bounded reading/thinking window. Route opening earns no time.
-export function useStudyTime(sessionId: string, stepId: string, kind: "activity" | "conversationActivity" = "activity") {
+export function useStudyTime(sessionId: string, stepId: string, kind: "activity" | "conversationActivity" | "reviewActivity" = "activity") {
   const { append } = useStudy(); const current = useRef({ sessionId, stepId, append, kind }); current.current = { sessionId, stepId, append, kind };
   const clock = useRef({ last: 0, until: 0, wall: 0, focused: false, foreground: AppState.currentState === "active" });
   const flush = useCallback(() => {
