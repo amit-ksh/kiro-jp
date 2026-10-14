@@ -33,6 +33,11 @@ export function validateStudyStamp(event: Pick<StudyEvent, "eventId" | "sessionI
 }
 export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, now: number) {
   validateStudyStamp(event, now);
+  if(event.kind === "audioActivity" && event.lessonId === "library") {
+    const clips=new Set([...lesson.words.map(w=>`word-${w.id}`),...lesson.kana.map((_k,i)=>`kana-${i+1}`),...lesson.words.map(w=>w.example.id),...lesson.grammar.examples.map(s=>s.id)].map(id=>`library:${lesson.id}:${lesson.version}:${id}`));
+    if(event.lessonVersion!==1 || event.sessionId!==`library-${lesson.id}-v${lesson.version}` || !clips.has(event.stepId) || event.input!=="listening" || !event.spans.length || event.support.length || event.context || event.dontKnow!==undefined)throw new Error("Invalid checked-library listening activity.");
+    return;
+  }
   if(event.kind === "audioActivity" && event.lessonId === "review") {
     if(event.lessonVersion !== 1 || !event.stepId.startsWith("review:") || event.stepId.length <= 7 || event.stepId.length > 240 || event.input !== "listening" || !event.spans.length || event.support.length || event.context || event.dontKnow !== undefined) throw new Error("Invalid review audio activity.");
     return;

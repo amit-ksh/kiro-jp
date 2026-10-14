@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- Added the checked offline grammar index and sentence-to-pattern links as a verified incremental part of references. Its library listening protocol validates the exact checked version/clip without fabricating a study session. Only the first pattern is implemented; this does not complete slice 5 or its remaining content/import gates. Evidence and current open checks are recorded in `build-evidence.md`.
+
 - October 14 upload dependency: review-listening time now waits for the exact server-acknowledged review track, matching answer-practice activity. Three real SQLite tests cover waiting/unblocking, restart, 50-row batches and account isolation; all 102 tests and affected native types/lint/export pass. Actual native playback synchronized one listening event without changing earlier records or closures. Remaining auth-quarantine and broader end-to-end fault/learner gates stay open. See `build-evidence.md > Review listening upload dependency — October 14`.
 
 - October 14 storage upgrade: explicit forward-only SQLite migrations now preserve the shipped v1/v2/v3 stores and add v4 lookup/outbox indexes. Unsupported newer or incompatible stores are retained and refused with recovery guidance. All 99 tests, affected native types/lint and Android export pass. Actual Android upgraded the saved account from v3 to v4, retaining its review answer and Downloaded marker; exact cloud comparison confirmed no closure, study/audio or profile changes. This completes the migration increment, not the remaining slice-4 reliability/learner matrix. See `build-evidence.md > Forward-only local storage upgrades — October 14`.

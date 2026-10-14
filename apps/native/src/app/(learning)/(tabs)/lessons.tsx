@@ -16,6 +16,18 @@ export default function Lessons() {
         </Body>
       </Panel>
       <OfflineLesson />
+      <Panel>
+        <Title>Grammar reference</Title>
+        <Body>
+          Find a useful pattern, read its explanation and replay checked
+          examples.
+        </Body>
+        <Button
+          label="Search grammar"
+          secondary
+          onPress={() => router.push("/(learning)/grammar")}
+        />
+      </Panel>
       {lessonCatalog.map((lesson) => (
         <Panel key={lesson.id}>
           <Title>{lesson.title}</Title>

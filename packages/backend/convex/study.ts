@@ -37,6 +37,9 @@ export const push = mutation({ args: { events: v.array(studyEventValue) }, handl
     } else if (event.kind === "conversationActivity" || (event.kind === "audioActivity" && event.lessonId === "conversation")) {
       const segment = await ctx.db.query("conversationSegments").withIndex("by_user_segment", q => q.eq("userId", userId).eq("segmentId", event.sessionId)).unique();
       if (!segment) throw new ConvexError("Study activity needs an owned conversation segment.");
+    } else if (event.kind === "audioActivity" && event.lessonId === "library") {
+      // Shared validation binds this activity to a known checked content version/clip.
+      // It is account-owned listening effort, without creating a lesson or recall grade.
     } else if (event.kind === "audioActivity" && event.lessonId === "reference") {
       const phraseId = ctx.db.normalizeId("savedPhrases",event.sessionId);
       const phrase = phraseId ? await ctx.db.get(phraseId) : null;

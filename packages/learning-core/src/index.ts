@@ -12,3 +12,4 @@ export * from "./recording.ts";
 export * from "./wave.ts";
 export * from "./reviews.ts";
 export * from "./content-package.ts";
+export * from "./grammar-reference.ts";

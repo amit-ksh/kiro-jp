@@ -231,6 +231,15 @@ export default function Home() {
         </Panel>
       )}
       <Panel>
+        <Title>Grammar reference</Title>
+        <Body>Search checked patterns, examples and common mistakes.</Body>
+        <Button
+          label="Find a grammar pattern"
+          secondary
+          onPress={() => router.push("/(learning)/grammar")}
+        />
+      </Panel>
+      <Panel>
         <Title>Your starting point</Title>
         <Body>
           {bandLabel(profile.acceptedBand)} · Target {profile.targetJlpt}

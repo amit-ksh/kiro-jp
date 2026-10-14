@@ -19,6 +19,7 @@ export function AudioPlay({
   conversation = false,
   reference = false,
   reviewTrackId,
+  libraryClipId,
 }: {
   source: AudioSource;
   label: string;
@@ -26,6 +27,7 @@ export function AudioPlay({
   conversation?: boolean;
   reference?: boolean;
   reviewTrackId?: string;
+  libraryClipId?: string;
 }) {
   const player = useAudioPlayer(null, { updateInterval: 100 }),
     status = useAudioPlayerStatus(player),
@@ -70,6 +72,7 @@ export function AudioPlay({
       (slow ? 0.75 : 1),
     reference,
     reviewTrackId,
+    libraryClipId,
   );
   useEffect(() => registerPlayer(player), [player]);
   useFocusEffect(
