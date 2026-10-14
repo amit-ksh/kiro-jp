@@ -47,6 +47,8 @@ type State = Projection & {
   loading: boolean;
   pending: number;
   error: string;
+  online: boolean;
+  requestFeedback: (eventId: string) => Promise<void>;
   run: ReviewRun | null;
   saveRun: (run: ReviewRun | null) => Promise<void>;
   submit: (
@@ -85,7 +87,9 @@ export function ReviewProvider({
     [cursor, setCursor] = useState(0),
     [error, setError] = useState(""),
     [run, setRun] = useState<ReviewRun | null>(null),
-    [retry, setRetry] = useState(0);
+    [retry, setRetry] = useState(0),
+    [received, setReceived] = useState<Set<string>>(new Set());
+  const requestedFeedback = useRef(new Set<string>());
   const dbRef = useRef<SQLiteDatabase | null>(null),
     epoch = useRef(0),
     serial = useRef(Promise.resolve()),
@@ -96,7 +100,14 @@ export function ReviewProvider({
   latest.current = { study, projection };
   const push = useMutation(api.reviews.push),
     ensureLesson = useMutation(api.reviews.ensureLesson),
-    ensurePhrase = useMutation(api.reviews.ensurePhrase);
+    ensurePhrase = useMutation(api.reviews.ensurePhrase),
+    requestReviewFeedback = useMutation(api.reviewAssessment.request);
+  const requestFeedback = useCallback(
+    async (eventId: string) => {
+      await requestReviewFeedback({ eventId });
+    },
+    [requestReviewFeedback],
+  );
   const remote = useQuery(
     api.reviews.pull,
     online && !loading ? { afterCursor: cursor } : "skip",
@@ -149,6 +160,14 @@ export function ReviewProvider({
       );
       if (generation !== epoch.current) return;
       setProjection(next);
+      setReceived(
+        new Set(
+          changes.flatMap((row) => {
+            const change = JSON.parse(row.body) as ReviewChange;
+            return change.kind === "attempt" ? [change.event.eventId] : [];
+          }),
+        ),
+      );
       setPending(saved.filter((row) => row.acknowledged !== 1).length);
     },
     [],
@@ -361,7 +380,15 @@ export function ReviewProvider({
         const db = dbRef.current;
         if (!db || generation !== epoch.current)
           throw new Error("Review storage is not ready.");
-        if (await db.getFirstAsync("SELECT event_id FROM review_events WHERE event_id=?",question.eventId)) { await refresh(db,generation); return; }
+        if (
+          await db.getFirstAsync(
+            "SELECT event_id FROM review_events WHERE event_id=?",
+            question.eventId,
+          )
+        ) {
+          await refresh(db, generation);
+          return;
+        }
         const occurredAt = Date.now(),
           offsetMinutes = new Date(occurredAt).getTimezoneOffset(),
           opportunity = question.opportunity;
@@ -456,6 +483,24 @@ export function ReviewProvider({
     const timer = setInterval(() => setRetry((value) => value + 1), 30000);
     return () => clearInterval(timer);
   }, []);
+  useEffect(() => {
+    if (!online || loading) return;
+    for (const event of projection.attempts) {
+      const receipt = projection.receipts.get(event.eventId),
+        track = projection.tracks.find((track) => track.id === event.trackId);
+      if (
+        !received.has(event.eventId) ||
+        requestedFeedback.current.has(event.eventId) ||
+        receipt?.feedback ||
+        receipt?.status === "invalid-with-reason" ||
+        receipt?.assessment.outcome !== "pending" ||
+        track?.card.exercise.kind !== "sentence"
+      )
+        continue;
+      requestedFeedback.current.add(event.eventId);
+      void requestFeedback(event.eventId).catch(() => {});
+    }
+  }, [online, loading, projection, received, requestFeedback]);
   return (
     <Context.Provider
       value={{
@@ -463,6 +508,8 @@ export function ReviewProvider({
         loading: loading || study.loading,
         pending,
         error,
+        online,
+        requestFeedback,
         run,
         saveRun,
         submit,

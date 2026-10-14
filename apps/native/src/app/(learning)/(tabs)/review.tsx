@@ -8,6 +8,8 @@ import {
 } from "@packages/learning-core";
 import { useReviews, type ReviewQuestion } from "../../../data/ReviewProvider";
 import { useStudyTime } from "../../../features/lessons/useStudyTime";
+import { ReviewFeedback } from "../../../features/review/ReviewFeedback";
+import { SentenceFeedbackHistory } from "../../../features/review/SentenceFeedbackHistory";
 import {
   Body,
   Button,
@@ -28,17 +30,29 @@ export default function Review() {
   const savedAttempt = question
     ? reviews.attempts.find((e) => e.eventId === question.eventId)
     : undefined;
-  const [input, setInput] = useState(""),
-    [support, setSupport] = useState<SupportFlag[]>([]),
+  const [draftInput, setInput] = useState(""),
+    [draftSupport, setSupport] = useState<SupportFlag[]>([]),
+    [answerQuestionId, setAnswerQuestionId] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const scroll = useRef<ScrollView>(null);
+  const input =
+    answerQuestionId === question?.eventId ? draftInput : (run?.input ?? "");
+  const support =
+    answerQuestionId === question?.eventId
+      ? draftSupport
+      : (run?.support ?? []);
   const time = useStudyTime(
     run?.id ?? "review-preview",
     track?.id ?? "review-preview",
     "reviewActivity",
   );
+  const pausePractice = time.pause;
   useEffect(() => {
+    if (receipt?.assessment.outcome === "pending") pausePractice();
+  }, [receipt?.assessment.outcome, pausePractice]);
+  useEffect(() => {
+    setAnswerQuestionId(question?.eventId ?? "");
     scroll.current?.scrollTo({ y: 0, animated: false });
     setInput(run?.input ?? "");
     setSupport(run?.support ?? []);
@@ -69,7 +83,16 @@ export default function Review() {
     setBusy(true);
     setError("");
     void work()
-      .catch((cause) => { if(__DEV__)console.warn("Review local action failure",cause instanceof Error?cause.message:"Unknown local storage error");setError("Your place is retained. Try again before continuing."); })
+      .catch((cause) => {
+        if (__DEV__)
+          console.warn(
+            "Review local action failure",
+            cause instanceof Error
+              ? cause.message
+              : "Unknown local storage error",
+          );
+        setError("Your place is retained. Try again before continuing.");
+      })
       .finally(() => setBusy(false));
   };
   const start = (extra: boolean) =>
@@ -159,11 +182,21 @@ export default function Review() {
               {track.card.source === "phrase" ? "Saved phrase · " : ""}
               {track.card.facet}
             </Body>
-            <Text style={[styles.kanji, { color: colors.onSurface }]}>
-              {track.card.facet === "grammar"
-                ? "A polite request"
-                : (track.card.exercise.japanese ?? track.card.label)}
-            </Text>
+            {track.card.facet === "grammar" ? (
+              <Title>A polite request</Title>
+            ) : (
+              <Text
+                style={[
+                  styles.kanji,
+                  { color: colors.onSurface },
+                  track.card.source === "phrase"
+                    ? { fontSize: 28, lineHeight: 40 }
+                    : {},
+                ]}
+              >
+                {track.card.exercise.japanese ?? track.card.label}
+              </Text>
+            )}
             <Body>{track.card.exercise.prompt}</Body>
             {question.mode === "extra" && (
               <Body muted>
@@ -176,6 +209,7 @@ export default function Review() {
                 <Field
                   label="Your recall answer"
                   value={input}
+                  editable={!busy}
                   autoCapitalize="none"
                   autoCorrect={false}
                   onChangeText={(text) => {
@@ -242,7 +276,7 @@ export default function Review() {
                     ? "Recalled."
                     : receipt?.assessment.outcome === "assisted"
                       ? "Recalled with support."
-                      : receipt?.status === "pending-assessment"
+                      : receipt?.assessment.outcome === "pending"
                         ? "Awaiting feedback."
                         : receipt?.assessment.outcome === "validAlternative"
                           ? "A useful alternative."
@@ -252,17 +286,29 @@ export default function Review() {
                   Your answer:{" "}
                   {savedAttempt.dontKnow ? "I don't know" : savedAttempt.input}
                 </Body>
-                <Body>Expected: {track.card.exercise.expected}</Body>
+                <Body>
+                  {track.card.exercise.kind === "sentence"
+                    ? "Examples"
+                    : "Expected"}
+                  : {track.card.exercise.expected}
+                </Body>
                 <Body>
                   {receipt?.assessment.explanation ??
                     "Saved on this phone; review feedback is loading."}
                 </Body>
-                {receipt?.assessment.inputScript === "romaji" && (
-                  <Body muted>
-                    This recalls the reading. Kana literacy is assessed
-                    separately.
-                  </Body>
+                {track.card.exercise.kind === "sentence" && (
+                  <ReviewFeedback
+                    key={question.eventId}
+                    eventId={question.eventId}
+                  />
                 )}
+                {track.card.facet === "reading" &&
+                  receipt?.assessment.inputScript === "romaji" && (
+                    <Body muted>
+                      This recalls the reading. Kana literacy is assessed
+                      separately.
+                    </Body>
+                  )}
                 {receipt?.status === "stale-practice" && (
                   <Body muted>
                     Your study was saved. Another device already resolved this
@@ -297,9 +343,10 @@ export default function Review() {
             <Panel>
               <Title>Practice saved.</Title>
               <Body>
-                {run?.questions.length} review attempts are retained, including
-                mistakes and supported answers. Mastery grows over later
-                reviews.
+                {run?.questions.length} review{" "}
+                {run?.questions.length === 1 ? "attempt is" : "attempts are"}{" "}
+                retained, including mistakes and supported answers. Mastery
+                grows over later reviews.
               </Body>
               <Button
                 label="Back to review queue"
@@ -310,14 +357,14 @@ export default function Review() {
           <Panel>
             <Title>
               {due.length
-                ? `${due.length} reviews ready`
+                ? `${due.length} ${due.length === 1 ? "review" : "reviews"} ready`
                 : reviews.tracks.length
                   ? "You're ready for the next return."
                   : "Begin learning to build your queue"}
             </Title>
             <Body>
               {reviews.tracks.length
-                ? `${reviews.tracks.length} separate meaning, reading, kana and grammar tracks. ${reviews.tracks.filter((t) => hasStrongRecall(t, Date.now())).length} have strong recall by the app's stage, day and age thresholds.`
+                ? `${reviews.tracks.length} review ${reviews.tracks.length === 1 ? "card" : "cards"}. Meanings, word readings, kana and grammar are practised separately. ${reviews.tracks.filter((t) => hasStrongRecall(t, Date.now())).length} with strong recall through spaced practice.`
                 : "Finish a few lesson exercises or save a checked phrase. Word and kana reviews begin after four hours; grammar follows after a day."}
             </Body>
             {due.length > 0 && !done && (
@@ -382,6 +429,27 @@ export default function Review() {
             onPress={reviews.retry}
           />
         </Panel>
+      )}
+      {(!run || done) && (
+        <SentenceFeedbackHistory
+          practise={(trackId) =>
+            act(async () => {
+              const target = reviews.tracks.find(
+                (track) => track.id === trackId,
+              );
+              if (!target) return;
+              const question = makeQuestion(target, true, true);
+              if (question)
+                await reviews.saveRun({
+                  id: Crypto.randomUUID(),
+                  questions: [question],
+                  index: 0,
+                  input: "",
+                  support: [],
+                });
+            })
+          }
+        />
       )}
     </Screen>
   );

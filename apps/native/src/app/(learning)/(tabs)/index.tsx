@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { Text } from "react-native";
-import { activeMilliseconds, bandLabel, localDayAt, sessionProjection } from "@packages/learning-core";
+import { activeMilliseconds, bandLabel, localDayAt, sessionProjection, reviewEarnsStreak } from "@packages/learning-core";
 import { lessonCatalog, requestsLesson } from "@packages/content";
 import { useStudy } from "../../../data/StudyProvider";
 import { useReviews } from "../../../data/ReviewProvider";
@@ -16,7 +16,7 @@ export default function Home() {
   const unfinishedChat = Object.values(study.chats).sort((a,b)=>b.conversation.updatedAt-a.conversation.updatedAt).find(chat=>chat.segments.some(segment=>segment.segmentId===chat.conversation.currentSegmentId && segment.state==="active"));
   const today = localDayAt(Date.now(), new Date().getTimezoneOffset());
   const milliseconds = activeMilliseconds(study.events.flatMap(event => event.spans), today);
-  const meaningful = study.events.some(event => event.kind === "conversationTurn" && event.localDay === today && event.input === "meaningful") || sessions.some(session => sessionProjection(requestsLesson, study.events.filter(event => event.sessionId === session.sessionId),study.checked).meaningfulDays.includes(today)) || reviews.attempts.some(event=>event.localDay===today && reviews.receipts.get(event.eventId)?.status!=="invalid-with-reason" && !["pending","unassessed"].includes(reviews.receipts.get(event.eventId)?.assessment.outcome??"pending"));
+  const meaningful = study.events.some(event => event.kind === "conversationTurn" && event.localDay === today && event.input === "meaningful") || sessions.some(session => sessionProjection(requestsLesson, study.events.filter(event => event.sessionId === session.sessionId),study.checked).meaningfulDays.includes(today)) || reviews.attempts.some(event=>event.localDay===today && reviewEarnsStreak(event,reviews.receipts.get(event.eventId)));
   const due = reviews.tracks.filter(track => track.dueAt <= Date.now()).length;
   if(study.loading || reviews.loading)return <Loading label="Opening your saved daily plan…"/>;
   return <Screen title="A little Japanese, today." subtitle={`${bandLabel(profile.acceptedBand)} · ${profile.dailyMinutes}-minute daily goal`}>

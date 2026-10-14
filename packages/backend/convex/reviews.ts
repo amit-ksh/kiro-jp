@@ -20,6 +20,7 @@ import {
   type ReviewReceipt,
   type ReviewCard,
   type Assessment,
+  type ReviewFeedback,
   type StudyEvent,
 } from "@packages/learning-core";
 import { requireUser } from "./lib/ownership";
@@ -186,8 +187,64 @@ export const pull = query({
     };
   },
 });
-async function classify(ctx: MutationCtx, row: Doc<"reviewAttempts">) {
+export async function recordReviewFeedback(
+  ctx: MutationCtx,
+  row: Doc<"reviewAttempts">,
+  feedback: ReviewFeedback,
+) {
+  const receipt = {
+    ...row.receipt,
+    revision: row.receipt.revision + 1,
+    feedback,
+  };
+  await ctx.db.patch(row._id, { receipt });
+  await log(ctx, row.userId, { kind: "attempt", event: row.event, receipt });
+  return receipt;
+}
+export async function reviewSourceWithSupport(
+  ctx: MutationCtx,
+  userId: Id<"users">,
+  event: ReviewAttempt,
+): Promise<ReviewAttempt> {
+  const history = await ctx.db
+    .query("reviewAttempts")
+    .withIndex("by_user_session_track", (q) =>
+      q
+        .eq("userId", userId)
+        .eq("event.sessionId", event.sessionId)
+        .eq("event.trackId", event.trackId)
+        .lte("event.occurredAt", event.occurredAt),
+    )
+    .take(101);
+  const exposed =
+    history.length > 100 ||
+    history.some(
+      (row) =>
+        row.event.eventId !== event.eventId &&
+        row.event.opportunityId === event.opportunityId &&
+        (row.event.occurredAt < event.occurredAt ||
+          (row.event.deviceId === event.deviceId &&
+            row.event.sequence < event.sequence)),
+    );
+  return {
+    ...event,
+    support: [
+      ...new Set([
+        ...event.support,
+        ...(exposed ? ["correctionRetry" as const] : []),
+      ]),
+    ],
+  };
+}
+export async function classifyReview(
+  ctx: MutationCtx,
+  row: Doc<"reviewAttempts">,
+  resolved?: Assessment,
+  feedback?: ReviewFeedback,
+) {
   const { userId, event } = row;
+  if (row.receipt.status === "applied-to-schedule")
+    return feedback ? recordReviewFeedback(ctx, row, feedback) : row.receipt;
   const savedTrack = await ctx.db
     .query("reviewTracks")
     .withIndex("by_user_track", (q) =>
@@ -212,14 +269,25 @@ async function classify(ctx: MutationCtx, row: Doc<"reviewAttempts">) {
         )
         .unique()
     : null;
+  const job = await ctx.db
+    .query("reviewAssessments")
+    .withIndex("by_user_event", (q) =>
+      q.eq("userId", userId).eq("eventId", event.eventId),
+    )
+    .unique();
+  const source =
+    job?.source ?? (await reviewSourceWithSupport(ctx, userId, event));
   const decision = await decideReview(
     savedTrack.track,
     opportunity?.opportunity,
     parent?.receipt,
-    event,
+    source,
     digest,
     row.receipt.revision + 1,
+    resolved ?? (job?.status === "ready" ? job.assessment : undefined),
   );
+  const metadata = feedback ?? row.receipt.feedback;
+  if (metadata) decision.receipt.feedback = metadata;
   if (decision.track && decision.closed && decision.next) {
     // The current track and open opportunity are read and written in this one
     // transaction. A concurrent successful commit forces the other to retry.
@@ -235,7 +303,7 @@ async function classify(ctx: MutationCtx, row: Doc<"reviewAttempts">) {
   await log(ctx, userId, { kind: "attempt", event, ...decision });
   return decision.receipt;
 }
-async function resolveChildren(
+export async function resolveChildren(
   ctx: MutationCtx,
   userId: Id<"users">,
   parentEventId: string,
@@ -260,7 +328,7 @@ async function resolveChildren(
       });
       break;
     }
-    const receipt = await classify(ctx, child);
+    const receipt = await classifyReview(ctx, child);
     used++;
     if (
       receipt.status !== "awaiting-parent" &&
@@ -349,7 +417,7 @@ export const push = mutation({
       });
       const saved = await ctx.db.get(id);
       if (!saved) throw new Error("Missing saved review.");
-      const receipt = await classify(ctx, saved);
+      const receipt = await classifyReview(ctx, saved);
       acks.push({ ...receipt, duplicate: false });
       if (
         receipt.status !== "awaiting-parent" &&

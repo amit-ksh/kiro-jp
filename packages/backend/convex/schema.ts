@@ -7,12 +7,13 @@ import { goalValue, jobStateValue, replyValue, practiceStampValue, phraseValue }
 import { supportValue } from "./studyValues";
 import { culturalEntityValue, culturalTypeValue, culturalSnapshotValue } from "./cultureValues";
 import { speechSourceValue, speechStatusValue, speechSegmentValue } from "./speechValues";
-import { reviewAttemptValue, reviewReceiptValue, reviewTrackValue, reviewOpportunityValue, reviewChangeValue } from "./reviewValues";
+import { reviewAttemptValue, reviewReceiptValue, reviewTrackValue, reviewOpportunityValue, reviewChangeValue, reviewCardValue, reviewAssessmentResultValue } from "./reviewValues";
 export default defineSchema({
   ...authTables,
   reviewTracks: defineTable({userId:v.id("users"),track:reviewTrackValue}).index("by_user_track",["userId","track.id"]).index("by_user_due",["userId","track.dueAt"]),
   reviewOpportunities: defineTable({userId:v.id("users"),opportunity:reviewOpportunityValue}).index("by_user_opportunity",["userId","opportunity.id"]),
-  reviewAttempts: defineTable({userId:v.id("users"),event:reviewAttemptValue,receipt:reviewReceiptValue}).index("by_user_event",["userId","event.eventId"]).index("by_user_parent",["userId","event.parentEventId","receipt.status"]).index("by_user_status",["userId","receipt.status"]),
+  reviewAttempts: defineTable({userId:v.id("users"),event:reviewAttemptValue,receipt:reviewReceiptValue}).index("by_user_event",["userId","event.eventId"]).index("by_user_parent",["userId","event.parentEventId","receipt.status"]).index("by_user_status",["userId","receipt.status"]).index("by_user_session_track",["userId","event.sessionId","event.trackId","event.occurredAt"]),
+  reviewAssessments: defineTable({userId:v.id("users"),eventId:v.string(),source:reviewAttemptValue,card:reviewCardValue,status:v.union(v.literal("queued"),v.literal("running"),v.literal("ready"),v.literal("unavailable")),attempt:v.number(),claim:v.number(),leaseUntil:v.optional(v.number()),updatedAt:v.number(),assessment:v.optional(reviewAssessmentResultValue),corrected:v.optional(phraseValue),trace:v.string()}).index("by_user_event",["userId","eventId"]),
   reviewChanges: defineTable({userId:v.id("users"),cursor:v.number(),change:reviewChangeValue}).index("by_user_cursor",["userId","cursor"]),
   reviewCursors: defineTable({userId:v.id("users"),cursor:v.number()}).index("by_user",["userId"]),
   accountEmailLimits: defineTable({ key: v.string(), lastRequestedAt: v.number(), day: v.string(), count: v.number() }).index("by_key", ["key"]),

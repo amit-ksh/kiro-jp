@@ -13,6 +13,7 @@ import {
   validateStudyStamp,
   type StudyEvent,
 } from "./study.ts";
+import type { TutorPhrase } from "./conversation.ts";
 
 export const reviewAlgorithm = 1 as const;
 export type ReviewFacet = "meaning" | "reading" | "kana" | "grammar";
@@ -100,6 +101,14 @@ export interface ReviewReceipt {
   opportunityId: string;
   resolutionId?: string;
   reason?: string;
+  feedback?: ReviewFeedback;
+}
+export interface ReviewFeedback {
+  status: "queued" | "running" | "ready" | "unavailable";
+  attempt: number;
+  updatedAt: number;
+  leaseUntil?: number;
+  corrected?: TutorPhrase;
 }
 export interface ReviewDecision {
   receipt: ReviewReceipt;
@@ -284,13 +293,36 @@ export function validateReviewAttempt(event: ReviewAttempt, now: number) {
   )
     throw new Error("Invalid review attempt.");
 }
-export function reviewAssessment(card: ReviewCard, event: ReviewAttempt) {
-  return assessFixed(
+export function reviewAssessment(
+  card: ReviewCard,
+  event: ReviewAttempt,
+  resolved?: Assessment,
+): Assessment {
+  const fixed = assessFixed(
     card.exercise,
     event.input ?? "",
     event.support,
     event.dontKnow,
   );
+  if (
+    fixed.outcome !== "pending" ||
+    !resolved ||
+    resolved.normalized !== fixed.normalized ||
+    resolved.expected !== fixed.expected ||
+    resolved.explanation.length > 500
+  )
+    return fixed;
+  const outcome =
+    resolved.outcome === "independent" && event.support.length
+      ? "assisted"
+      : resolved.outcome;
+  return {
+    ...fixed,
+    outcome,
+    explanation: resolved.explanation,
+    kanaEvidence: false,
+    targetObserved: outcome === "independent" || outcome === "assisted",
+  };
 }
 /** The decision never changes a closed opportunity, regardless of occurrence time. */
 export async function decideReview(
@@ -300,8 +332,9 @@ export async function decideReview(
   event: ReviewAttempt,
   digest: ReviewDigest,
   receiptRevision = 1,
+  resolved?: Assessment,
 ): Promise<ReviewDecision> {
-  const assessment = reviewAssessment(track.card, event);
+  const assessment = reviewAssessment(track.card, event, resolved);
   const receipt = (status: ReviewStatus, reason?: string): ReviewDecision => ({
     receipt: {
       eventId: event.eventId,
@@ -412,12 +445,20 @@ export async function decideReview(
   };
 }
 export function hasStrongRecall(track: ReviewTrack, now: number) {
-  const threshold = track.card.facet === "grammar" ? grammarIntervals.length - 1 : 6;
+  const threshold =
+    track.card.facet === "grammar" ? grammarIntervals.length - 1 : 6;
   return (
     track.stage >= threshold &&
     track.qualifyingDays.length >= 5 &&
     now - track.introducedAt >= 21 * 86_400_000
   );
+}
+/** A completed review attempt is effort even while its skill grade is pending. */
+export function reviewEarnsStreak(
+  event: ReviewAttempt,
+  receipt: ReviewReceipt | undefined,
+) {
+  return Boolean(receipt && (event.dontKnow || event.input?.trim()));
 }
 export function orderReviewAttempts(events: readonly ReviewAttempt[]) {
   const compare = (a: ReviewAttempt, b: ReviewAttempt) =>
@@ -503,7 +544,9 @@ export async function projectReviews(
       event,
       digest,
       (receipt?.revision ?? 0) + 1,
+      receipt?.assessment,
     );
+    if (receipt?.feedback) decision.receipt.feedback = receipt.feedback;
     receipts.set(event.eventId, decision.receipt);
     if (decision.track && decision.closed && decision.next) {
       tracks.set(track.id, decision.track);

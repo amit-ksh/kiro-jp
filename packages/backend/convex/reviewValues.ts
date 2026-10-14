@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { supportValue } from "./studyValues";
+import { phraseValue } from "./conversationValues";
 export const reviewFacetValue = v.union(
   v.literal("meaning"),
   v.literal("reading"),
@@ -111,6 +112,34 @@ export const reviewAttemptValue = v.object({
   baseRevision: v.number(),
   mode: v.union(v.literal("due"), v.literal("extra")),
 });
+export const reviewAssessmentResultValue = v.object({
+  outcome,
+  normalized: v.string(),
+  expected: v.string(),
+  explanation: v.string(),
+  inputScript: v.union(
+    v.literal("english"),
+    v.literal("kana"),
+    v.literal("romaji"),
+    v.literal("japanese"),
+    v.literal("tiles"),
+    v.literal("none"),
+  ),
+  kanaEvidence: v.boolean(),
+  targetObserved: v.boolean(),
+});
+export const reviewFeedbackValue = v.object({
+  status: v.union(
+    v.literal("queued"),
+    v.literal("running"),
+    v.literal("ready"),
+    v.literal("unavailable"),
+  ),
+  attempt: v.number(),
+  updatedAt: v.number(),
+  leaseUntil: v.optional(v.number()),
+  corrected: v.optional(phraseValue),
+});
 export const reviewReceiptValue = v.object({
   eventId: v.string(),
   revision: v.number(),
@@ -141,6 +170,7 @@ export const reviewReceiptValue = v.object({
   opportunityId: v.string(),
   resolutionId: v.optional(v.string()),
   reason: v.optional(v.string()),
+  feedback: v.optional(reviewFeedbackValue),
 });
 export const reviewChangeValue = v.union(
   v.object({

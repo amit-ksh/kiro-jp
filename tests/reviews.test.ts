@@ -9,6 +9,7 @@ import {
   hasStrongRecall,
   validateReviewAttempt,
   projectReviews,
+  reviewEarnsStreak,
   type ReviewAttempt,
   type ReviewCard,
   type ReviewTrack,
@@ -16,6 +17,7 @@ import {
   type ReviewReceipt,
 } from "../packages/learning-core/src/reviews.ts";
 import { localDayAt } from "../packages/learning-core/src/study.ts";
+import { assessNovelSentence } from "../packages/learning-core/src/sentence-assessment.ts";
 const digest = async (text: string) =>
   createHash("sha256").update(text).digest("hex");
 const start = Date.UTC(2026, 8, 1),
@@ -319,10 +321,14 @@ test("mastery needs stage, distinct qualifying days and age; a current lapse cle
   assert.deepEqual(lapse.track!.independentDays, days);
   assert.deepEqual(lapse.track!.qualifyingDays, []);
   assert.equal(hasStrongRecall(lapse.track!, now), false);
-  const grammarStrong={...strong,stage:5,card:{...strong.card,facet:"grammar" as const}};
-  assert.equal(hasStrongRecall(grammarStrong,now),true);
-  assert.equal(hasStrongRecall({...grammarStrong,stage:4},now),false);
-  assert.equal(hasStrongRecall({...strong,stage:5},now),false);
+  const grammarStrong = {
+    ...strong,
+    stage: 5,
+    card: { ...strong.card, facet: "grammar" as const },
+  };
+  assert.equal(hasStrongRecall(grammarStrong, now), true);
+  assert.equal(hasStrongRecall({ ...grammarStrong, stage: 4 }, now), false);
+  assert.equal(hasStrongRecall({ ...strong, stage: 5 }, now), false);
 });
 test("forged parent snapshots, malformed dates, unsupported revisions and cycles cannot close a review", async () => {
   const { track, opportunity } = await root(),
@@ -486,4 +492,229 @@ test("a cached lesson introduction creates provisional offline cards without cha
   );
   assert.equal(returned.tracks[0]!.introducedAt, start);
   assert.equal(returned.provisional.size, 0);
+});
+
+async function novelGrammar(id: string, input = "この本をください") {
+  const grammar = await introduceReview(
+    {
+      ...card,
+      id: "requests:1:request-kudasai:grammar",
+      facet: "grammar",
+      exercise: requestsLesson.exercises.find((e) => e.id === "request-own")!,
+    },
+    start,
+    digest,
+  );
+  const event = attempt(grammar.track, grammar.opportunity, id, input);
+  const assessment = assessNovelSentence(
+    grammar.track.card.exercise,
+    { id: event.eventId, input, support: event.support },
+    {
+      messageId: event.eventId,
+      validity: "appropriate",
+      meaningfulJapanese: true,
+      target: "used",
+      span: input,
+      explanation:
+        "The item is followed by をください to make a polite request.",
+    },
+  );
+  return { ...grammar, event, assessment };
+}
+test("a source-bound delayed grammar grade closes only its still-open opportunity", async () => {
+  const value = await novelGrammar("delayed-grade"),
+    pending = await decideReview(
+      value.track,
+      value.opportunity,
+      undefined,
+      value.event,
+      digest,
+    );
+  assert.equal(pending.receipt.status, "pending-assessment");
+  assert.equal(pending.track, undefined);
+  const checked = await decideReview(
+    value.track,
+    value.opportunity,
+    undefined,
+    value.event,
+    digest,
+    4,
+    value.assessment,
+  );
+  assert.equal(checked.receipt.status, "applied-to-schedule");
+  assert.equal(checked.track!.stage, 1);
+  assert.equal(checked.track!.dueAt, value.event.occurredAt + 3 * 86400000);
+  assert.deepEqual(checked.track!.qualifyingDays, [value.event.localDay]);
+  assert.equal(checked.receipt.assessment.kanaEvidence, false);
+});
+test("a late appropriate grade retains its language evidence without replacing a competing closure", async () => {
+  const value = await novelGrammar("late-grade"),
+    winnerEvent = attempt(
+      value.track,
+      value.opportunity,
+      "fixed-winner",
+      "本をください",
+    );
+  const winner = await decideReview(
+    value.track,
+    value.opportunity,
+    undefined,
+    winnerEvent,
+    digest,
+  );
+  const late = await decideReview(
+    winner.track!,
+    winner.closed,
+    undefined,
+    value.event,
+    digest,
+    4,
+    value.assessment,
+  );
+  assert.equal(late.receipt.status, "stale-practice");
+  assert.equal(late.receipt.assessment.outcome, "independent");
+  assert.equal(late.track, undefined);
+  assert.equal(winner.closed!.resolution!.eventId, winnerEvent.eventId);
+});
+test("crossed semantic input cannot grade another answer; corrected retries remain extra practice", async () => {
+  const value = await novelGrammar("bound-grade");
+  const crossed = await decideReview(
+    value.track,
+    value.opportunity,
+    undefined,
+    value.event,
+    digest,
+    4,
+    { ...value.assessment, normalized: "another answer" },
+  );
+  assert.equal(crossed.receipt.status, "pending-assessment");
+  const wrongExpected = await decideReview(
+    value.track,
+    value.opportunity,
+    undefined,
+    value.event,
+    digest,
+    4,
+    { ...value.assessment, expected: "another pattern" },
+  );
+  assert.equal(wrongExpected.receipt.status, "pending-assessment");
+  const assisted = { ...value.event, support: ["correctionRetry" as const] };
+  const retry = await decideReview(
+    value.track,
+    value.opportunity,
+    undefined,
+    assisted,
+    digest,
+    4,
+    value.assessment,
+  );
+  assert.equal(retry.receipt.status, "extra-practice");
+  assert.equal(retry.receipt.assessment.outcome, "assisted");
+  assert.equal(retry.track, undefined);
+});
+test("resolved missing-parent feedback survives provisional replay and later canonical classification", async () => {
+  const value = await novelGrammar("grammar-root", "水をください"),
+    parent = await decideReview(
+      value.track,
+      value.opportunity,
+      undefined,
+      value.event,
+      digest,
+    );
+  const child = attempt(
+    parent.track!,
+    parent.next!,
+    "grammar-child",
+    "この本をください",
+  );
+  const assessment = assessNovelSentence(
+    parent.track!.card.exercise,
+    { id: child.eventId, input: child.input!, support: [] },
+    {
+      messageId: child.eventId,
+      validity: "appropriate",
+      meaningfulJapanese: true,
+      target: "used",
+      span: child.input!,
+      explanation: "A polite request using the target pattern.",
+    },
+  );
+  const waiting = await decideReview(
+    value.track,
+    undefined,
+    undefined,
+    child,
+    digest,
+    4,
+    assessment,
+  );
+  waiting.receipt.feedback = { status: "ready", attempt: 1, updatedAt: now };
+  assert.equal(waiting.receipt.status, "awaiting-parent");
+  const projection = await projectReviews(
+    [
+      {
+        kind: "introduced",
+        track: value.track,
+        opportunity: value.opportunity,
+      },
+      { kind: "attempt", event: child, ...waiting },
+      { kind: "attempt", event: value.event, ...parent },
+    ],
+    [{ event: child, acknowledged: true }],
+    [],
+    digest,
+  );
+  assert.equal(projection.tracks[0]!.stage, 2);
+  assert(projection.provisional.has(value.track.id));
+  assert.equal(
+    projection.receipts.get(child.eventId)!.feedback!.status,
+    "ready",
+  );
+  const accepted = await decideReview(
+    parent.track!,
+    parent.next,
+    parent.receipt,
+    child,
+    digest,
+    5,
+    assessment,
+  );
+  assert.equal(accepted.receipt.status, "applied-to-schedule");
+});
+
+test("a completed pending review earns effort credit without claiming skill or mastery", async () => {
+  const value = await novelGrammar("effort-not-grade"),
+    pending = await decideReview(
+      value.track,
+      value.opportunity,
+      undefined,
+      value.event,
+      digest,
+    );
+  assert.equal(reviewEarnsStreak(value.event, pending.receipt), true);
+  assert.equal(pending.receipt.assessment.outcome, "pending");
+  assert.equal(pending.track, undefined);
+  assert.equal(hasStrongRecall(value.track, now), false);
+  assert.equal(
+    reviewEarnsStreak(
+      { ...value.event, input: "  ", dontKnow: false },
+      pending.receipt,
+    ),
+    false,
+  );
+  assert.equal(
+    reviewEarnsStreak(
+      { ...value.event, input: "", dontKnow: true },
+      pending.receipt,
+    ),
+    true,
+  );
+  assert.equal(reviewEarnsStreak(value.event, undefined), false);
+  assert.equal(
+    reviewEarnsStreak(value.event, {
+      ...pending.receipt,
+      status: "stale-practice",
+    }),
+    true,
+  );
 });

@@ -1,17 +1,18 @@
 "use node";
 import type { ActionCtx } from "../../_generated/server";
-import { internal } from "../../_generated/api";
+import { internal } from "../../_generated/api.js";
 import {
   createGatewayModel,
   GatewayControlError,
   type ConversationProvider,
   type GatewayReceipt,
-} from "./providers";
+} from "./providers.ts";
 // One spending/transport boundary for chat, recap and language checks.
 export function actionGateway(
   ctx: Pick<ActionCtx, "runMutation">,
   prefix: string,
   receipts: GatewayReceipt[],
+  beforeDispatch?: () => Promise<boolean>,
 ) {
   const configured = process.env.AI_CONVERSATION_PROVIDER ?? "gemini";
   if (configured !== "gemini" && configured !== "openrouter")
@@ -29,8 +30,9 @@ export function actionGateway(
     },
     prefix,
     {
-      reserve: async (dispatch) =>
-        dispatch.provider === "gemini"
+      reserve: async (dispatch) => {
+        if (beforeDispatch && !(await beforeDispatch())) return false;
+        return dispatch.provider === "gemini"
           ? (
               await ctx.runMutation(internal.aiBudget.reserve, {
                 operationId: dispatch.operationId,
@@ -43,7 +45,8 @@ export function actionGateway(
               await ctx.runMutation(internal.aiQuota.reserve, {
                 operationId: dispatch.operationId,
               })
-            ).start,
+            ).start;
+      },
       settle: async (operationId, usage) => {
         await ctx.runMutation(internal.aiBudget.settle, {
           operationId,
