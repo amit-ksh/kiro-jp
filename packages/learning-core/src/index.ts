@@ -4,3 +4,5 @@ export * from "./auth-identity.ts";
 export * from "./lesson.ts";
 export * from "./study.ts";
 export * from "./content-check.ts";
+export * from "./conversation.ts";
+export * from "./readings.ts";

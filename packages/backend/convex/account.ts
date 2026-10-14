@@ -5,6 +5,7 @@ import { requireUser } from "./lib/ownership";
 export const capabilities = query({ args: {}, handler: () => ({
   emailVerification: process.env.ACCOUNT_EMAIL_ENABLED === "true",
   passwordRecovery: process.env.ACCOUNT_EMAIL_ENABLED === "true",
+  culturalPersonalization: Boolean(process.env.QLOO_API_KEY),
 }) });
 
 export const current = query({ args: {}, handler: async ctx => {

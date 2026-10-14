@@ -2,7 +2,7 @@ import { assessFixed, grammarIntervals, recallIntervals, type Assessment, type P
 export interface StudySpan { start: number; end: number; localDay: string; offsetMinutes: number; }
 export interface StudyEvent {
   eventId: string; sessionId: string; deviceId: string; sequence: number; lessonId: string; lessonVersion: number; occurredAt: number; localDay: string; timezone: string; offsetMinutes: number;
-  kind: "started" | "studied" | "attempted" | "advanced" | "activity" | "savedPhrase";
+  kind: "started" | "studied" | "attempted" | "advanced" | "activity" | "savedPhrase" | "conversationActivity" | "conversationTurn";
   stepId: string; input?: string; dontKnow?: boolean; support: SupportFlag[]; spans: StudySpan[];
   context?: { theme: string; band: "foundations" | "early-n5" | "early-n4"; romaji: boolean; furigana: boolean; translations: boolean };
 }
@@ -24,10 +24,15 @@ export function activeMilliseconds(spans: readonly StudySpan[], day: string) {
   return total;
 }
 export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, now: number) {
-  if (![event.eventId, event.sessionId, event.deviceId].every(id => /^[a-zA-Z0-9_-]{8,100}$/u.test(id)) || !Number.isInteger(event.sequence) || event.sequence < 0 || event.sequence > 100_000 || event.lessonId !== lesson.id || event.lessonVersion !== lesson.version || !Number.isFinite(event.occurredAt) || event.occurredAt > now + 300_000 || event.occurredAt < Date.UTC(2026, 0, 1) || !Number.isInteger(event.offsetMinutes) || Math.abs(event.offsetMinutes) > 840 || event.localDay !== localDayAt(event.occurredAt, event.offsetMinutes) || event.timezone.length > 80 || event.support.length > 7 || (event.input?.length ?? 0) > 1000 || event.spans.length > 4) throw new Error("Invalid study event.");
+  if (![event.eventId, event.sessionId, event.deviceId].every(id => /^[a-zA-Z0-9_-]{8,100}$/u.test(id)) || !Number.isInteger(event.sequence) || event.sequence < 0 || event.sequence > 100_000 || !Number.isFinite(event.occurredAt) || event.occurredAt > now + 300_000 || event.occurredAt < Date.UTC(2026, 0, 1) || !Number.isInteger(event.offsetMinutes) || Math.abs(event.offsetMinutes) > 840 || event.localDay !== localDayAt(event.occurredAt, event.offsetMinutes) || event.timezone.length > 80 || event.support.length > 7 || (event.input?.length ?? 0) > 1000 || event.spans.length > 4) throw new Error("Invalid study event.");
+  for (const span of event.spans) if (!Number.isFinite(span.start) || !Number.isFinite(span.end) || span.end < span.start || span.end - span.start > 30_000 || span.end > event.occurredAt + 1000 || span.start < event.occurredAt - 60_000 || !Number.isInteger(span.offsetMinutes) || Math.abs(span.offsetMinutes) > 840 || span.localDay !== localDayAt(span.start, span.offsetMinutes)) throw new Error("Invalid study time.");
+  if (event.kind === "conversationActivity" || event.kind === "conversationTurn") {
+    if (event.lessonId !== "conversation" || event.lessonVersion !== 1 || (event.kind === "conversationActivity" && (event.stepId !== "chat" || event.input !== undefined)) || (event.kind === "conversationTurn" && (event.input !== "meaningful" || event.spans.length > 0 || !/^[a-zA-Z0-9_-]{8,100}$/u.test(event.stepId)))) throw new Error("Invalid conversation study evidence.");
+    return;
+  }
+  if (event.lessonId !== lesson.id || event.lessonVersion !== lesson.version) throw new Error("Unsupported lesson version.");
   const step = lessonSteps(lesson).find(item => item.id === event.stepId) ?? (exerciseForStep(lesson, event.stepId) ? { kind: "exercise" } : undefined);
   if (!step || (event.kind === "started" && (event.stepId !== "goal" || !event.context)) || (event.kind === "attempted" && step.kind !== "exercise") || (event.kind === "savedPhrase" && !lesson.grammar.examples.some(example => example.id === event.input)) || (event.context && event.context.theme.length > 120)) throw new Error("Invalid lesson step.");
-  for (const span of event.spans) if (!Number.isFinite(span.start) || !Number.isFinite(span.end) || span.end < span.start || span.end - span.start > 30_000 || span.end > event.occurredAt + 1000 || span.start < event.occurredAt - 60_000 || Math.abs(span.offsetMinutes) > 840 || span.localDay !== localDayAt(span.start, span.offsetMinutes)) throw new Error("Invalid study time.");
 }
 export function sessionProjection(lesson: PreparedLesson, source: readonly StudyEvent[]) {
   const events = [...source].sort((a, b) => a.occurredAt - b.occurredAt || a.deviceId.localeCompare(b.deviceId) || a.sequence - b.sequence || a.eventId.localeCompare(b.eventId));

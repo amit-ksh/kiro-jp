@@ -23,12 +23,17 @@ export const push = mutation({ args: { events: v.array(studyEventValue) }, handl
   const receipts: { eventId: string; cursor: number }[] = [];
   for (const raw of args.events) {
     const event = raw as StudyEvent;
+    if (event.kind === "conversationTurn") throw new ConvexError("Conversation language evidence is assessed on the server.");
     try { validateStudyEvent(event, requestsLesson, Date.now()); } catch { throw new ConvexError("Check the saved study activity before retrying."); }
     const previous = await ctx.db.query("studyEvents").withIndex("by_user_event", q => q.eq("userId", userId).eq("event.eventId", event.eventId)).unique();
     if (previous) {
       if (canonical(previous.event) !== canonical(event)) throw new ConvexError("A saved activity ID cannot be replaced with another answer.");
       receipts.push({ eventId: event.eventId, cursor: previous.cursor }); continue;
     }
+    if (event.kind === "conversationActivity") {
+      const segment = await ctx.db.query("conversationSegments").withIndex("by_user_segment", q => q.eq("userId", userId).eq("segmentId", event.sessionId)).unique();
+      if (!segment) throw new ConvexError("Study activity needs an owned conversation segment.");
+    } else {
     const session = await ctx.db.query("studySessions").withIndex("by_user_session", q => q.eq("userId", userId).eq("sessionId", event.sessionId)).unique();
     if (event.kind === "started") {
       if (session) throw new ConvexError("This session already has a starting snapshot.");
@@ -37,6 +42,7 @@ export const push = mutation({ args: { events: v.array(studyEventValue) }, handl
     if (event.kind === "advanced" && exerciseForStep(requestsLesson, event.stepId)) {
       const priorAttempt = await ctx.db.query("studyEvents").withIndex("by_user_step_kind", q => q.eq("userId", userId).eq("event.sessionId", event.sessionId).eq("event.stepId", event.stepId).eq("event.kind", "attempted")).first();
       if (!priorAttempt) throw new ConvexError("Complete an attempt before continuing.");
+    }
     }
     cursor += 1;
     await ctx.db.insert("studyEvents", { userId, cursor, event });

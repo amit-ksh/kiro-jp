@@ -4,15 +4,15 @@ import { useFocusEffect } from "expo-router";
 import { splitStudySpan } from "@packages/learning-core";
 import { useStudy } from "../../data/StudyProvider";
 // Interaction opens a bounded reading/thinking window. Route opening earns no time.
-export function useStudyTime(sessionId: string, stepId: string) {
-  const { append } = useStudy(); const current = useRef({ sessionId, stepId, append }); current.current = { sessionId, stepId, append };
+export function useStudyTime(sessionId: string, stepId: string, kind: "activity" | "conversationActivity" = "activity") {
+  const { append } = useStudy(); const current = useRef({ sessionId, stepId, append, kind }); current.current = { sessionId, stepId, append, kind };
   const clock = useRef({ last: 0, until: 0, wall: 0, focused: false, foreground: AppState.currentState === "active" });
   const flush = useCallback(() => {
     const state = clock.current, now = performance.now(), end = Math.min(now, state.until);
     if (state.focused && state.foreground && state.last && end > state.last) {
       const milliseconds = Math.min(15_000, end - state.last), start = state.wall, finish = start + milliseconds;
       const spans = splitStudySpan(start, finish, new Date(start).getTimezoneOffset());
-      void current.current.append({ sessionId: current.current.sessionId, kind: "activity", stepId: current.current.stepId, spans }).catch(() => {});
+      void current.current.append({ sessionId: current.current.sessionId, kind: current.current.kind, stepId: current.current.stepId, spans }).catch(() => {});
     }
     state.last = now; state.wall = Date.now();
   }, []);

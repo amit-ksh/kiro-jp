@@ -27,6 +27,9 @@ export interface GatewayReceipt {
   model: string;
   status: number;
   gatewayLogId?: string;
+  finishReason?: string;
+  visibleCharacters?: number;
+  reasoningTokens?: number;
 }
 export interface GatewayBudget {
   reserve: (dispatch: Dispatch) => Promise<boolean>;
@@ -96,7 +99,16 @@ export function createGatewayModel(provider: ConversationProvider, config: Gatew
     for (const [name, value] of Object.entries(headers)) outgoingHeaders.set(name, value);
     const response = await transport(input, { ...init, headers: outgoingHeaders, redirect: "error", signal });
     const gatewayLogId = response.headers.get("cf-aig-log-id") ?? undefined;
-    budget.record?.({ operationId, provider, model, status: response.status, ...(gatewayLogId ? { gatewayLogId } : {}) });
+    const receipt: GatewayReceipt = { operationId, provider, model, status: response.status, ...(gatewayLogId ? { gatewayLogId } : {}) };
+    budget.record?.(receipt);
+    if (response.ok && provider === "openrouter") {
+      const result = await response.clone().json().catch(() => null);
+      const choice = result?.choices?.[0];
+      if (typeof choice?.finish_reason === "string") receipt.finishReason = choice.finish_reason;
+      if (typeof choice?.message?.content === "string") receipt.visibleCharacters = choice.message.content.length;
+      const reasoning = result?.usage?.completion_tokens_details?.reasoning_tokens;
+      if (Number.isSafeInteger(reasoning) && reasoning >= 0) receipt.reasoningTokens = reasoning;
+    }
     if (response.ok && provider === "gemini") {
       const result = await response.clone().json().catch(() => null);
       const usage = result?.usageMetadata;
@@ -114,6 +126,6 @@ export function createGatewayModel(provider: ConversationProvider, config: Gatew
   if (provider === "gemini") return createGoogle({ apiKey: key, baseURL, headers, fetch: guardedFetch })(model);
   return createOpenAICompatible({
     name: "openrouter", apiKey: key, baseURL, headers, fetch: guardedFetch, supportsStructuredOutputs: true,
-    transformRequestBody: body => ({ ...body, model, plugins: [], provider: { allow_fallbacks: false, require_parameters: true, max_price: { prompt: 0, completion: 0, request: 0, image: 0 } } }),
+    transformRequestBody: body => ({ ...body, model, ...(model === defaultOpenRouterModel ? { reasoning: { max_tokens: 1024 } } : {}), plugins: [], provider: { allow_fallbacks: false, require_parameters: true, max_price: { prompt: 0, completion: 0, request: 0, image: 0 } } }),
   })(model);
 }

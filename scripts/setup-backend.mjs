@@ -44,7 +44,7 @@ const values = {
   ACCOUNT_EMAIL_ENABLED: mailEnabled ? "true" : "false",
   GEMINI_ALLOW_PAID: env.GEMINI_ALLOW_PAID ?? "false",
   GEMINI_BUDGET_MICROUSD: env.GEMINI_BUDGET_MICROUSD ?? "0",
-  ...Object.fromEntries(["GEMINI_API_KEY", "CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_GATEWAY_ID", "CLOUDFLARE_GATEWAY_TOKEN", "OPENROUTER_API_KEY", "OPENROUTER_MODEL", "OPENROUTER_GATEWAY_PATH", "AI_CONVERSATION_PROVIDER", "QLOO_API_KEY", "QLOO_API_URL"].filter(name => env[name]).map(name => [name, env[name]])),
+  ...Object.fromEntries(["GEMINI_API_KEY", "CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_GATEWAY_ID", "CLOUDFLARE_GATEWAY_TOKEN", "OPENROUTER_API_KEY", "OPENROUTER_MODEL", "OPENROUTER_GATEWAY_PATH", "AI_CONVERSATION_PROVIDER", "QLOO_API_KEY", "QLOO_API_URL", "QLOO_TAG_ID_FIELD"].filter(name => env[name]).map(name => [name, env[name]])),
 };
 if (!existingPrivate.stdout?.trim() || existingPrivate.status !== 0) values.JWT_PRIVATE_KEY = privateKey;
 if (!existingJwks.stdout?.trim() || existingJwks.status !== 0) values.JWKS = JSON.stringify({ keys: [{ ...publicJwk, use: "sig", alg: "RS256" }] });
