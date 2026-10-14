@@ -61,4 +61,11 @@ test("audio CLI version and rejected input run before private configuration or i
   });
   assert.equal(limit.status, 2);
   assert.match(limit.stdout, /between 1 and 11/u);
+  const mixed = spawnSync(process.execPath, [script, "--check", "--dry-run"], {
+    cwd: tmpdir(),
+    encoding: "utf8",
+  });
+  assert.equal(mixed.status, 2);
+  assert.match(mixed.stdout, /exactly one mode/u);
+  assert.equal(mixed.stderr, "");
 });

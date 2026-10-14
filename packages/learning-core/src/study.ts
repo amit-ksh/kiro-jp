@@ -2,7 +2,7 @@ import { assessFixed, grammarIntervals, recallIntervals, type Assessment, type P
 export interface StudySpan { start: number; end: number; localDay: string; offsetMinutes: number; }
 export interface StudyEvent {
   eventId: string; sessionId: string; deviceId: string; sequence: number; lessonId: string; lessonVersion: number; occurredAt: number; localDay: string; timezone: string; offsetMinutes: number;
-  kind: "started" | "studied" | "attempted" | "advanced" | "activity" | "savedPhrase" | "conversationActivity" | "conversationTurn";
+  kind: "started" | "studied" | "attempted" | "advanced" | "activity" | "savedPhrase" | "conversationActivity" | "conversationTurn" | "audioActivity";
   stepId: string; input?: string; dontKnow?: boolean; support: SupportFlag[]; spans: StudySpan[];
   context?: { theme: string; band: "foundations" | "early-n5" | "early-n4"; romaji: boolean; furigana: boolean; translations: boolean };
 }
@@ -31,6 +31,7 @@ export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, no
     return;
   }
   if (event.lessonId !== lesson.id || event.lessonVersion !== lesson.version) throw new Error("Unsupported lesson version.");
+  if(event.kind==="audioActivity" && (event.stepId!=="recap" || !["listening","speaking"].includes(event.input??"") || !event.spans.length || event.support.length || event.context || event.dontKnow!==undefined))throw new Error("Invalid audio practice activity.");
   const step = lessonSteps(lesson).find(item => item.id === event.stepId) ?? (exerciseForStep(lesson, event.stepId) ? { kind: "exercise" } : undefined);
   if (!step || (event.kind === "started" && (event.stepId !== "goal" || !event.context)) || (event.kind === "attempted" && step.kind !== "exercise") || (event.kind === "savedPhrase" && !lesson.grammar.examples.some(example => example.id === event.input)) || (event.context && event.context.theme.length > 120)) throw new Error("Invalid lesson step.");
 }

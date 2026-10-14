@@ -16,6 +16,14 @@
   "sampleRate": 24000,
   "sha256": "e2d9986546aa65b4385749f5aaa5309f8912aece4c400044635fe927518fcbf4",
   "createdAt": "2026-10-14T01:36:28.205Z",
-  "languageCheck": "pending",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-a38ed12963af37c7cc074d1ecb4ab3be6e298163c287d0ec072fa561469c69a5",
+    "checkedAt": "2026-10-14T02:12:59.442Z",
+    "audioHash": "e2d9986546aa65b4385749f5aaa5309f8912aece4c400044635fe927518fcbf4",
+    "kana": "ほん",
+    "matches": true
+  },
   "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
 }

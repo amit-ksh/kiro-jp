@@ -1,0 +1,29 @@
+{
+  "id": "kana-3",
+  "kind": "kana",
+  "text": "お",
+  "display": "お",
+  "meaning": "o",
+  "lessonId": "requests",
+  "lessonVersion": 1,
+  "scriptHash": "0c44cee0cc0c62d5e97a0d4628a594a6af3c9b8bea0309b2f2881c6c2cd4aafb",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-requests-v1-kana-3-0c44cee0cc0c",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1,
+  "sampleRate": 24000,
+  "sha256": "522ac04e5ff8b11e5a72874e8ffca3b24e59f19946d79165b14e5f5be89d558f",
+  "createdAt": "2026-10-14T02:11:58.230Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-a38ed12963af37c7cc074d1ecb4ab3be6e298163c287d0ec072fa561469c69a5",
+    "checkedAt": "2026-10-14T02:12:59.445Z",
+    "audioHash": "522ac04e5ff8b11e5a72874e8ffca3b24e59f19946d79165b14e5f5be89d558f",
+    "kana": "お",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

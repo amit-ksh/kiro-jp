@@ -1,0 +1,29 @@
+{
+  "id": "price-yen",
+  "kind": "sentence",
+  "text": "ひゃくえんです。",
+  "display": "100円です。",
+  "meaning": "It is 100 yen.",
+  "lessonId": "requests",
+  "lessonVersion": 1,
+  "scriptHash": "ff155a850a2cddc60a0638960d9bdab511488ef18b522edabb722a7c78c44abc",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-requests-v1-price-yen-ff155a850a2c",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.8,
+  "sampleRate": 24000,
+  "sha256": "b41857a969d62fb65bafcce42f6b94a27428765b9e66ae37c15532e130287e96",
+  "createdAt": "2026-10-14T02:12:09.948Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-a38ed12963af37c7cc074d1ecb4ab3be6e298163c287d0ec072fa561469c69a5",
+    "checkedAt": "2026-10-14T02:12:59.447Z",
+    "audioHash": "b41857a969d62fb65bafcce42f6b94a27428765b9e66ae37c15532e130287e96",
+    "kana": "ひゃくえんです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

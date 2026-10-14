@@ -10,10 +10,11 @@ if (argv.length === 1 && ["--version", "-v", "-V"].includes(argv[0])) {
 }
 const help = () => {
   console.log(
-    `bin: ${JSON.stringify(fileURLToPath(import.meta.url))}\ndescription: Prepare source-checked lesson audio through the guarded Gateway.\nflags: --generate, --dry-run (default), --limit <1..11> (default 11), --help\nexamples[2]:\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --dry-run\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --generate --limit 4`,
+    `bin: ${JSON.stringify(fileURLToPath(import.meta.url))}\ndescription: Prepare source-checked lesson audio through the guarded Gateway.\nflags: --generate, --check, --dry-run (default), --limit <1..11> (default 11), --help\nexamples[3]:\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --dry-run\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --generate --limit 4\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --check`,
   );
 };
 let generate = false,
+  check = false,
   limit = 11;
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--help") {
@@ -21,18 +22,28 @@ for (let i = 0; i < argv.length; i++) {
     process.exit(0);
   }
   if (argv[i] === "--generate") generate = true;
+  else if (argv[i] === "--check") check = true;
   else if (argv[i] === "--dry-run") generate = false;
   else if (argv[i] === "--limit" && /^[1-9][0-9]*$/u.test(argv[i + 1] ?? "")) {
     limit = Number(argv[++i]);
   } else {
     console.log(
-      'error: "Invalid input; use --generate, --dry-run, --limit <1..11>, or --help."',
+      'error: "Invalid input; use --generate, --check, --dry-run, --limit <1..11>, or --help."',
     );
     process.exit(2);
   }
 }
 if (limit < 1 || limit > 11) {
   console.log('error: "--limit must be between 1 and 11."');
+  process.exit(2);
+}
+if (
+  argv.filter((arg) => ["--generate", "--check", "--dry-run"].includes(arg))
+    .length > 1
+) {
+  console.log(
+    'error: "Use exactly one mode: --generate, --check, or --dry-run."',
+  );
   process.exit(2);
 }
 const rows = [];
@@ -79,7 +90,7 @@ try {
   let client,
     env = process.env;
   const model = "gemini-3.8-flash-lite-tts";
-  if (generate) {
+  if (generate || check) {
     const source = [".env", ".env.local", "starter-japanese/.env"].find(
       (file) => fs.existsSync(file),
     );
@@ -124,6 +135,7 @@ try {
       });
       continue;
     }
+    if (check) throw new Error("GENERATE_MISSING_AUDIO_BEFORE_CHECK");
     if (!generate) {
       rows.push({ id: clip.id, kind: clip.kind, status: "needs-generation" });
       continue;
@@ -221,6 +233,15 @@ try {
   console.log(
     `count: ${rows.length}\nclips[${rows.length}]{id,kind,status}:\n${rows.map((row) => `  ${row.id},${row.kind},${row.status}`).join("\n")}`,
   );
+  if (check) {
+    const { checkLessonAudio } = await import("./lib/check-lesson-audio.mjs");
+    const results = await checkLessonAudio({ client, env, directory, clips });
+    console.log(
+      `checks[${results.length}]{id,status}:\n${results.map((row) => `  ${row.id},${row.status}`).join("\n")}`,
+    );
+    if (results.some((row) => row.status !== "transcript-consistent"))
+      process.exitCode = 1;
+  }
 } catch (error) {
   console.log(
     `error: ${JSON.stringify(/^[A-Z_]+$/u.test(error.message) ? error.message : "PREPARATION_FAILED_PRIVATE_DETAILS_WITHHELD")}\nhelp: "Keep prepared candidates; inspect the budget and existing reservation before retrying generation."`,

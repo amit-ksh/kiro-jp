@@ -1,0 +1,29 @@
+{
+  "id": "request-book",
+  "kind": "sentence",
+  "text": "ほんをください。",
+  "display": "本をください。",
+  "meaning": "A book, please.",
+  "lessonId": "requests",
+  "lessonVersion": 1,
+  "scriptHash": "e602bc58e4ed21f73e70ae17fb406aa66b447b7768c75076cd8d5d0b7a61cad0",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-requests-v1-request-book-e602bc58e4ed",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.4,
+  "sampleRate": 24000,
+  "sha256": "aef107e0974defe63f1ed1d0cd22154b3fcbac78f99eee6e230c43a8e33bedb8",
+  "createdAt": "2026-10-14T02:12:07.040Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-a38ed12963af37c7cc074d1ecb4ab3be6e298163c287d0ec072fa561469c69a5",
+    "checkedAt": "2026-10-14T02:12:59.447Z",
+    "audioHash": "aef107e0974defe63f1ed1d0cd22154b3fcbac78f99eee6e230c43a8e33bedb8",
+    "kana": "ほんをください",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

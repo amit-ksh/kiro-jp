@@ -26,10 +26,14 @@ import { SentenceView } from "../../features/lessons/SentenceView";
 import { useStudyTime } from "../../features/lessons/useStudyTime";
 import { LessonConversation } from "../../features/conversation/LessonConversation";
 import { SentenceFeedback } from "../../features/lessons/SentenceFeedback";
+import { AudioPlay } from "../../features/speech/AudioPlay";
+import { lessonAudio } from "../../features/speech/lesson-audio";
+import { useSpeech } from "../../features/speech/SpeechProvider";
 
 export default function Lesson() {
   const { sessionId = "" } = useLocalSearchParams<{ sessionId: string }>();
   const study = useStudy();
+  const speech = useSpeech();
   const colors = useColors();
   const events = useMemo(
     () => study.events.filter((event) => event.sessionId === sessionId),
@@ -184,7 +188,16 @@ export default function Lesson() {
     projection.steps.findIndex((item) => item.id === step.id) + 1;
   const sentence = (
     value: (typeof requestsLesson.grammar.examples)[number],
-  ) => <SentenceView key={value.id} sentence={value} {...settings} />;
+  ) => (
+    <View key={value.id} style={{ gap: 8 }}>
+      <SentenceView sentence={value} {...settings} />
+      <AudioPlay
+        source={lessonAudio[value.id]}
+        sessionId={sessionId}
+        label={value.text}
+      />
+    </View>
+  );
   return (
     <Screen
       title={requestsLesson.title}
@@ -215,7 +228,7 @@ export default function Lesson() {
               </Body>
               <Body muted>
                 These text exercises are ready offline. The tutor opens after
-                your lesson; speaking practice is being connected next.
+                your lesson. Listen and record short attempts with this session.
               </Body>
               <Button
                 label="Begin learning"
@@ -240,7 +253,23 @@ export default function Lesson() {
               <Body>{word.readingNote}</Body>
               <Body>{word.mnemonic}</Body>
               <Body muted>Memory aid; not an etymology.</Body>
+              <AudioPlay
+                source={lessonAudio[`word-${word.id}`]}
+                sessionId={sessionId}
+                label={word.word}
+              />
               {sentence(word.example)}
+              <Button
+                label="Practise this word aloud"
+                secondary
+                onPress={() => {
+                  time.pause();
+                  router.push({
+                    pathname: "/(learning)/speech",
+                    params: { sessionId, cueId: `word-${word.id}` },
+                  });
+                }}
+              />
               <Button
                 label="I studied this word"
                 onPress={() => {
@@ -254,12 +283,17 @@ export default function Lesson() {
           {step.kind === "kana" && (
             <>
               <Title>A little hiragana.</Title>
-              {requestsLesson.kana.map((kana) => (
+              {requestsLesson.kana.map((kana, index) => (
                 <View key={kana.character} style={{ gap: 6 }}>
                   <Body style={{ fontSize: 30 }}>
                     {kana.character} · {kana.sound}
                   </Body>
                   <Body>{kana.note}</Body>
+                  <AudioPlay
+                    source={lessonAudio[`kana-${index + 1}`]}
+                    sessionId={sessionId}
+                    label={kana.character}
+                  />
                 </View>
               ))}
               <Body>
@@ -308,6 +342,23 @@ export default function Lesson() {
                       : "Use the pattern"}
               </Title>
               <Body>{exercise.prompt}</Body>
+              {exercise.kind === "sentence" && (
+                <Button
+                  label="Practise a spoken answer"
+                  secondary
+                  onPress={() => {
+                    time.pause();
+                    router.push({
+                      pathname: "/(learning)/speech",
+                      params: {
+                        sessionId,
+                        cueId: "request-water",
+                        returnStep: exercise.id,
+                      },
+                    });
+                  }}
+                />
+              )}
               {exercise.japanese && (
                 <Text
                   style={[
@@ -472,8 +523,12 @@ export default function Lesson() {
                 .
               </Body>
               <Body>
-                Speaking: not practised. Finishing text exercises does not award
-                mastery.
+                {speech.recordings.some(
+                  (record) => record.sessionId === sessionId,
+                )
+                  ? "Speaking: recorded practice, awaiting assessment. "
+                  : "Speaking: not practised. "}
+                Finishing text exercises does not award mastery.
               </Body>
               <Body style={{ fontSize: 23, fontWeight: "700" }}>
                 {requestsLesson.grammar.pattern}
@@ -512,6 +567,16 @@ export default function Lesson() {
                   />
                 </View>
               ))}
+              <Button
+                label="Practise words and sentences aloud"
+                onPress={() => {
+                  time.pause();
+                  router.push({
+                    pathname: "/(learning)/speech",
+                    params: { sessionId, cueId: "request-water" },
+                  });
+                }}
+              />
               <LessonConversation
                 sessionId={sessionId}
                 theme={snapshot.theme}

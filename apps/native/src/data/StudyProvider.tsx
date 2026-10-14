@@ -12,7 +12,7 @@ type EventInput = Pick<StudyEvent, "sessionId" | "kind" | "stepId"> & Partial<Pi
 export type CachedChat = NonNullable<FunctionReturnType<typeof api.conversation.get>>;
 type SavedPhrases = FunctionReturnType<typeof api.references.list>;
 type SentenceFeedback = Record<string, FunctionReturnType<typeof api.assessment.list>[number]>;
-type State = { events: StudyEvent[]; sentenceFeedback:SentenceFeedback; checked:Record<string,Assessment>; phrases: SavedPhrases; chats: Record<string, CachedChat>; cacheChat: (chat: CachedChat) => Promise<void>; drafts: Record<string, string>; saveDraft: (sessionId: string, stepId: string, input: string) => Promise<void>; loading: boolean; pending: number; error: string; append: (input: EventInput) => Promise<StudyEvent>; retry: () => void };
+type State = { accountId:string; events: StudyEvent[]; sentenceFeedback:SentenceFeedback; checked:Record<string,Assessment>; phrases: SavedPhrases; chats: Record<string, CachedChat>; cacheChat: (chat: CachedChat) => Promise<void>; drafts: Record<string, string>; saveDraft: (sessionId: string, stepId: string, input: string) => Promise<void>; loading: boolean; pending: number; error: string; append: (input: EventInput) => Promise<StudyEvent>; retry: () => void };
 const Context = createContext<State | null>(null);
 export function StudyProvider({ accountId, cloudReady, children }: { accountId: string; cloudReady: boolean; children: ReactNode }) {
   const [events, setEvents] = useState<StudyEvent[]>([]), [loading, setLoading] = useState(true), [cursor, setCursor] = useState(0), [pending, setPending] = useState(0), [error, setError] = useState(""), [retryCount, setRetryCount] = useState(0);
@@ -125,6 +125,6 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
     })().catch(() => { if (epoch === epochRef.current) setError("Saved on this phone. Study synchronization will retry when you reconnect."); }).finally(() => { if (epoch === epochRef.current) { syncing.current = false; } });
   }, [cloudReady, loading, pending, retryCount, events, enqueue, refresh, push]);
   useEffect(() => { const timer = setInterval(() => setRetryCount(count => count + 1), 30_000); return () => clearInterval(timer); }, []);
-  return <Context.Provider value={{ events, sentenceFeedback, checked, phrases, chats, cacheChat, drafts, saveDraft, loading, pending, error, append, retry: () => setRetryCount(count => count + 1) }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ accountId,events, sentenceFeedback, checked, phrases, chats, cacheChat, drafts, saveDraft, loading, pending, error, append, retry: () => setRetryCount(count => count + 1) }}>{children}</Context.Provider>;
 }
 export function useStudy() { const state = useContext(Context); if (!state) throw new Error("StudyProvider is required."); return state; }

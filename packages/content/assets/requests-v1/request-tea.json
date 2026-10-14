@@ -1,0 +1,29 @@
+{
+  "id": "request-tea",
+  "kind": "sentence",
+  "text": "おちゃをください。",
+  "display": "お茶をください。",
+  "meaning": "Tea, please.",
+  "lessonId": "requests",
+  "lessonVersion": 1,
+  "scriptHash": "87e1cac98c59c7a851c085cea5c9fded12609d4de81264cd48d2e9d9b883c1ee",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-requests-v1-request-tea-87e1cac98c59",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.84,
+  "sampleRate": 24000,
+  "sha256": "cfdc7f46fe672f4b9a022a5a912ba0aa6c359f751e7fc49fc2f52083918400d5",
+  "createdAt": "2026-10-14T02:12:04.052Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-a38ed12963af37c7cc074d1ecb4ab3be6e298163c287d0ec072fa561469c69a5",
+    "checkedAt": "2026-10-14T02:12:59.446Z",
+    "audioHash": "cfdc7f46fe672f4b9a022a5a912ba0aa6c359f751e7fc49fc2f52083918400d5",
+    "kana": "おちゃをください",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}
