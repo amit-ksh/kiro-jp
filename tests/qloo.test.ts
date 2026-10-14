@@ -1,5 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import type { QlooCacheEntry } from "../packages/backend/convex/lib/qloo.ts";
 import {
   createQlooSession,
   decodeEntities,
@@ -111,4 +113,77 @@ test("open tag-item schema remains pending until its provisioned field is config
     (await qloo.findInterestTags("shrines")).status,
     "schemaPending",
   );
+});
+test("decoded private context is reused across turns while dislikes and types remain separate", async () => {
+  const entries = new Map<string, QlooCacheEntry>();
+  let dispatched = 0;
+  const cache = {
+    key: (value: string) => createHash("sha256").update(value).digest("hex"),
+    read: async (key: string) => entries.get(key) ?? null,
+    write: async (key: string, entry: QlooCacheEntry) => {
+      entries.set(key, entry);
+    },
+  };
+  const transport: typeof fetch = async (input) => {
+    dispatched++;
+    const url = new URL(String(input));
+    return Response.json(
+      url.pathname === "/search"
+        ? { success: true, results: [entity] }
+        : { success: true, results: { entities: [entity] } },
+    );
+  };
+  const config = {
+    baseUrl: "https://hackathon.api.qloo.com",
+    apiKey: "synthetic-key",
+  };
+  const first = createQlooSession(config, transport, cache);
+  await first.resolveFavorite("Synthetic book", "urn:entity:book");
+  await first.recommendCulturalContexts(
+    "urn:entity:book",
+    [entity.entity_id],
+    [],
+  );
+  assert.equal(dispatched, 2);
+  const second = createQlooSession(config, transport, cache);
+  await second.resolveFavorite("Synthetic book", "urn:entity:book");
+  assert.equal(
+    (
+      await second.recommendCulturalContexts(
+        "urn:entity:book",
+        [entity.entity_id],
+        [],
+      )
+    ).items.length,
+    1,
+  );
+  assert.equal(dispatched, 2);
+  assert(second.traces.every((trace) => trace.status === "cached"));
+  assert.equal(
+    (
+      await second.recommendCulturalContexts(
+        "urn:entity:book",
+        [entity.entity_id],
+        [],
+        [entity.entity_id],
+      )
+    ).items.length,
+    0,
+  );
+  assert.equal(dispatched, 3);
+  for (const entry of entries.values()) entry.expiresAt = Date.now() - 1;
+  const expired = createQlooSession(config, transport, cache);
+  await expired.resolveFavorite("Synthetic book", "urn:entity:book");
+  assert.equal(dispatched, 4);
+  const unconfigured = createQlooSession(
+    { baseUrl: config.baseUrl },
+    transport,
+    cache,
+  );
+  assert.equal(
+    (await unconfigured.resolveFavorite("Synthetic book", "urn:entity:book"))
+      .status,
+    "notConfigured",
+  );
+  assert.equal(dispatched, 4);
 });

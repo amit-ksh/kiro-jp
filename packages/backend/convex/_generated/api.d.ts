@@ -28,6 +28,7 @@ import type * as lib_ownership from "../lib/ownership.js";
 import type * as lib_qloo from "../lib/qloo.js";
 import type * as profile from "../profile.js";
 import type * as profileValues from "../profileValues.js";
+import type * as qlooCache from "../qlooCache.js";
 import type * as referenceAI from "../referenceAI.js";
 import type * as references from "../references.js";
 import type * as study from "../study.js";
@@ -60,6 +61,7 @@ declare const fullApi: ApiFromModules<{
   "lib/qloo": typeof lib_qloo;
   profile: typeof profile;
   profileValues: typeof profileValues;
+  qlooCache: typeof qlooCache;
   referenceAI: typeof referenceAI;
   references: typeof references;
   study: typeof study;

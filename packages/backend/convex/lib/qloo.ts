@@ -23,6 +23,17 @@ export interface QlooConfig {
   apiKey?: string;
   tagIdField?: "id" | "tag_id";
 }
+export interface QlooCacheEntry {
+  items: unknown[];
+  inputs: string[];
+  checkedAt: number;
+  expiresAt: number;
+}
+export interface QlooCache {
+  read: (key: string) => Promise<QlooCacheEntry | null>;
+  write: (key: string, entry: QlooCacheEntry) => Promise<void>;
+  key: (input: string) => string;
+}
 export type QlooResult<T> =
   | { status: "ready"; items: T[]; inputs: string[]; checkedAt: number }
   | {
@@ -88,6 +99,7 @@ export function decodeTags(
 export function createQlooSession(
   config: QlooConfig,
   transport: typeof fetch = fetch,
+  cache?: QlooCache,
 ) {
   const root = config.baseUrl.replace(/\/$/u, "");
   if (
@@ -115,9 +127,44 @@ export function createQlooSession(
     params: Record<string, string>,
     inputs: string[],
     decode: (data: Record<string, unknown>) => T[],
+    variant = "",
   ): Promise<QlooResult<T>> {
     if (!root || !config.apiKey)
       return { status: "notConfigured", items: [], inputs };
+    const cacheKey = cache?.key(
+      JSON.stringify([
+        root,
+        operation,
+        config.tagIdField ?? "",
+        Object.entries(params).sort(([a], [b]) => a.localeCompare(b)),
+        variant,
+      ]),
+    );
+    if (cache && cacheKey) {
+      try {
+        const stored = await cache.read(cacheKey);
+        if (
+          stored &&
+          stored.expiresAt > Date.now() &&
+          stored.checkedAt <= Date.now() + 300_000
+        ) {
+          traces.push({
+            operation,
+            inputs: stored.inputs,
+            status: "cached",
+            ids: stored.items.map((item) => String(record(item).id)),
+          });
+          return {
+            status: "ready",
+            items: stored.items as T[],
+            inputs: stored.inputs,
+            checkedAt: stored.checkedAt,
+          };
+        }
+      } catch {
+        /* Cache failure does not block a bounded live request. */
+      }
+    }
     if (calls >= 3) return { status: "limitReached", items: [], inputs };
     calls += 1;
     try {
@@ -137,13 +184,26 @@ export function createQlooSession(
       const data = record(JSON.parse(text));
       if (data.success !== true) throw new Error("Invalid Qloo envelope.");
       const items = decode(data);
+      const checkedAt = Date.now();
+      if (cache && cacheKey) {
+        try {
+          await cache.write(cacheKey, {
+            items,
+            inputs,
+            checkedAt,
+            expiresAt: checkedAt + 86_400_000,
+          });
+        } catch {
+          /* The live result remains useful without a cache write. */
+        }
+      }
       traces.push({
         operation,
         inputs,
         status: "ready",
         ids: items.map((item) => String(record(item).id)),
       });
-      return { status: "ready", items, inputs, checkedAt: Date.now() };
+      return { status: "ready", items, inputs, checkedAt };
     } catch {
       traces.push({ operation, inputs, status: "unavailable", ids: [] });
       return { status: "unavailable", items: [], inputs };
@@ -231,6 +291,7 @@ export function createQlooSession(
                 (dislike) => dislike.toLowerCase() === item.name.toLowerCase(),
               ),
           ),
+        JSON.stringify([...dislikes].sort()),
       );
       recommendations.push(...result.items);
       return result;
