@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import * as Crypto from "expo-crypto";
-import { lessonCatalog, requestsLesson } from "@packages/content";
+import { lessonCatalog, curriculum } from "@packages/content";
 import {
   localDayAt,
   reviewQueue,
@@ -29,19 +29,20 @@ export default function SessionPreview() {
     [error, setError] = useState("");
   const starting = useRef(false),
     selectedSessionId = useRef<string | null>(null);
-  const lesson =
-    lessonCatalog.find((item) => item.id === lessonId) ?? lessonCatalog[0];
+  const lesson = lessonCatalog.find((item) => item.id === lessonId);
+  if (!lesson) return <Screen title="Lesson unavailable"><Panel><Body>This lesson is not in the current library. Choose an available lesson; your saved progress is retained.</Body><Button label="Show lessons" onPress={() => router.replace("/(learning)/(tabs)/lessons")} /></Panel></Screen>;
+  const preparedLesson = curriculum.get(lesson.id);
   const unfinished = study.events
     .filter(
       (event) =>
         event.kind === "started" &&
-        event.lessonId === requestsLesson.id &&
-        event.lessonVersion === requestsLesson.version,
+        event.lessonId === preparedLesson?.id &&
+        event.lessonVersion === preparedLesson?.version,
     )
     .filter(
       (event) =>
-        !sessionProjection(
-          requestsLesson,
+        preparedLesson && !sessionProjection(
+          preparedLesson,
           study.events.filter((item) => item.sessionId === event.sessionId),
           study.checked,
         ).finishedText,
@@ -76,6 +77,7 @@ export default function SessionPreview() {
     setBusy(true);
     setError("");
     try {
+      if (!preparedLesson) throw new Error("Checked lesson not available.");
       const sessionId =
         selectedSessionId.current ?? resume?.sessionId ?? Crypto.randomUUID();
       selectedSessionId.current = sessionId;
@@ -87,6 +89,8 @@ export default function SessionPreview() {
         await study.append({
           sessionId,
           kind: "started",
+          lessonId: preparedLesson.id,
+          lessonVersion: preparedLesson.version,
           stepId: "goal",
           context: {
             theme,
@@ -116,13 +120,13 @@ export default function SessionPreview() {
     <Screen title={lesson.title}>
       <Panel>
         <Title>
-          {lesson.id === "requests" ? requestsLesson.outcome : lesson.outcome}
+          {preparedLesson?.outcome ?? lesson.outcome}
         </Title>
         <Body>{lesson.kanji.join(" · ")}</Body>
         <Body>{lesson.pattern}</Body>
-        {lesson.id === "requests" ? (
+        {preparedLesson ? (
           <>
-            <Body>{theme} · four kanji, three kana and a useful request.</Body>
+            <Body>{theme} · {preparedLesson.words.length} kanji, {preparedLesson.kana.length} kana and a useful pattern.</Body>
             <Body>
               {firstReviews
                 ? `First, ${firstReviews} ${savedReview ? "remaining questions in your saved review set" : "due reviews"}. Then ${resume ? "resume your saved lesson" : "learn the kanji, kana and grammar"}, practise pronunciation and open your interest-led conversation.`

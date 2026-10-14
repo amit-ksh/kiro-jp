@@ -2,7 +2,7 @@
 import { v } from "convex/values";
 import { internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import { actionGateway } from "./lib/ai/service";
 import { generateSentenceFeedback } from "./lib/ai/sentence";
 import type { GatewayReceipt } from "./lib/ai/providers";
@@ -13,10 +13,8 @@ export const run = internalAction({
     if (!row) return;
     const receipts: GatewayReceipt[] = [];
     try {
-      if (
-        row.card.sourceId !== requestsLesson.id ||
-        row.card.sourceVersion !== requestsLesson.version
-      )
+      const lesson = curriculum.get(row.card.sourceId, row.card.sourceVersion);
+      if (!lesson)
         throw new Error("Source lesson unavailable.");
       const model = actionGateway(
         ctx,
@@ -31,7 +29,7 @@ export const run = internalAction({
       const result = await generateSentenceFeedback(
         model,
         { eventId: row.eventId, input: row.source.input },
-        requestsLesson,
+        lesson,
         row.card.exercise,
       );
       if (

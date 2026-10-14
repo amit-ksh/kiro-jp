@@ -21,7 +21,7 @@ export function assessFixed(exercise: LessonExercise, input: string, support: re
   const assisted = support.length > 0 || exercise.kind === "tiles";
   const detail = { ...base, normalized, inputScript, kanaEvidence: exercise.facet === "kana" && accepted && !assisted, targetObserved: (exercise.facet === "grammar" || exercise.facet === "sentence") && accepted };
   if (accepted) return { ...detail, outcome: assisted ? "assisted" : "independent" };
-  if (exercise.alternatives?.some(answer => normalizeJapanese(answer) === normalized || (roman && normalizeRomaji(answer) === normalizeRomaji(input)))) return { ...detail, outcome: "validAlternative", explanation: "That is a useful request too. Try today's をください pattern next; it has not been demonstrated yet." };
+  if (exercise.alternatives?.some(answer => normalizeJapanese(answer) === normalized || (roman && normalizeRomaji(answer) === normalizeRomaji(input)))) return { ...detail, outcome: "validAlternative", explanation: "That is a useful sentence too. Try today's target pattern next; it has not been demonstrated yet." };
   if (exercise.kind === "sentence" && input.trim()) return { ...detail, outcome: "pending", explanation: "Your sentence is saved and awaiting feedback. A new sentence needs assessment before it can demonstrate this pattern." };
   return { ...detail, outcome: "incorrect" };
 }

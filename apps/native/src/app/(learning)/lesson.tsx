@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { Text, View } from "react-native";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import {
   sessionProjection,
   exerciseForStep,
   type Assessment,
+  type PreparedLesson,
   type SupportFlag,
 } from "@packages/learning-core";
 import { useStudy } from "../../data/StudyProvider";
@@ -27,11 +28,19 @@ import { useStudyTime } from "../../features/lessons/useStudyTime";
 import { LessonConversation } from "../../features/conversation/LessonConversation";
 import { SentenceFeedback } from "../../features/lessons/SentenceFeedback";
 import { AudioPlay } from "../../features/speech/AudioPlay";
-import { lessonAudio } from "../../features/speech/lesson-audio";
+import { preparedLessonAudio } from "../../features/speech/lesson-audio";
 import { useSpeech } from "../../features/speech/SpeechProvider";
 
 export default function Lesson() {
   const { sessionId = "" } = useLocalSearchParams<{ sessionId: string }>();
+  const study = useStudy();
+  const lesson = curriculum.forSession(study.events, sessionId);
+  if (study.loading) return <Loading label="Opening your saved lesson…" />;
+  if (!lesson) return <Screen title="Find your session"><Panel><Body>This saved lesson version is not available here. Reconnect or update the app; your progress is retained.</Body><Button label="Go to Home" onPress={() => router.replace("/(learning)/(tabs)")} /></Panel></Screen>;
+  return <LessonSession key={sessionId} sessionId={sessionId} lesson={lesson} />;
+}
+function LessonSession({ sessionId, lesson }: { sessionId: string; lesson: PreparedLesson }) {
+  const lessonAudio = preparedLessonAudio(lesson.id, lesson.version);
   const study = useStudy();
   const speech = useSpeech();
   const colors = useColors();
@@ -40,8 +49,8 @@ export default function Lesson() {
     [study.events, sessionId],
   );
   const projection = useMemo(
-    () => sessionProjection(requestsLesson, events, study.checked),
-    [events, study.checked],
+    () => sessionProjection(lesson, events, study.checked),
+    [events, study.checked, lesson],
   );
   const step = projection.next,
     snapshot = events.find((event) => event.kind === "started")?.context;
@@ -53,7 +62,7 @@ export default function Lesson() {
     [error, setError] = useState(""),
     [tiles, setTiles] = useState<number[]>([]);
   const time = useStudyTime(sessionId, step.id);
-  const exercise = exerciseForStep(requestsLesson, step.id);
+  const exercise = exerciseForStep(lesson, step.id);
   const lastAttempt = projection.attempts
     .filter((attempt) => attempt.event.stepId === step.id)
     .slice(-1)[0];
@@ -97,7 +106,7 @@ export default function Lesson() {
         ),
       );
   };
-  const word = requestsLesson.words.find((item) => item.id === step.targetId);
+  const word = lesson.words.find((item) => item.id === step.targetId);
   const settings = {
     romaji: snapshot?.romaji ?? true,
     readings: snapshot?.furigana ?? true,
@@ -140,7 +149,7 @@ export default function Lesson() {
         ...(study.drafts[`${sessionId}:${step.id}:speech-support`] === "transcriptEdited" && answer === draft ? { support: [...new Set([...support, "transcriptEdited" as const])] } : {}),
         dontKnow,
       });
-      const assessed = sessionProjection(requestsLesson, [
+      const assessed = sessionProjection(lesson, [
         ...events,
         event,
       ]).attempts.find(
@@ -188,7 +197,7 @@ export default function Lesson() {
   const position =
     projection.steps.findIndex((item) => item.id === step.id) + 1;
   const sentence = (
-    value: (typeof requestsLesson.grammar.examples)[number],
+    value: (typeof lesson.grammar.examples)[number],
   ) => (
     <View key={value.id} style={{ gap: 8 }}>
       <SentenceView sentence={value} {...settings} />
@@ -201,7 +210,7 @@ export default function Lesson() {
   );
   return (
     <Screen
-      title={requestsLesson.title}
+      title={lesson.title}
       subtitle={`${snapshot.theme} · Step ${position} of ${projection.steps.length}`}
     >
       <View onTouchStart={time.interact}>
@@ -217,13 +226,13 @@ export default function Lesson() {
           </Body>
           {step.kind === "goal" && (
             <>
-              <Title>A request you can use today.</Title>
+              <Title>Language you can use today.</Title>
               <Body>
                 By the end, you&apos;ll be able to{" "}
-                {requestsLesson.outcome.toLowerCase()}.
+                {lesson.outcome.toLowerCase()}.
               </Body>
               <Body>
-                Learn four kanji, a little kana and one pattern. Then bring
+                Learn {lesson.words.length} kanji, a little kana and one pattern. Then bring
                 these words into a conversation about{" "}
                 {snapshot.theme.toLowerCase()}.
               </Body>
@@ -284,7 +293,7 @@ export default function Lesson() {
           {step.kind === "kana" && (
             <>
               <Title>A little hiragana.</Title>
-              {requestsLesson.kana.map((kana, index) => (
+              {lesson.kana.map((kana, index) => (
                 <View key={kana.character} style={{ gap: 6 }}>
                   <Body style={{ fontSize: 30 }}>
                     {kana.character} · {kana.sound}
@@ -315,12 +324,12 @@ export default function Lesson() {
             <>
               <Title>Request an item politely.</Title>
               <Body style={{ fontSize: 24, fontWeight: "700" }}>
-                {requestsLesson.grammar.pattern}
+                {lesson.grammar.pattern}
               </Body>
-              <Body>{requestsLesson.grammar.explanation}</Body>
-              {requestsLesson.grammar.examples.map(sentence)}
-              <Body>{requestsLesson.grammar.register}</Body>
-              <Body>{requestsLesson.grammar.mistake}</Body>
+              <Body>{lesson.grammar.explanation}</Body>
+              {lesson.grammar.examples.map(sentence)}
+              <Body>{lesson.grammar.register}</Body>
+              <Body>{lesson.grammar.mistake}</Body>
               <Button
                 label="Try it"
                 onPress={() => {
@@ -354,7 +363,7 @@ export default function Lesson() {
                       pathname: "/(learning)/speech",
                       params: {
                         sessionId,
-                        cueId: "request-water",
+                        cueId: lesson.grammar.examples[0]?.id ?? "own-sentence",
                         returnStep: exercise.id,
                       },
                     });
@@ -533,9 +542,9 @@ export default function Lesson() {
                 Finishing text exercises does not award mastery.
               </Body>
               <Body style={{ fontSize: 23, fontWeight: "700" }}>
-                {requestsLesson.grammar.pattern}
+                {lesson.grammar.pattern}
               </Body>
-              {requestsLesson.grammar.examples.map((example) => (
+              {lesson.grammar.examples.map((example) => (
                 <View key={example.id} style={{ gap: 10 }}>
                   {sentence(example)}
                   <Button
@@ -575,7 +584,7 @@ export default function Lesson() {
                   time.pause();
                   router.push({
                     pathname: "/(learning)/speech",
-                    params: { sessionId, cueId: "request-water" },
+                    params: { sessionId, cueId: lesson.grammar.examples[0]?.id ?? "own-sentence" },
                   });
                 }}
               />

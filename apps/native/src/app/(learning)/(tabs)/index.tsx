@@ -8,7 +8,7 @@ import {
   reviewEarnsStreak,
   reviewQueue,
 } from "@packages/learning-core";
-import { lessonCatalog, requestsLesson } from "@packages/content";
+import { lessonCatalog, curriculum } from "@packages/content";
 import { useStudy } from "../../../data/StudyProvider";
 import { useReviews } from "../../../data/ReviewProvider";
 import { useProfile } from "../../../data/ProfileProvider";
@@ -31,12 +31,12 @@ export default function Home() {
   const content = useContent();
   const lesson = lessonCatalog[0];
   const sessions = study.events
-    .filter((event) => event.kind === "started")
+    .filter((event) => event.kind === "started" && curriculum.forEvent(event))
     .sort((a, b) => b.occurredAt - a.occurredAt);
   const unfinished = sessions.find(
     (session) =>
       !sessionProjection(
-        requestsLesson,
+        curriculum.forEvent(session)!,
         study.events.filter((event) => event.sessionId === session.sessionId),
       ).finishedText,
   );
@@ -63,7 +63,7 @@ export default function Home() {
     ) ||
     sessions.some((session) =>
       sessionProjection(
-        requestsLesson,
+        curriculum.forEvent(session)!,
         study.events.filter((event) => event.sessionId === session.sessionId),
         study.checked,
       ).meaningfulDays.includes(today),
@@ -157,7 +157,7 @@ export default function Home() {
       {unfinished && (
         <Panel>
           <Title>Continue learning</Title>
-          <Body>{requestsLesson.title} · saved where you stopped</Body>
+          <Body>{curriculum.forEvent(unfinished)!.title} · saved where you stopped</Body>
           <Button
             label="Resume my lesson"
             secondary

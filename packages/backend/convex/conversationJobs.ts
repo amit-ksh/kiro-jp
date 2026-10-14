@@ -11,7 +11,6 @@ import {
   validateStudyEvent,
   type StudyEvent,
 } from "@packages/learning-core";
-import { requestsLesson } from "@packages/content";
 import { assessmentValue, replyValue } from "./conversationValues";
 import { culturalSnapshotValue } from "./cultureValues";
 async function storeEvidence(
@@ -61,7 +60,7 @@ async function storeEvidence(
         support: message.support,
         spans: [],
       };
-      validateStudyEvent(event, requestsLesson, Date.now());
+      validateStudyEvent(event, undefined, Date.now());
       const counter = await ctx.db
         .query("studyCursors")
         .withIndex("by_user", (q) => q.eq("userId", segment.userId))

@@ -13,3 +13,5 @@ export * from "./wave.ts";
 export * from "./reviews.ts";
 export * from "./content-package.ts";
 export * from "./grammar-reference.ts";
+export * from "./curriculum.ts";
+export * from "./speech-cues.ts";

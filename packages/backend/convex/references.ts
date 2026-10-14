@@ -3,7 +3,7 @@ import { ConvexError, v } from "convex/values";
 import { internal } from "./_generated/api";
 import { requireUser } from "./lib/ownership";
 import { limit } from "./conversation";
-import { requestsLesson } from "@packages/content";
+import { preparedLessons } from "@packages/content";
 import {
   normalizeJapanese,
   normalizeEnglish,
@@ -12,7 +12,7 @@ import {
 } from "@packages/learning-core";
 import { phraseValue } from "./conversationValues";
 function checkedPhrase(phrase: TutorPhrase): TutorPhrase | null {
-  for (const example of requestsLesson.grammar.examples)
+  for (const example of preparedLessons.flatMap(lesson => lesson.grammar.examples))
     if (
       normalizeJapanese(example.text) === normalizeJapanese(phrase.japanese) &&
       normalizeJapanese(example.reading) ===
@@ -25,7 +25,7 @@ function checkedPhrase(phrase: TutorPhrase): TutorPhrase | null {
         romaji: example.romaji,
         english: example.meaning,
       };
-  for (const word of requestsLesson.words)
+  for (const word of preparedLessons.flatMap(lesson => lesson.words))
     if (
       normalizeJapanese(word.word) === normalizeJapanese(phrase.japanese) &&
       normalizeJapanese(word.reading) === normalizeJapanese(phrase.reading) &&

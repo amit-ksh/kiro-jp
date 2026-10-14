@@ -5,12 +5,12 @@ import type { SQLiteDatabase } from "expo-sqlite";
 import { api } from "@packages/backend/convex/_generated/api";
 import type { FunctionReturnType } from "convex/server";
 import { localDayAt, validateStudyEvent, type StudyEvent, type Assessment } from "@packages/learning-core";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import { openAccountDatabase, accountTransaction } from "./database";
 import { pendingStudyBatchSql } from "./studyOutbox";
 import { cacheStudyPage } from "./syncCache";
 
-type EventInput = Pick<StudyEvent, "sessionId" | "kind" | "stepId"> & Partial<Pick<StudyEvent, "input" | "support" | "dontKnow" | "context" | "spans">>;
+type EventInput = Pick<StudyEvent, "sessionId" | "kind" | "stepId"> & Partial<Pick<StudyEvent, "input" | "support" | "dontKnow" | "context" | "spans" | "lessonId" | "lessonVersion">>;
 export type CachedChat = NonNullable<FunctionReturnType<typeof api.conversation.get>>;
 type SavedPhrases = FunctionReturnType<typeof api.references.list>;
 type SentenceFeedback = Record<string, FunctionReturnType<typeof api.assessment.list>[number]>;
@@ -92,8 +92,13 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
       const reference = input.kind === "audioActivity" && input.stepId === "reference";
       const review = input.kind === "reviewActivity" || (input.kind === "audioActivity" && input.stepId.startsWith("review:"));
       const library = input.kind === "audioActivity" && input.stepId.startsWith("library:");
-      const event: StudyEvent = { ...input, eventId: Crypto.randomUUID(), deviceId: deviceId.current, sequence: sequence.current + 1, lessonId: review ? "review" : library ? "library" : reference ? "reference" : conversation ? "conversation" : requestsLesson.id, lessonVersion: conversation || reference || review || library ? 1 : requestsLesson.version, occurredAt: now, localDay: localDayAt(now, offsetMinutes), timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, offsetMinutes, support: input.support ?? [], spans: input.spans ?? [] };
-      validateStudyEvent(event, requestsLesson, now);
+      let lesson = input.kind === "started" ? curriculum.get(input.lessonId ?? "", input.lessonVersion ?? 0) : undefined;
+      if (!conversation && !reference && !review && !library && input.kind !== "started") {
+        const start = await db.getFirstAsync<{ body: string }>("SELECT body FROM study_events WHERE session_id=? AND json_extract(body,'$.kind')='started' ORDER BY rowid LIMIT 1", input.sessionId);
+        if (start) lesson = curriculum.forEvent(JSON.parse(start.body) as StudyEvent);
+      }
+      const event: StudyEvent = { ...input, eventId: Crypto.randomUUID(), deviceId: deviceId.current, sequence: sequence.current + 1, lessonId: review ? "review" : library ? "library" : reference ? "reference" : conversation ? "conversation" : lesson?.id ?? "", lessonVersion: conversation || reference || review || library ? 1 : lesson?.version ?? 0, occurredAt: now, localDay: localDayAt(now, offsetMinutes), timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, offsetMinutes, support: input.support ?? [], spans: input.spans ?? [] };
+      validateStudyEvent(event, curriculum.forEvent(event), now);
       await accountTransaction(db, async tx => { await tx.runAsync("INSERT INTO study_events (event_id,session_id,body) VALUES (?,?,?)", event.eventId, event.sessionId, JSON.stringify(event)); await tx.runAsync("INSERT INTO study_metadata (key,value) VALUES ('sequence',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", String(event.sequence)); });
       if (epoch !== epochRef.current) return;
       sequence.current = event.sequence; created = event; await refresh(db, epoch);

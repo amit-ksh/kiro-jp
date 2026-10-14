@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
 import { Linking, View } from "react-native";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
+import { lessonSpeechCues } from "@packages/learning-core";
 import { useStudy } from "../../data/StudyProvider";
 import { useSpeech } from "../../features/speech/SpeechProvider";
 import { AudioPlay } from "../../features/speech/AudioPlay";
-import { lessonAudio } from "../../features/speech/lesson-audio";
+import { preparedLessonAudio } from "../../features/speech/lesson-audio";
 import { useAudioTime } from "../../features/speech/useAudioTime";
 import { TranscriptCard } from "../../features/speech/TranscriptCard";
 import { useStudyTime } from "../../features/lessons/useStudyTime";
@@ -18,28 +19,6 @@ import {
   Screen,
   Title,
 } from "../../components/ui";
-const sentences = [
-  ...new Map(
-    [
-      ...requestsLesson.words.map((word) => word.example),
-      ...requestsLesson.grammar.examples,
-    ].map((sentence) => [sentence.id, sentence]),
-  ).values(),
-];
-const cues = [
-  ...requestsLesson.words.map((word) => ({
-    id: `word-${word.id}`,
-    text: word.word,
-    reading: word.reading,
-    meaning: word.meaning,
-  })),
-  ...sentences.map((sentence) => ({
-    id: sentence.id,
-    text: sentence.text,
-    reading: sentence.reading,
-    meaning: sentence.meaning,
-  })),
-];
 export default function Speech() {
   const {
     sessionId = "",
@@ -53,11 +32,17 @@ export default function Speech() {
     conversationSegmentId: string;
   }>();
   const study = useStudy(),
-    speech = useSpeech(),
-    [selected, setSelected] = useState(
-      cues.some((cue) => cue.id === cueId) ? cueId : "word-water",
-    ),
+    speech = useSpeech();
+  const lesson = curriculum.forSession(study.events, sessionId);
+  const cues = lesson ? lessonSpeechCues(lesson) : [];
+  const [chosen, setSelected] = useState(cueId),
     [notice, setNotice] = useState("");
+  const selected = cues.some((cue) => cue.id === chosen)
+    ? chosen
+    : (cues[0]?.id ?? "");
+  const lessonAudio = lesson
+    ? preparedLessonAudio(lesson.id, lesson.version)
+    : {};
   const conversation = Boolean(conversationSegmentId);
   const cue = conversation
     ? {
@@ -66,7 +51,12 @@ export default function Speech() {
         reading: "Speak a short Japanese reply, then check the transcript.",
         meaning: "You can change the text before sending it to your tutor.",
       }
-    : cues.find((item) => item.id === selected)!;
+    : (cues.find((item) => item.id === selected) ?? {
+        id: "unavailable",
+        text: "Saved lesson unavailable",
+        reading: "",
+        meaning: "Reconnect or update the app to open this version.",
+      });
   const studyId = conversationSegmentId || sessionId;
   const timing = useStudyTime(
     studyId,
@@ -86,9 +76,7 @@ export default function Speech() {
           (segment) => segment.segmentId === conversationSegmentId,
         ),
       )
-    : study.events.some(
-        (event) => event.sessionId === sessionId && event.kind === "started",
-      );
+    : Boolean(lesson && cues.some((item) => item.id === selected));
   useAudioTime(studyId, "speaking", speech.recording, conversation);
   const stop = speech.stop;
   useFocusEffect(
@@ -118,7 +106,13 @@ export default function Speech() {
         ]),
       );
     } else {
-      if (edited) await study.append({ sessionId, kind: "studied", stepId: returnStep, support: ["transcriptEdited"] });
+      if (edited)
+        await study.append({
+          sessionId,
+          kind: "studied",
+          stepId: returnStep,
+          support: ["transcriptEdited"],
+        });
       await study.saveDraft(sessionId, returnStep, text);
       await study.saveDraft(
         sessionId,
@@ -156,6 +150,8 @@ export default function Speech() {
       subtitle={
         conversation
           ? "Record, check, then return to your conversation."
+          : cue.id === "own-sentence"
+            ? "Practise a sentence of your own."
           : "Word by word, then a complete sentence."
       }
     >
@@ -163,7 +159,7 @@ export default function Speech() {
         <Title>{cue.text}</Title>
         <Body>{cue.reading}</Body>
         <Body>{cue.meaning}</Body>
-        {!conversation && (
+        {!conversation && cue.id !== "own-sentence" && (
           <AudioPlay
             key={selected}
             source={lessonAudio[selected]}
@@ -172,7 +168,7 @@ export default function Speech() {
           />
         )}
         <Body muted>
-          {conversation
+          {conversation || cue.id === "own-sentence"
             ? "Recordings stay on this device until you request a transcript."
             : "Prepared model audio · recordings stay on this device until you request a transcript."}
         </Body>
@@ -182,6 +178,8 @@ export default function Speech() {
         <Body>
           {conversation
             ? "Record your reply, replay it, then check the text before sending. A transcript is a recognition aid, never a pronunciation score."
+            : cue.id === "own-sentence"
+              ? "Record your sentence, replay it and check the recognized text. You can correct the transcript before submitting."
             : "Listen, repeat, then compare through playback. A transcript is a recognition aid, never a pronunciation score."}
         </Body>
         {speech.recording ? (
@@ -307,7 +305,7 @@ export default function Speech() {
         />
         {(conversation ||
           (returnStep &&
-            requestsLesson.exercises.some(
+            lesson?.exercises.some(
               (exercise) =>
                 exercise.id === returnStep && exercise.kind === "sentence",
             ))) && (

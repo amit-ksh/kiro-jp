@@ -4,7 +4,7 @@ import { z } from "zod";
 import { v } from "convex/values";
 import { internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import { exerciseForStep, canonicalTutorPhrase } from "@packages/learning-core";
 import { actionGateway } from "./lib/ai/service";
 import { generationPolicy, type GatewayReceipt } from "./lib/ai/providers";
@@ -15,7 +15,9 @@ export const run = internalAction({
     if (!row) return;
     const receipts: GatewayReceipt[] = [];
     try {
-      const exercise = exerciseForStep(requestsLesson, row.source.stepId);
+      const lesson = curriculum.forEvent(row.source);
+      if (!lesson) throw new Error("Source lesson version unavailable.");
+      const exercise = exerciseForStep(lesson, row.source.stepId);
       if (!exercise) throw new Error("Exercise unavailable.");
       const result = await generateText({
         ...generationPolicy,
@@ -51,9 +53,9 @@ export const run = internalAction({
           eventId: row.eventId,
           answer: row.source.input,
           prompt: exercise.prompt,
-          pattern: requestsLesson.grammar.pattern,
-          register: requestsLesson.grammar.register,
-          examples: requestsLesson.grammar.examples.map((example) => ({
+          pattern: lesson.grammar.pattern,
+          register: lesson.grammar.register,
+          examples: lesson.grammar.examples.map((example) => ({
             text: example.text,
             reading: example.reading,
             meaning: example.meaning,

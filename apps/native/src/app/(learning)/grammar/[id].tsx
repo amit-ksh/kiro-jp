@@ -4,7 +4,7 @@ import { useProfile } from "../../../data/ProfileProvider";
 import { Body, Button, Panel, Screen, Title } from "../../../components/ui";
 import { SentenceView } from "../../../features/lessons/SentenceView";
 import { AudioPlay } from "../../../features/speech/AudioPlay";
-import { lessonAudio } from "../../../features/speech/lesson-audio";
+import { preparedLessonAudio } from "../../../features/speech/lesson-audio";
 export default function GrammarDetail() {
   const { id } = useLocalSearchParams<{ id: string }>(),
     { profile } = useProfile();
@@ -25,6 +25,7 @@ export default function GrammarDetail() {
     );
   const { lesson } = entry,
     grammar = lesson.grammar;
+  const lessonAudio = preparedLessonAudio(lesson.id, lesson.version);
   return (
     <Screen
       title={grammar.pattern}
@@ -49,9 +50,7 @@ export default function GrammarDetail() {
             translation={profile.translations}
             grammarLinks={false}
           />
-          {lesson.id === "requests" &&
-          lesson.version === 1 &&
-          lessonAudio[sentence.id] ? (
+          {lessonAudio[sentence.id] ? (
             <AudioPlay
               source={lessonAudio[sentence.id]}
               label={sentence.text}

@@ -8,7 +8,7 @@ import {
 } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import {
   assessNovelSentence,
   reviewAssessment,
@@ -85,8 +85,7 @@ export const request = mutation({
     if (
       !track ||
       track.track.card.source !== "lesson" ||
-      track.track.card.sourceId !== requestsLesson.id ||
-      track.track.card.sourceVersion !== requestsLesson.version ||
+      !curriculum.get(track.track.card.sourceId, track.track.card.sourceVersion) ||
       track.track.card.exercise.kind !== "sentence" ||
       reviewAssessment(track.track.card, source.event).outcome !== "pending"
     )

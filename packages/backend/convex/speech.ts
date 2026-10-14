@@ -17,7 +17,8 @@ import {
   whisperNeuronBound,
   type SpeechSource,
 } from "./lib/speechContract";
-import { requestsLesson } from "@packages/content";
+import { lessonSpeechCues } from "@packages/learning-core";
+import { curriculum } from "@packages/content";
 
 async function ownsSource(
   ctx: MutationCtx,
@@ -32,16 +33,11 @@ async function ownsSource(
         q.eq("userId", userId).eq("sessionId", source.lessonSessionId!),
       )
       .unique();
-    const cues = [
-      ...requestsLesson.words.map((word) => `word-${word.id}`),
-      ...requestsLesson.words.map((word) => word.example.id),
-      ...requestsLesson.grammar.examples.map((example) => example.id),
-      "own-sentence",
-    ];
+    const lesson = session ? curriculum.get(session.lessonId, session.version) : undefined;
+    if (!lesson) return false;
+    const cues = lessonSpeechCues(lesson).map(cue => cue.id);
     return Boolean(
       session &&
-      session.lessonId === requestsLesson.id &&
-      session.version === requestsLesson.version &&
       cues.includes(source.cueId),
     );
   }

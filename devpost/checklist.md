@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- Replaced single-lesson assumptions in native lesson/reference/attempt handling and backend assessment/review/speech ownership with a checked exact-version registry. Synthetic changed answer keys prove older work remains interpretable, and a fresh Android start/reopen proves the durable handoff. This prepares curriculum expansion; only requests v1 is registered, and the other six templates plus tutor bindings/audio/packages remain open in slice 5.
+
 - Interrupted-cache checks found that unchanged study query data did not retry a failed local save. Added explicit/periodic cache retries, shared atomic incoming-page writers, monotonic cursors and a server-confirmed account synchronization gate. File-backed SQLite and Android restart evidence are in `build-evidence.md`; broader revoked-session/device stress and the learner checkpoint remain open.
 
 - Added the checked offline grammar index and sentence-to-pattern links as a verified incremental part of references. Its library listening protocol validates the exact checked version/clip without fabricating a study session. Only the first pattern is implemented; this does not complete slice 5 or its remaining content/import gates. Evidence and current open checks are recorded in `build-evidence.md`.

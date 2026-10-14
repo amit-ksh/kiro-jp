@@ -3,7 +3,7 @@ import { v, ConvexError } from "convex/values";
 import { internal } from "./_generated/api";
 import { requireUser } from "./lib/ownership";
 import { limit } from "./conversation";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import {
   exerciseForStep,
   sessionProjection,
@@ -21,11 +21,11 @@ export const request = mutation({
           q.eq("userId", userId).eq("event.eventId", args.eventId),
         )
         .unique();
+    const lesson = source ? curriculum.forEvent(source.event) : undefined;
     if (
       !source ||
       source.event.kind !== "attempted" ||
-      source.event.lessonId !== requestsLesson.id ||
-      source.event.lessonVersion !== requestsLesson.version
+      !lesson
     )
       throw new ConvexError(
         "Synchronize this lesson answer before requesting feedback.",
@@ -46,7 +46,7 @@ export const request = mutation({
           (existing.leaseUntil ?? Infinity) > Date.now()))
     )
       return { id: existing._id };
-    const exercise = exerciseForStep(requestsLesson, source.event.stepId);
+    const exercise = exerciseForStep(lesson, source.event.stepId);
     if (!exercise || exercise.kind !== "sentence")
       throw new ConvexError("This exercise uses predefined answers.");
     const history = await ctx.db
@@ -56,7 +56,7 @@ export const request = mutation({
       )
       .take(1001);
     const attempt = sessionProjection(
-      requestsLesson,
+      lesson,
       history.map((row) => row.event as StudyEvent),
     ).attempts.find((row) => row.event.eventId === args.eventId);
     if (!attempt || attempt.assessment.outcome !== "pending")
@@ -142,7 +142,9 @@ export const settle = internalMutation({
   handler: async (ctx, args) => {
     const row = await ctx.db.get(args.id);
     if (!row || row.claim !== args.claim || row.status !== "running") return;
-    const exercise = exerciseForStep(requestsLesson, row.source.stepId);
+    const lesson = curriculum.forEvent(row.source);
+    if (!lesson) throw new Error("Source lesson version missing.");
+    const exercise = exerciseForStep(lesson, row.source.stepId);
     if (!exercise) throw new Error("Source exercise missing.");
     const assessment = args.semantic
       ? assessNovelSentence(

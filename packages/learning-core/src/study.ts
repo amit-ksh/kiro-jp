@@ -31,9 +31,10 @@ export function validateStudyStamp(event: Pick<StudyEvent, "eventId" | "sessionI
   if (event.support.length > 7 || (event.input?.length ?? 0) > 1000 || event.spans.length > 4) throw new Error("Invalid study payload bounds.");
   for (const span of event.spans) if (!Number.isFinite(span.start) || !Number.isFinite(span.end) || span.end < span.start || span.end - span.start > 30_000 || span.end > event.occurredAt + 1000 || span.start < event.occurredAt - 60_000 || !Number.isInteger(span.offsetMinutes) || Math.abs(span.offsetMinutes) > 840 || span.localDay !== localDayAt(span.start, span.offsetMinutes)) throw new Error("Invalid study time.");
 }
-export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, now: number) {
+export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson | undefined, now: number) {
   validateStudyStamp(event, now);
   if(event.kind === "audioActivity" && event.lessonId === "library") {
+    if (!lesson) throw new Error("Unsupported checked-library lesson version.");
     const clips=new Set([...lesson.words.map(w=>`word-${w.id}`),...lesson.kana.map((_k,i)=>`kana-${i+1}`),...lesson.words.map(w=>w.example.id),...lesson.grammar.examples.map(s=>s.id)].map(id=>`library:${lesson.id}:${lesson.version}:${id}`));
     if(event.lessonVersion!==1 || event.sessionId!==`library-${lesson.id}-v${lesson.version}` || !clips.has(event.stepId) || event.input!=="listening" || !event.spans.length || event.support.length || event.context || event.dontKnow!==undefined)throw new Error("Invalid checked-library listening activity.");
     return;
@@ -58,7 +59,7 @@ export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, no
     if (event.lessonId !== "conversation" || event.lessonVersion !== 1 || (event.kind === "conversationActivity" && (event.stepId !== "chat" || event.input !== undefined)) || (event.kind === "conversationTurn" && (event.input !== "meaningful" || event.spans.length > 0 || !/^[a-zA-Z0-9_-]{8,100}$/u.test(event.stepId)))) throw new Error("Invalid conversation study evidence.");
     return;
   }
-  if (event.lessonId !== lesson.id || event.lessonVersion !== lesson.version) throw new Error("Unsupported lesson version.");
+  if (!lesson || event.lessonId !== lesson.id || event.lessonVersion !== lesson.version) throw new Error("Unsupported lesson version.");
   if(event.kind==="audioActivity" && (event.stepId!=="recap" || !["listening","speaking"].includes(event.input??"") || !event.spans.length || event.support.length || event.context || event.dontKnow!==undefined))throw new Error("Invalid audio practice activity.");
   const step = lessonSteps(lesson).find(item => item.id === event.stepId) ?? (exerciseForStep(lesson, event.stepId) ? { kind: "exercise" } : undefined);
   if (!step || (event.kind === "started" && (event.stepId !== "goal" || !event.context)) || (event.kind === "attempted" && step.kind !== "exercise") || (event.kind === "savedPhrase" && !lesson.grammar.examples.some(example => example.id === event.input)) || (event.context && event.context.theme.length > 120)) throw new Error("Invalid lesson step.");

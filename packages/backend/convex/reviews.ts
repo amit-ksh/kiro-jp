@@ -7,7 +7,7 @@ import {
 } from "./_generated/server";
 import type { Id, Doc } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import {
   decideReview,
   introduceReview,
@@ -105,11 +105,8 @@ export const ensureLesson = mutation({
         q.eq("userId", userId).eq("sessionId", args.sessionId),
       )
       .unique();
-    if (
-      !session ||
-      session.lessonId !== requestsLesson.id ||
-      session.version !== requestsLesson.version
-    )
+    const lesson = session ? curriculum.get(session.lessonId, session.version) : undefined;
+    if (!lesson)
       throw new ConvexError(
         "This lesson needs to synchronize before preparing reviews.",
       );
@@ -141,7 +138,7 @@ export const ensureLesson = mutation({
       }
     let added = 0;
     for (const item of lessonReviewIntroductions(
-      requestsLesson,
+      lesson,
       rows.map((row) => row.event as StudyEvent),
       checked,
     ))

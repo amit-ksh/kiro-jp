@@ -1,6 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import { exerciseForStep, validateStudyEvent, type StudyEvent } from "@packages/learning-core";
 import { requireUser } from "./lib/ownership";
 import { studyEventValue } from "./studyValues";
@@ -23,8 +23,9 @@ export const push = mutation({ args: { events: v.array(studyEventValue) }, handl
   const receipts: { eventId: string; cursor: number }[] = [];
   for (const raw of args.events) {
     const event = raw as StudyEvent;
+    const lesson = curriculum.forEvent(event);
     if (event.kind === "conversationTurn") throw new ConvexError("Conversation language evidence is assessed on the server.");
-    try { validateStudyEvent(event, requestsLesson, Date.now()); } catch { throw new ConvexError("Check the saved study activity before retrying."); }
+    try { validateStudyEvent(event, lesson, Date.now()); } catch { throw new ConvexError("Check the saved study activity before retrying."); }
     const previous = await ctx.db.query("studyEvents").withIndex("by_user_event", q => q.eq("userId", userId).eq("event.eventId", event.eventId)).unique();
     if (previous) {
       if (canonical(previous.event) !== canonical(event)) throw new ConvexError("A saved activity ID cannot be replaced with another answer.");
@@ -50,7 +51,7 @@ export const push = mutation({ args: { events: v.array(studyEventValue) }, handl
       if (session) throw new ConvexError("This session already has a starting snapshot.");
       await ctx.db.insert("studySessions", { userId, sessionId: event.sessionId, lessonId: event.lessonId, version: event.lessonVersion, startedAt: event.occurredAt });
     } else if (!session || session.lessonId !== event.lessonId || session.version !== event.lessonVersion) throw new ConvexError("The session snapshot must synchronize first.");
-    if (event.kind === "advanced" && exerciseForStep(requestsLesson, event.stepId)) {
+    if (event.kind === "advanced" && lesson && exerciseForStep(lesson, event.stepId)) {
       const priorAttempt = await ctx.db.query("studyEvents").withIndex("by_user_step_kind", q => q.eq("userId", userId).eq("event.sessionId", event.sessionId).eq("event.stepId", event.stepId).eq("event.kind", "attempted")).first();
       if (!priorAttempt) throw new ConvexError("Complete an attempt before continuing.");
     }

@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import { sessionProjection } from "@packages/learning-core";
 import { useStudy } from "../../data/StudyProvider";
 import {
@@ -14,19 +14,17 @@ import { SentenceView } from "../../features/lessons/SentenceView";
 import { LessonConversation } from "../../features/conversation/LessonConversation";
 import { SentenceFeedback } from "../../features/lessons/SentenceFeedback";
 import { AudioPlay } from "../../features/speech/AudioPlay";
-import { lessonAudio } from "../../features/speech/lesson-audio";
+import { preparedLessonAudio } from "../../features/speech/lesson-audio";
 export default function Reference() {
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const { events, checked, loading } = useStudy();
   const session = events.filter((event) => event.sessionId === sessionId);
   const started = session.find((event) => event.kind === "started");
   const context = started?.context;
-  const projection = sessionProjection(requestsLesson, session, checked);
+  const lesson = curriculum.forSession(session, sessionId);
   if (loading) return <Loading label="Opening your saved reference…" />;
   if (
-    !started ||
-    started.lessonId !== requestsLesson.id ||
-    started.lessonVersion !== requestsLesson.version
+    !started || !lesson
   )
     return (
       <Screen title="Your session reference">
@@ -39,10 +37,12 @@ export default function Reference() {
         </Panel>
       </Screen>
     );
+  const projection = sessionProjection(lesson, session, checked);
+  const lessonAudio = preparedLessonAudio(lesson.id, lesson.version);
   return (
     <Screen title="Keep it with you." subtitle="Your session reference">
       <Panel>
-        <Title>{requestsLesson.title}</Title>
+        <Title>{lesson.title}</Title>
         <Body>{context?.theme ?? "Everyday Japanese"}</Body>
         <Body>
           {projection.initiallyLearned.length} kanji introduced · grammar{" "}
@@ -56,7 +56,7 @@ export default function Reference() {
         )}
       </Panel>
       {sessionId && <SentenceFeedback sessionId={sessionId} />}
-      {requestsLesson.words.map((word) => (
+      {lesson.words.map((word) => (
         <Panel key={word.id}>
           <Title>
             {word.kanji} · {word.meaning}
@@ -85,10 +85,10 @@ export default function Reference() {
         </Panel>
       ))}
       <Panel>
-        <Title>{requestsLesson.grammar.pattern}</Title>
-        <Body>{requestsLesson.grammar.explanation}</Body>
-        <Body>{requestsLesson.grammar.register}</Body>
-        <Body>{requestsLesson.grammar.mistake}</Body>
+        <Title>{lesson.grammar.pattern}</Title>
+        <Body>{lesson.grammar.explanation}</Body>
+        <Body>{lesson.grammar.register}</Body>
+        <Body>{lesson.grammar.mistake}</Body>
         <Body muted>
           Original AI-assisted content, source-checked against Japan Foundation
           materials. Model audio has separate transcript and file checks; no

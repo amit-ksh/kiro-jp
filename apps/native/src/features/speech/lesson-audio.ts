@@ -32,6 +32,10 @@ const checks: Record<
   "price-yen": require("../../../../../packages/content/assets/requests-v1/price-yen.json"),
 };
 const preparing = new Map<number, Promise<AudioSource>>();
+export function preparedLessonAudio(id: string, version: number): Record<string, AudioSource> {
+  // Never substitute another lesson/version when a clip has not been prepared.
+  return id === "requests" && version === 1 ? lessonAudio : {};
+}
 export async function cachePreparedModelAudio(id: string, uri: string) {
   const record = checks[id];
   if (

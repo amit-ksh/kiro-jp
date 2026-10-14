@@ -13,7 +13,7 @@ import * as Crypto from "expo-crypto";
 import type { SQLiteDatabase } from "expo-sqlite";
 import { api } from "@packages/backend/convex/_generated/api";
 import type { Id } from "@packages/backend/convex/_generated/dataModel";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import {
   lessonReviewIntroductions,
   phraseReviewIntroductions,
@@ -126,13 +126,10 @@ export function ReviewProvider({
             .filter((e) => e.kind === "started")
             .map((e) => e.sessionId),
         ),
-      ].flatMap((session) =>
-        lessonReviewIntroductions(
-          requestsLesson,
-          source.events.filter((e) => e.sessionId === session),
-          source.checked,
-        ),
-      );
+      ].flatMap((session) => {
+        const lesson = curriculum.forSession(source.events, session);
+        return lesson ? lessonReviewIntroductions(lesson, source.events.filter((e) => e.sessionId === session), source.checked) : [];
+      });
       for (const phrase of source.phrases)
         if (phrase.status === "approved")
           introductions.push(
@@ -345,9 +342,12 @@ export function ReviewProvider({
         const db = dbRef.current;
         if (!db || generation !== epoch.current)
           throw new Error("Review storage is not ready.");
+        const savedSource = await db.getFirstAsync<{body: string}>("SELECT body FROM study_events WHERE session_id=? AND json_extract(body,'$.kind')='started' ORDER BY rowid LIMIT 1", sessionId);
+        const lesson = savedSource ? curriculum.forEvent(JSON.parse(savedSource.body)) : undefined;
+        if (!lesson) throw new Error("This saved lesson version is unavailable. Update the app to continue.");
         const prepared = await prepareDailySession(
           db,
-          requestsLesson,
+          lesson,
           sessionId,
           latest.current.projection,
           () => Crypto.randomUUID(),

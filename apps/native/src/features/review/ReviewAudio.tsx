@@ -1,13 +1,14 @@
+import type { AudioSource } from "expo-audio";
 import { useState } from "react";
-import { requestsLesson } from "@packages/content";
-import type { ReviewTrack } from "@packages/learning-core";
+import { curriculum } from "@packages/content";
+import type { CheckedSentence, ReviewTrack } from "@packages/learning-core";
 import { useStudy } from "../../data/StudyProvider";
 import { useProfile } from "../../data/ProfileProvider";
 import { Body, Button } from "../../components/ui";
 import { SentenceView } from "../lessons/SentenceView";
 import { AudioPlay } from "../speech/AudioPlay";
 import { PhraseAudio } from "../speech/PhraseAudio";
-import { lessonAudio } from "../speech/lesson-audio";
+import { preparedLessonAudio } from "../speech/lesson-audio";
 
 /** Mount only after the answer is saved; model readings must not reveal a recall test. */
 export function ReviewAudio({
@@ -37,26 +38,24 @@ export function ReviewAudio({
       </>
     );
   }
-  if (
-    card.sourceId !== requestsLesson.id ||
-    card.sourceVersion !== requestsLesson.version
-  )
-    return null;
-  const exercise = requestsLesson.exercises.find(
+  const lesson = curriculum.get(card.sourceId, card.sourceVersion);
+  if (!lesson) return null;
+  const lessonAudio = preparedLessonAudio(lesson.id, lesson.version);
+  const exercise = lesson.exercises.find(
     (item) =>
       item.id === card.exercise.id && item.targetId === card.exercise.targetId,
   );
   if (!exercise) return null;
-  const word = requestsLesson.words.find(
+  const word = lesson.words.find(
     (item) => item.id === exercise.targetId,
   );
-  const kanaIndex = requestsLesson.kana.findIndex(
+  const kanaIndex = lesson.kana.findIndex(
     (item) => item.character === exercise.targetId,
   );
   const sentences = word
     ? [word.example]
-    : exercise.targetId === requestsLesson.grammar.id
-      ? requestsLesson.grammar.examples
+    : exercise.targetId === lesson.grammar.id
+      ? lesson.grammar.examples
       : [];
   const wordId = word
     ? `word-${word.id}`
@@ -94,7 +93,7 @@ export function ReviewAudio({
               label={
                 word
                   ? `${word.word} word`
-                  : requestsLesson.kana[kanaIndex]!.character
+                  : lesson.kana[kanaIndex]!.character
               }
               sessionId={sessionId}
               reviewTrackId={track.id}
@@ -104,6 +103,7 @@ export function ReviewAudio({
             <ReviewSentence
               key={sentence.id}
               sentence={sentence}
+              source={lessonAudio[sentence.id]}
               settings={settings}
               sessionId={sessionId}
               trackId={track.id}
@@ -117,11 +117,13 @@ export function ReviewAudio({
 
 function ReviewSentence({
   sentence,
+  source,
   settings,
   sessionId,
   trackId,
 }: {
-  sentence: (typeof requestsLesson.grammar.examples)[number];
+  sentence: CheckedSentence;
+  source?: AudioSource;
   settings: { romaji: boolean; readings: boolean; translation: boolean };
   sessionId: string;
   trackId: string;
@@ -129,9 +131,9 @@ function ReviewSentence({
   return (
     <>
       <SentenceView sentence={sentence} {...settings} />
-      {lessonAudio[sentence.id] && (
+      {source && (
         <AudioPlay
-          source={lessonAudio[sentence.id]}
+          source={source}
           label={sentence.text}
           sessionId={sessionId}
           reviewTrackId={trackId}

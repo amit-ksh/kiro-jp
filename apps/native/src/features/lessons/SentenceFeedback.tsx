@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useConvexConnectionState } from "convex/react";
 import { api } from "@packages/backend/convex/_generated/api";
-import { requestsLesson } from "@packages/content";
+import { curriculum } from "@packages/content";
 import { assessFixed, exerciseForStep } from "@packages/learning-core";
 import { useStudy } from "../../data/StudyProvider";
 import { Body, Button, Panel, Title } from "../../components/ui";
@@ -13,10 +13,10 @@ export function SentenceFeedback({ sessionId }: { sessionId: string }) {
     request = useMutation(api.assessment.request);
   const [busy, setBusy] = useState(""),
     [error, setError] = useState("");
+  const lesson = curriculum.forSession(study.events, sessionId);
   const timing = useStudyTime(
     sessionId,
-    requestsLesson.exercises.find((exercise) => exercise.kind === "sentence")!
-      .id,
+    lesson?.exercises.find((exercise) => exercise.kind === "sentence")?.id ?? "recap",
   );
   const requested = useRef(new Set<string>());
   const attempts = useMemo(
@@ -25,15 +25,15 @@ export function SentenceFeedback({ sessionId }: { sessionId: string }) {
         (event) =>
           event.sessionId === sessionId &&
           event.kind === "attempted" &&
-          exerciseForStep(requestsLesson, event.stepId)?.kind === "sentence" &&
+          lesson && exerciseForStep(lesson, event.stepId)?.kind === "sentence" &&
           assessFixed(
-            exerciseForStep(requestsLesson, event.stepId)!,
+            exerciseForStep(lesson, event.stepId)!,
             event.input ?? "",
             event.support,
             event.dontKnow,
           ).outcome === "pending",
       ),
-    [study.events, sessionId],
+    [study.events, sessionId, lesson],
   );
   useEffect(() => {
     if (!connection.isWebSocketConnected || study.pending > 0) return;
