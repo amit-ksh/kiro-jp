@@ -118,6 +118,7 @@ export default function Speech() {
         ]),
       );
     } else {
+      if (edited) await study.append({ sessionId, kind: "studied", stepId: returnStep, support: ["transcriptEdited"] });
       await study.saveDraft(sessionId, returnStep, text);
       await study.saveDraft(
         sessionId,

@@ -62,3 +62,13 @@ test("audio effort retains original days and unions overlaps without awarding re
       ),
     );
 });
+test("using an edited transcript retains assistance even after the answer is revised", () => {
+  const occurredAt = Date.UTC(2026, 9, 14, 4);
+  const base: StudyEvent = { eventId: "speech-help-0001", sessionId: "speech-session-0001", deviceId: "speech-device-0001", sequence: 1, lessonId: requestsLesson.id, lessonVersion: 1, occurredAt, localDay: "2026-10-14", timezone: "UTC", offsetMinutes: 0, kind: "studied", stepId: "request-own", support: ["transcriptEdited"], spans: [] };
+  validateStudyEvent(base, requestsLesson, occurredAt);
+  const revised: StudyEvent = { ...base, eventId: "speech-answer-0001", sequence: 2, occurredAt: occurredAt + 1, kind: "attempted", input: "hon o kudasai", support: [] };
+  const result = sessionProjection(requestsLesson, [base, revised]).attempts[0]!;
+  assert.equal(result.assessment.outcome, "assisted");
+  assert(result.support.includes("transcriptEdited"));
+  assert.equal(result.assessment.kanaEvidence, false);
+});
