@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Text, type ScrollView } from "react-native";
+import { router } from "expo-router";
 import * as Crypto from "expo-crypto";
 import {
   hasStrongRecall,
+  reviewQueue,
   type ReviewTrack,
   type SupportFlag,
 } from "@packages/learning-core";
 import { useReviews, type ReviewQuestion } from "../../../data/ReviewProvider";
+import { useStudy } from "../../../data/StudyProvider";
 import { useStudyTime } from "../../../features/lessons/useStudyTime";
 import { ReviewFeedback } from "../../../features/review/ReviewFeedback";
 import { SentenceFeedbackHistory } from "../../../features/review/SentenceFeedbackHistory";
@@ -21,6 +24,7 @@ import {
   useColors,
 } from "../../../components/ui";
 export default function Review() {
+  const study = useStudy();
   const reviews = useReviews(),
     colors = useColors(),
     run = reviews.run,
@@ -60,9 +64,15 @@ export default function Review() {
     // Restore each durable question draft once; ongoing typing stays local.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question?.eventId]);
-  const due = reviews.tracks
-    .filter((t) => t.dueAt <= Date.now())
-    .sort((a, b) => a.dueAt - b.dueAt || a.id.localeCompare(b.id));
+  const { ready: due, awaitingFeedback } = reviewQueue(reviews, Date.now());
+  const nextLesson =
+    run?.nextSessionId &&
+    study.events.some(
+      (event) =>
+        event.sessionId === run.nextSessionId && event.kind === "started",
+    )
+      ? run.nextSessionId
+      : undefined;
   const makeQuestion = (
     item: ReviewTrack,
     extra = false,
@@ -177,6 +187,12 @@ export default function Review() {
       ) : run && !done && question && track ? (
         <>
           <Panel>
+            {nextLesson && (
+              <Body muted>
+                Today&apos;s reviews first, then your saved lesson. You can pause and
+                return at any point.
+              </Body>
+            )}
             <Body muted>
               Question {run.index + 1} of {run.questions.length} ·{" "}
               {track.card.source === "phrase" ? "Saved phrase · " : ""}
@@ -348,6 +364,26 @@ export default function Review() {
                 retained, including mistakes and supported answers. Mastery
                 grows over later reviews.
               </Body>
+              {nextLesson && (
+                <>
+                  <Body>
+                    Your review set is saved. Continue with kanji, kana,
+                    grammar, pronunciation and your interest-led conversation.
+                    Remaining due reviews stay in the queue; pending sentence
+                    feedback can arrive later.
+                  </Body>
+                  <Button
+                    label="Continue to my lesson"
+                    busy={busy}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(learning)/lesson",
+                        params: { sessionId: nextLesson },
+                      })
+                    }
+                  />
+                </>
+              )}
               <Button
                 label="Back to review queue"
                 onPress={() => act(() => reviews.saveRun(null))}
@@ -367,6 +403,16 @@ export default function Review() {
                 ? `${reviews.tracks.length} review ${reviews.tracks.length === 1 ? "card" : "cards"}. Meanings, word readings, kana and grammar are practised separately. ${reviews.tracks.filter((t) => hasStrongRecall(t, Date.now())).length} with strong recall through spaced practice.`
                 : "Finish a few lesson exercises or save a checked phrase. Word and kana reviews begin after four hours; grammar follows after a day."}
             </Body>
+            {awaitingFeedback.length > 0 && (
+              <Body muted>
+                {awaitingFeedback.length} due{" "}
+                {awaitingFeedback.length === 1
+                  ? "sentence is"
+                  : "sentences are"}{" "}
+                awaiting feedback. You can continue learning without repeating
+                those answers.
+              </Body>
+            )}
             {due.length > 0 && !done && (
               <Button label="Start review" onPress={() => start(false)} />
             )}

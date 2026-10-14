@@ -10,6 +10,7 @@ import {
   validateReviewAttempt,
   projectReviews,
   reviewEarnsStreak,
+  reviewQueue,
   type ReviewAttempt,
   type ReviewCard,
   type ReviewTrack,
@@ -20,6 +21,76 @@ import { localDayAt } from "../packages/learning-core/src/study.ts";
 import { assessNovelSentence } from "../packages/learning-core/src/sentence-assessment.ts";
 const digest = async (text: string) =>
   createHash("sha256").update(text).digest("hex");
+
+test("daily due selection retains pending answers without blocking other cards or rewriting schedules", async () => {
+  const grammarCard: ReviewCard = {
+    ...card,
+    id: "grammar-daily-0000",
+    facet: "grammar",
+    exercise: requestsLesson.exercises.find((e) => e.kind === "sentence")!,
+  };
+  const pending = await introduceReview(grammarCard, start, digest);
+  const event = attempt(
+    pending.track,
+    pending.opportunity,
+    "pending-daily",
+    "sono manga o kudasai",
+    now,
+  );
+  const decision = await decideReview(
+    pending.track,
+    pending.opportunity,
+    undefined,
+    event,
+    digest,
+  );
+  assert.equal(decision.receipt.assessment.outcome, "pending");
+  const cards = await Promise.all(
+    Array.from({ length: 10 }, (_, i) =>
+      introduceReview({ ...card, id: `daily-${i}` }, start + i, digest),
+    ),
+  );
+  const tracks = [pending.track, ...cards.map((item) => item.track)];
+  const original = JSON.stringify(tracks);
+  const source = {
+    tracks: tracks.toReversed(),
+    attempts: [event],
+    receipts: new Map([[event.eventId, decision.receipt]]),
+  };
+  const queue = reviewQueue(source, now);
+  assert.deepEqual(
+    queue.ready.map((item) => item.id),
+    cards.map((item) => item.track.id),
+  );
+  assert.deepEqual(
+    queue.awaitingFeedback.map((item) => item.id),
+    [pending.track.id],
+  );
+  assert.equal(queue.ready.slice(0, 8).length, 8);
+  assert.equal(queue.ready.slice(8).length, 2);
+  assert.equal(JSON.stringify(tracks), original);
+  assert.deepEqual(reviewQueue(source, start).ready, []);
+  const invalid = {
+    ...decision.receipt,
+    status: "invalid-with-reason" as const,
+  };
+  assert.equal(
+    reviewQueue(
+      { ...source, receipts: new Map([[event.eventId, invalid]]) },
+      now,
+    ).ready.length,
+    11,
+  );
+  const extra = { ...event, mode: "extra" as const };
+  assert.equal(
+    reviewQueue({ ...source, attempts: [extra] }, now).ready.length,
+    11,
+  );
+  const changed = { ...pending.track, opportunityId: "next-daily-opportunity" };
+  const moved = reviewQueue({ ...source, tracks: [changed] }, now);
+  assert.equal(moved.ready.length, 1);
+  assert.equal(moved.awaitingFeedback.length, 0);
+});
 const start = Date.UTC(2026, 8, 1),
   now = Date.UTC(2026, 9, 14);
 const card: ReviewCard = {

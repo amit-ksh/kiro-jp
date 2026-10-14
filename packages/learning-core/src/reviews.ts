@@ -460,6 +460,33 @@ export function reviewEarnsStreak(
 ) {
   return Boolean(receipt && (event.dontKnow || event.input?.trim()));
 }
+/** Pending sentences keep their schedule, but should not block other due study. */
+export function reviewQueue(
+  source: {
+    tracks: readonly ReviewTrack[];
+    attempts: readonly ReviewAttempt[];
+    receipts: ReadonlyMap<string, ReviewReceipt>;
+  },
+  now: number,
+) {
+  const awaiting = new Set(
+    source.attempts.flatMap((event) => {
+      const receipt = source.receipts.get(event.eventId);
+      return event.mode === "due" &&
+        receipt?.assessment.outcome === "pending" &&
+        receipt.status !== "invalid-with-reason"
+        ? [event.opportunityId]
+        : [];
+    }),
+  );
+  const due = source.tracks
+    .filter((track) => track.dueAt <= now)
+    .sort((a, b) => a.dueAt - b.dueAt || a.id.localeCompare(b.id));
+  return {
+    ready: due.filter((track) => !awaiting.has(track.opportunityId)),
+    awaitingFeedback: due.filter((track) => awaiting.has(track.opportunityId)),
+  };
+}
 export function orderReviewAttempts(events: readonly ReviewAttempt[]) {
   const compare = (a: ReviewAttempt, b: ReviewAttempt) =>
     a.occurredAt - b.occurredAt ||

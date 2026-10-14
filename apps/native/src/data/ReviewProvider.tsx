@@ -22,26 +22,17 @@ import {
   validateReviewAttempt,
   type ReviewAttempt,
   type ReviewChange,
-  type ReviewOpportunity,
   type SupportFlag,
 } from "@packages/learning-core";
 import { openAccountDatabase, accountTransaction } from "./database";
 import { useStudy } from "./StudyProvider";
+import {
+  prepareDailySession,
+  type ReviewQuestion,
+  type ReviewRun,
+} from "./dailySession";
+export type { ReviewQuestion, ReviewRun } from "./dailySession";
 
-export interface ReviewQuestion {
-  eventId: string;
-  trackId: string;
-  opportunity: ReviewOpportunity;
-  mode: "due" | "extra";
-  correction: boolean;
-}
-export interface ReviewRun {
-  id: string;
-  questions: ReviewQuestion[];
-  index: number;
-  input: string;
-  support: SupportFlag[];
-}
 type Projection = Awaited<ReturnType<typeof projectReviews>>;
 type State = Projection & {
   loading: boolean;
@@ -51,6 +42,7 @@ type State = Projection & {
   requestFeedback: (eventId: string) => Promise<void>;
   run: ReviewRun | null;
   saveRun: (run: ReviewRun | null) => Promise<void>;
+  prepareSessionReviews: (sessionId: string) => Promise<"review" | "lesson">;
   submit: (
     question: ReviewQuestion,
     input: string,
@@ -367,6 +359,32 @@ export function ReviewProvider({
     },
     [enqueue],
   );
+  const prepareSessionReviews = useCallback(
+    async (sessionId: string) => {
+      const generation = epoch.current;
+      let destination: "review" | "lesson" = "lesson";
+      await enqueue(async () => {
+        const db = dbRef.current;
+        if (!db || generation !== epoch.current)
+          throw new Error("Review storage is not ready.");
+        const prepared = await prepareDailySession(
+          db,
+          requestsLesson,
+          sessionId,
+          latest.current.projection,
+          () => Crypto.randomUUID(),
+          Date.now(),
+          new Date().getTimezoneOffset(),
+        );
+        if (generation !== epoch.current)
+          throw new Error("Your account changed before the plan was saved.");
+        if (prepared.run) setRun(prepared.run);
+        destination = prepared.destination;
+      });
+      return destination;
+    },
+    [enqueue],
+  );
   const submit = useCallback(
     async (
       question: ReviewQuestion,
@@ -512,6 +530,7 @@ export function ReviewProvider({
         requestFeedback,
         run,
         saveRun,
+        prepareSessionReviews,
         submit,
         retry: () => {
           study.retry();
