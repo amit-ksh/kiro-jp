@@ -7,8 +7,14 @@ import { goalValue, jobStateValue, replyValue, practiceStampValue, phraseValue }
 import { supportValue } from "./studyValues";
 import { culturalEntityValue, culturalTypeValue, culturalSnapshotValue } from "./cultureValues";
 import { speechSourceValue, speechStatusValue, speechSegmentValue } from "./speechValues";
+import { reviewAttemptValue, reviewReceiptValue, reviewTrackValue, reviewOpportunityValue, reviewChangeValue } from "./reviewValues";
 export default defineSchema({
   ...authTables,
+  reviewTracks: defineTable({userId:v.id("users"),track:reviewTrackValue}).index("by_user_track",["userId","track.id"]).index("by_user_due",["userId","track.dueAt"]),
+  reviewOpportunities: defineTable({userId:v.id("users"),opportunity:reviewOpportunityValue}).index("by_user_opportunity",["userId","opportunity.id"]),
+  reviewAttempts: defineTable({userId:v.id("users"),event:reviewAttemptValue,receipt:reviewReceiptValue}).index("by_user_event",["userId","event.eventId"]).index("by_user_parent",["userId","event.parentEventId","receipt.status"]).index("by_user_status",["userId","receipt.status"]),
+  reviewChanges: defineTable({userId:v.id("users"),cursor:v.number(),change:reviewChangeValue}).index("by_user_cursor",["userId","cursor"]),
+  reviewCursors: defineTable({userId:v.id("users"),cursor:v.number()}).index("by_user",["userId"]),
   accountEmailLimits: defineTable({ key: v.string(), lastRequestedAt: v.number(), day: v.string(), count: v.number() }).index("by_key", ["key"]),
   aiBudgets: defineTable({ provider: v.literal("gemini"), reservedMicros: v.number(), spentMicros: v.number() }).index("by_provider", ["provider"]),
   aiCostReservations: defineTable({ operationId: v.string(), model: v.string(), reservedMicros: v.number(), inputRate: v.number(), outputRate: v.number(), state: v.union(v.literal("pending"), v.literal("settled")), actualMicros: v.optional(v.number()), createdAt: v.number() }).index("by_operation", ["operationId"]),

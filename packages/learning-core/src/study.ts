@@ -23,9 +23,16 @@ export function activeMilliseconds(spans: readonly StudySpan[], day: string) {
   for (const span of sorted) { total += Math.max(0, span.end - Math.max(end, span.start)); end = Math.max(end, span.end); }
   return total;
 }
-export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, now: number) {
-  if (![event.eventId, event.sessionId, event.deviceId].every(id => /^[a-zA-Z0-9_-]{8,100}$/u.test(id)) || !Number.isInteger(event.sequence) || event.sequence < 0 || event.sequence > 100_000 || !Number.isFinite(event.occurredAt) || event.occurredAt > now + 300_000 || event.occurredAt < Date.UTC(2026, 0, 1) || !Number.isInteger(event.offsetMinutes) || Math.abs(event.offsetMinutes) > 840 || event.localDay !== localDayAt(event.occurredAt, event.offsetMinutes) || event.timezone.length > 80 || event.support.length > 7 || (event.input?.length ?? 0) > 1000 || event.spans.length > 4) throw new Error("Invalid study event.");
+export function validateStudyStamp(event: Pick<StudyEvent, "eventId" | "sessionId" | "deviceId" | "sequence" | "occurredAt" | "offsetMinutes" | "localDay" | "timezone" | "support" | "input" | "spans">, now: number) {
+  if (![event.eventId, event.sessionId, event.deviceId].every(id => /^[a-zA-Z0-9_-]{8,100}$/u.test(id))) throw new Error("Invalid study identity.");
+  if (!Number.isInteger(event.sequence) || event.sequence < 0 || event.sequence > 100_000) throw new Error("Invalid study sequence.");
+  if (!Number.isFinite(event.occurredAt) || event.occurredAt > now + 300_000 || event.occurredAt < Date.UTC(2026, 0, 1)) throw new Error("Invalid study occurrence time.");
+  if (!Number.isInteger(event.offsetMinutes) || Math.abs(event.offsetMinutes) > 840 || event.localDay !== localDayAt(event.occurredAt, event.offsetMinutes) || event.timezone.length > 80) throw new Error("Invalid study calendar day.");
+  if (event.support.length > 7 || (event.input?.length ?? 0) > 1000 || event.spans.length > 4) throw new Error("Invalid study payload bounds.");
   for (const span of event.spans) if (!Number.isFinite(span.start) || !Number.isFinite(span.end) || span.end < span.start || span.end - span.start > 30_000 || span.end > event.occurredAt + 1000 || span.start < event.occurredAt - 60_000 || !Number.isInteger(span.offsetMinutes) || Math.abs(span.offsetMinutes) > 840 || span.localDay !== localDayAt(span.start, span.offsetMinutes)) throw new Error("Invalid study time.");
+}
+export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson, now: number) {
+  validateStudyStamp(event, now);
   if(event.kind === "audioActivity" && event.lessonId === "reference") {
     if(event.lessonVersion !== 1 || event.stepId !== "reference" || event.input !== "listening" || !event.spans.length || event.support.length || event.context || event.dontKnow!==undefined) throw new Error("Invalid reference audio activity.");
     return;

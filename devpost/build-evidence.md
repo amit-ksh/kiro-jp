@@ -50,6 +50,16 @@ Slice 1 passed its revised mechanical checks. This records observed checks, not 
 
 ## Remaining integration and learner checks
 
+### Permanent review-closure kernel — October 14
+
+Added the shared version-1 scheduler/opportunity decisions and owned Convex review tracks, immutable opportunities, attempt receipts, paginated change log and account cursor. Introductions are derived from synchronized lesson evidence or approved saved phrases; repeating preparation preserves an existing schedule. Meaning, whole-word reading, kana and grammar retain distinct card definitions and initial intervals. SHA-256 identities include the algorithm, opportunity, immutable closing event and outcome, so a matching offline chain derives the same successors as the server.
+
+Nine new tests cover both winning outcomes, weeks-late failures, matching multi-step chains, divergent descendants, missing parents, assistance/early/correction retries, distinct-day/age recall thresholds, romaji literacy separation, pending grammar and malformed snapshots/cycles. All 67 shared tests and all six workspace typechecks passed. A current lapse clears the qualifying run while preserving historical independent-day evidence; stale lapses change neither.
+
+Live authenticated synthetic fixtures passed: two concurrent clients produced exactly one closure and one stale receipt; a weeks-late failure left seven subsequent advances intact; lost-ack retries returned the current receipt without another change; immutable answer-ID replacement was rejected. A grandchild and child uploaded before their parent were retained awaiting-parent, then both resolved at receipt revision 2. A conflicting offline branch and its descendant became stale practice. Anonymous/foreign access was rejected, and an invalid revision was retained without schedule changes. These fixture attempts contain no study time and are not human learning evidence. Both an incorrect winner and an independent winner were observed in separate runs. The initial malformed-snapshot fixture accidentally used a future successor's due time; timestamp rejection was correct, and the fixture was repaired to use a valid occurrence time.
+
+The kernel is deployed to the configured development backend. No model inference was used. The Android due runner, local review outbox/provisional overlay, delayed novel review assessment and native offline/restart verification are still required. Slice 4 and all learner hands-on checkpoints remain unchecked.
+
 ### Tutor checkpoint — October 14 continuation
 
 The scheduled 04:00 continuation revalidated EAS job `d846bd95-eb79-4b0c-94ff-47104f106d60` as FINISHED; no duplicate build was started. The foundation APK remains the earlier signed snapshot. Current lesson/chat UI checks use SDK-55 Expo Go on the task-local Android 15 emulator, with a fresh Hermes export; they do not prove the final standalone release or microphone quality.

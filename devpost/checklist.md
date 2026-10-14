@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- October 14: implemented and live-checked the permanent review-closure kernel as an independent reliability increment while Qloo access remains pending. Concurrent clients, weeks-late failures, missing-parent descendants, duplicate/current receipts and divergent branches pass against the development backend; 67 shared tests pass. The Android runner, local review outbox/rebuild, pending novel review assessment and native offline gates remain open, so slice 4 stays unchecked.
+
 - October 14: Saved approved phrases now have on-demand Gateway TTS, an independent transcript consistency check, authenticated download and verified offline reuse. Both generations reserve the existing Gemini cap. A repeatable Expo Go cold-link handoff required a second intent before app JavaScript started; retain the independent standalone cold/offline gate. This incremental check does not substitute for real human speech quality, full SRS/offline reconciliation, real Qloo access or learner hands-on feedback.
 
 - October 14: Workers Free was explicitly confirmed by the learner, enabling the guarded Whisper implementation and live AAC/source-audio/silence checks. The existing Android emulator's unrelated system stalls required a smaller display and restart without a data wipe; account/progress returned. Native transcript controls and the complete speaking checkpoint remain subject to their own verification. No slice-2 Qloo or later-slice acceptance is inferred from these checks.

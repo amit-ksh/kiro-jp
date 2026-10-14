@@ -10,3 +10,4 @@ export * from "./sentence-assessment.ts";
 export * from "./culture.ts";
 export * from "./recording.ts";
 export * from "./wave.ts";
+export * from "./reviews.ts";

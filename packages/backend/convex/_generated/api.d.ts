@@ -39,6 +39,8 @@ import type * as readback from "../readback.js";
 import type * as readbackAI from "../readbackAI.js";
 import type * as referenceAI from "../referenceAI.js";
 import type * as references from "../references.js";
+import type * as reviewValues from "../reviewValues.js";
+import type * as reviews from "../reviews.js";
 import type * as speech from "../speech.js";
 import type * as speechAI from "../speechAI.js";
 import type * as speechUpload from "../speechUpload.js";
@@ -84,6 +86,8 @@ declare const fullApi: ApiFromModules<{
   readbackAI: typeof readbackAI;
   referenceAI: typeof referenceAI;
   references: typeof references;
+  reviewValues: typeof reviewValues;
+  reviews: typeof reviews;
   speech: typeof speech;
   speechAI: typeof speechAI;
   speechUpload: typeof speechUpload;
