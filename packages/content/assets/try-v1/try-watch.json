@@ -1,0 +1,30 @@
+{
+  "id": "try-watch",
+  "kind": "sentence",
+  "text": "あにめをみてみます。",
+  "display": "アニメを見てみます。",
+  "meaning": "I'll try watching anime.",
+  "lessonId": "try",
+  "lessonVersion": 1,
+  "scriptHash": "5ed88db3e79ea1d4fd54bdd05a0f5766ded704266ef3b3af048518c3027b16db",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-try-v1-try-watch-5ed88db3e79e",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 3.16,
+  "sampleRate": 24000,
+  "sha256": "e58360f3a45efe9bbec8a6b667d648b8287dbfe5599841b4945f682fa351dbbf",
+  "createdAt": "2026-10-15T15:01:05.948Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e969e23d404ac5f26e26c50ff8f3cb18f93ecff35164221b1c91b222b1beb268",
+    "checkedAt": "2026-10-15T15:04:31.305Z",
+    "audioHash": "e58360f3a45efe9bbec8a6b667d648b8287dbfe5599841b4945f682fa351dbbf",
+    "kana": "あにめをみてみます",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

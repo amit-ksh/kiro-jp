@@ -1,0 +1,30 @@
+{
+  "id": "try-buy",
+  "kind": "sentence",
+  "text": "このまんがをかってみます。",
+  "display": "このマンガを買ってみます。",
+  "meaning": "I'll try buying this manga.",
+  "lessonId": "try",
+  "lessonVersion": 1,
+  "scriptHash": "4224855ca033ff44b83bbc09313686a4b6d79cc30977ce1a7d0bc18c871ce40d",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-try-v1-try-buy-4224855ca033",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 3.16,
+  "sampleRate": 24000,
+  "sha256": "db314e7fc88bc3a9ef4964f6e25c8015944a0b9b6675510b3c35bdd54e02f7fe",
+  "createdAt": "2026-10-15T15:00:56.011Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e969e23d404ac5f26e26c50ff8f3cb18f93ecff35164221b1c91b222b1beb268",
+    "checkedAt": "2026-10-15T15:04:31.303Z",
+    "audioHash": "db314e7fc88bc3a9ef4964f6e25c8015944a0b9b6675510b3c35bdd54e02f7fe",
+    "kana": "このまんがをかってみます",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

@@ -1,5 +1,13 @@
 # Build evidence — 2026-10-13
 
+## Final try template preparation — October 15
+
+Prepared `try` v1 with 買・作・食・見, dictionary-word reading checks, ラ・メ・ン, nineteen exercises, te-form + みます and the supported wish みたいです. It supplies 買って・作って・食べて・見て explicitly, pins ability v1 and distinguishes trying from ordinary watching/ability. An original example teaches each word; small っ and the ramen vowel-length mark are explained. 食's meal alias stays separate from the verb 食べる. Thirteen initial tracks plus two saved-phrase tracks remain independent. Original grammar explanations were checked against [Irodori L12-18](https://www.irodori.jpf.go.jp/assets/data/elementary01/pdf/Y_L12.pdf), [L10-16](https://www.irodori.jpf.go.jp/assets/data/elementary01/pdf/Y_L10.pdf) and [the first-party te-form answer chart, PDF page 16](https://www.irodori.jpf.go.jp/assets/data/resources/Grammar_Worksheets_Answer.pdf). The lesson links the checked WaniKani meaning/reading records; no source dialogue, mnemonic or audio was copied and no expert review is claimed.
+
+Fourteen Gateway-generated clips passed WAV/hash and audio-only transcript checks. The first isolated ン was recognized as ぬ and stayed unapproved. Its rejected bytes/metadata remain private. An explicit second generation replaced only that clip; six already checked clips were reused without inference, the replacement matched ん and all seven sentences passed. Final default checking reused all fourteen without inference. No grading normalization or budget rule was weakened to accept the mismatch.
+
+All 199 tests, six workspace typechecks and the existing six-package content gate pass. The private candidate manifest has fifteen files / 1,484,842 bytes. It remains outside the active registry, native audio map and public manifest index, so learner-visible code and its prior Android bundle are unchanged. Current Gemini confirmed-token estimate is 501,733 micro-USD with 1,493,756 micro-USD held against the unchanged 10,000,000 micro-USD cap. Activation, backend integration, actual native practice/offline checks and learner gates remain open; no full slice is accepted here.
+
 ## Ability v1 package and backend integration — October 15
 
 Activated the sixth checked lesson in the exact-version curriculum, native audio map, local N4 grammar search and immutable package registry. Fourteen checked clips plus the lesson snapshot form fifteen files / 1,711,717 bytes. Every actually served file passed size/SHA-256 checks; repeat publication returned already published. The five earlier manifest files retain their exact bytes. Lower bands continue to receive supported N5 first-session recommendations; accepted early N4 can enter ability with the prepared refresher. Try remains upcoming.

@@ -1,0 +1,30 @@
+{
+  "id": "word-watch",
+  "kind": "word",
+  "text": "みる",
+  "display": "見る",
+  "meaning": "see",
+  "lessonId": "try",
+  "lessonVersion": 1,
+  "scriptHash": "f829ad211b6f17395f0e8970f4213db0d074726668d5efa1cc1587ddda07bec9",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-try-v1-word-watch-f829ad211b6f",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.08,
+  "sampleRate": 24000,
+  "sha256": "0cabc96103ae40f355a192c6c6300ab79f5e4ac6f6823cddebf0c7bde37f0a39",
+  "createdAt": "2026-10-15T15:00:05.212Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-512f4500bf3babe62c9ed889d01c74f2e9f087c31bb80b6ed6184f3205124dd1",
+    "checkedAt": "2026-10-15T15:01:53.987Z",
+    "audioHash": "0cabc96103ae40f355a192c6c6300ab79f5e4ac6f6823cddebf0c7bde37f0a39",
+    "kana": "みる",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

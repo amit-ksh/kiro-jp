@@ -1,0 +1,30 @@
+{
+  "id": "want-try-eat",
+  "kind": "sentence",
+  "text": "らーめんをたべてみたいです。",
+  "display": "ラーメンを食べてみたいです。",
+  "meaning": "I want to try eating ramen.",
+  "lessonId": "try",
+  "lessonVersion": 1,
+  "scriptHash": "0812bfab180b93a4fb5ebcc6a82beccafd8ff1d502568776f1baec6dd28717e8",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-try-v1-want-try-eat-0812bfab180b",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 3.12,
+  "sampleRate": 24000,
+  "sha256": "331c43a46ad8c7fd064202ccaeec5e1aaf4d3bbafd17fc5ba469e5d6c94d576c",
+  "createdAt": "2026-10-15T15:01:15.372Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e969e23d404ac5f26e26c50ff8f3cb18f93ecff35164221b1c91b222b1beb268",
+    "checkedAt": "2026-10-15T15:04:31.306Z",
+    "audioHash": "331c43a46ad8c7fd064202ccaeec5e1aaf4d3bbafd17fc5ba469e5d6c94d576c",
+    "kana": "らーめんをたべてみたいです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

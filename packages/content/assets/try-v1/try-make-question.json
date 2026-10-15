@@ -1,0 +1,30 @@
+{
+  "id": "try-make-question",
+  "kind": "sentence",
+  "text": "おにぎりをつくってみますか。",
+  "display": "おにぎりを作ってみますか。",
+  "meaning": "Will you try making onigiri?",
+  "lessonId": "try",
+  "lessonVersion": 1,
+  "scriptHash": "b6f526123bcc988c327c9761ac509b98eec7079a4597f6bfcdd37e985afc661d",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-try-v1-try-make-question-b6f526123bcc",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 3.16,
+  "sampleRate": 24000,
+  "sha256": "6361a7736cd3018d232777383b8482318efb84f3018b679d1c3a5177097e643d",
+  "createdAt": "2026-10-15T15:01:09.921Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e969e23d404ac5f26e26c50ff8f3cb18f93ecff35164221b1c91b222b1beb268",
+    "checkedAt": "2026-10-15T15:04:31.305Z",
+    "audioHash": "6361a7736cd3018d232777383b8482318efb84f3018b679d1c3a5177097e643d",
+    "kana": "おにぎりをつくってみますか",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "try-eat",
+  "kind": "sentence",
+  "text": "らーめんをたべてみます。",
+  "display": "ラーメンを食べてみます。",
+  "meaning": "I'll try eating ramen.",
+  "lessonId": "try",
+  "lessonVersion": 1,
+  "scriptHash": "253eac7aacc148bf1554ec70dfb4484fcbaa614de339794a993c31033428f220",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-try-v1-try-eat-253eac7aacc1",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.88,
+  "sampleRate": 24000,
+  "sha256": "72b216384a3c02d9c5d84688d747f23cd453d2a71d91c5a873f467bc8f80b3a8",
+  "createdAt": "2026-10-15T15:01:02.577Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e969e23d404ac5f26e26c50ff8f3cb18f93ecff35164221b1c91b222b1beb268",
+    "checkedAt": "2026-10-15T15:04:31.304Z",
+    "audioHash": "72b216384a3c02d9c5d84688d747f23cd453d2a71d91c5a873f467bc8f80b3a8",
+    "kana": "らーめんをたべてみます",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

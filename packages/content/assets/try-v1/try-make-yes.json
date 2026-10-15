@@ -1,0 +1,30 @@
+{
+  "id": "try-make-yes",
+  "kind": "sentence",
+  "text": "はいつくってみます。",
+  "display": "はい、作ってみます。",
+  "meaning": "Yes, I'll try making them.",
+  "lessonId": "try",
+  "lessonVersion": 1,
+  "scriptHash": "9cc3bd3f68ace35091ca6a7122b1c8552c8201b7f37d6611c04bdce9110b9e9d",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-try-v1-try-make-yes-9cc3bd3f68ac",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.44,
+  "sampleRate": 24000,
+  "sha256": "0f554d7b845a8b037cca59bc5a01feffe804ec742bf7a9000a18152565a3180e",
+  "createdAt": "2026-10-15T15:01:12.895Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e969e23d404ac5f26e26c50ff8f3cb18f93ecff35164221b1c91b222b1beb268",
+    "checkedAt": "2026-10-15T15:04:31.306Z",
+    "audioHash": "0f554d7b845a8b037cca59bc5a01feffe804ec742bf7a9000a18152565a3180e",
+    "kana": "はいつくってみます",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}
