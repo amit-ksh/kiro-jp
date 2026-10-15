@@ -163,6 +163,7 @@ export const claim = internalMutation({
       .query("culturalSelections")
       .withIndex("by_user", (q) => q.eq("userId", job.userId))
       .take(20);
+    const imported = await ctx.db.query("wanikaniImports").withIndex("by_user",q=>q.eq("userId",job.userId)).unique();
     return {
       job: { ...job, claim },
       segment,
@@ -172,6 +173,7 @@ export const claim = internalMutation({
           job.sourceMessageIds.includes(message.messageId) && !message.stale,
       ),
       profile: profile?.data ?? null,
+      familiarity: (imported?.snapshot?.items ?? []).slice(0,20).map(item=>({characters:item.characters,type:item.type})),
       choices: choices.map((choice) => ({
         query: choice.query,
         entity: choice.entity,

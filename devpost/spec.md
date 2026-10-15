@@ -312,6 +312,8 @@ Implements `prd.md > Onboarding, Placement, and Preferences` and the optional im
 
 Take a read-only personal token through the authenticated Android import flow. The server reads user/assignments and resolves matching subjects for the prepared catalog, respecting pagination/rate responses and actual returned access. Store subject ID, type, characters/word mapping, SRS stage/started-at/import time as external familiarity. Do not import account credentials, proprietary lesson prose, or local mastery; do not write reviews back to WaniKani. Invalid/expired token offers Retry/Skip, leaving prior import intact. Discard the token after the import. Grammar/listening/speaking checks remain independent.
 
+The implemented optional flow is available in onboarding and Profile. Resolve only checked-catalog kanji/word slugs, then fetch assignments for the returned matching subject IDs. Retain only non-hidden subjects within the user's actual `max_level_granted`, with a started assignment and SRS stage 1–9. A complete candidate atomically replaces the account snapshot; missing, inconsistent, truncated or rate-limited pages never replace prior data. A per-account generation fence and 45-second lease prevent concurrent/stale publication; removal advances the fence and cannot be undone by a delayed result. A scheduled expiry carries only owner/generation, with no token. Credentials remain in the current request, are cleared from the native field on submit/background, and are absent from stored snapshots/jobs. The tutor can reuse up to twenty matched word/kanji hints at the accepted level, with all support and independent skill checks retained. No review, study-time, streak or mastery event is created by import. Successful real-account and native acceptance checks remain open until their evidence is recorded.
+
 ### Landing and Distribution Surface
 
 Implements `prd.md > Web Landing Page`.
@@ -516,7 +518,7 @@ No invented category/URN; applicable country filters only for supported place qu
 
 ### WaniKani
 
-Authenticated read-only server calls `GET https://api.wanikani.com/v2/user`, `/assignments`, `/subjects?ids=<needed IDs>`, with personal Bearer token and `Wanikani-Revision: 20170710`. Collections use `data[]` and `pages.next_url`; validate pagination host and do not forward tokens to arbitrary returned URLs. Read actual subject/SRS/access fields, normalize only catalog familiarity, respect 429/rate responses, discard token. No write endpoints. [API](https://docs.api.wanikani.com/20170710/).
+Authenticated read-only server calls `GET https://api.wanikani.com/v2/user`, `/subjects?slugs=<checked catalog characters>&types=kanji,vocabulary,kana_vocabulary&hidden=false`, then `/assignments?subject_ids=<matched IDs>&started=true`, with personal Bearer token and `Wanikani-Revision: 20170710`. This narrower order avoids importing thousands of unrelated assignments/subjects. Collections use `data[]`, `total_count` and `pages.next_url`; validate HTTPS origin, route, credentials/fragments, cycles, unique IDs and complete counts before publishing. Do not forward tokens to arbitrary returned URLs or follow redirects. Bound the import to twenty requests, thirty seconds overall, eight seconds per request and 1 MiB per body; exhausted bounds retain the earlier snapshot. Read actual subject/SRS/access fields, normalize only catalog familiarity, stop on 429/rate responses, discard token. No write endpoints. [API](https://docs.api.wanikani.com/20170710/).
 
 ### Content References, Expo, and Hosting
 

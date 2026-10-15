@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Text } from "react-native";
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { placementAudio } from "./placement-audio";
+import { WaniKaniImport } from "../imports/WaniKaniImport";
 import { interests, placementBank, recommendFirstLesson } from "@packages/content";
 import { bandLabel, recommendLevel, selectedBand, shouldOfferFollowups, type EstimatedLevel, type Goal, type LearningBand, type OnboardingStep, type PlacementQuestion, type PlacementResponse } from "@packages/learning-core";
 import { useProfile } from "../../data/ProfileProvider";
@@ -47,7 +48,7 @@ export function Onboarding() {
         {profile.goal === "jlpt" && <><Title>Target JLPT level</Title>{(["N5", "N4", "N3", "N2", "N1"] as const).map(level => <Choice key={level} label={level} selected={profile.targetJlpt === level} onPress={() => void save({ targetJlpt: level })}/>)}<Body muted>Starter lessons focus on N5/N4. Higher-level courses will follow.</Body><Field label="Optional exam date (YYYY-MM-DD)" value={profile.examDate ?? ""} onChangeText={value => void save({ examDate: value })} placeholder="2026-12-06"/></>}
         <Button label="Continue" onPress={() => void move("import")}/>
       </>}
-      {currentStep === "import" && <><Body>WaniKani familiarity helps identify kanji and vocabulary you may know. Grammar, listening and speaking are assessed separately.</Body><Body muted>The import connection is being added in a later build step. You can begin without it and import from Profile later.</Body><Button label="Skip for now" onPress={() => void save({ importSkipped: true, onboardingStep: "placement" })}/></>}
+      {currentStep === "import" && <><WaniKaniImport onContinue={() => void save({ importSkipped: false, onboardingStep: "placement" })}/><Button label="Skip for now" secondary onPress={() => void save({ importSkipped: true, onboardingStep: "placement" })}/></>}
       {currentStep === "placement" && question && <>
         <Body muted>Question {profile.placementResponses.length + 1} of {questions.length} · {question.domain}</Body><Title>{question.prompt}</Title>
         {question.japanese && <Text style={[styles.kanji, { color: "#37469E" }]}>{question.japanese}</Text>}
@@ -66,11 +67,11 @@ export function Onboarding() {
         <Field label="A specific favorite (optional)" value={favorite} onChangeText={setFavorite} placeholder="A favorite series or place" maxLength={120}/>
         <Button label="Add favorite" secondary disabled={!favorite.trim()} onPress={() => { const added = favorite.trim(); void save(current => ({ favorites: Array.from(new Set([...current.favorites, added])) })); setFavorite(""); }}/>
         {profile.favorites.length > 0 && <Body>{profile.favorites.join(" · ")}</Body>}
-        <Body muted>Favorites will be resolved through Qloo when conversation personalization is connected. These choices are saved now.</Body>
+        <Body muted>Your favorites are saved. In conversation, you can confirm a matching favorite when a name has several possible matches.</Body>
         <Button label="Continue" onPress={() => void move("preview")}/><Button label="Skip personalization for now" secondary onPress={() => void save({ interests: [], favorites: [], onboardingStep: "preview" })}/>
       </>}
       {currentStep === "preview" && <>
-        <Body>{bandLabel(profile.acceptedBand)} · {profile.dailyMinutes} minutes a day</Body><Title>{lesson.title}</Title><Text style={[styles.kanji, { color: "#37469E", fontSize: 40 }]}>{lesson.kanji.join(" ")}</Text><Body>One grammar pattern: {lesson.pattern}</Body><Body>You&apos;ll practise a little kana, word meanings and readings, pronunciation, then a conversation.</Body><Body>By the end: {lesson.outcome.toLowerCase()}.</Body><Body muted>This preview uses your saved interests and checked lesson metadata. Real Qloo conversation context is connected in the next build step.</Body><Button label="Start my session" onPress={() => void move("complete")}/>
+        <Body>{bandLabel(profile.acceptedBand)} · {profile.dailyMinutes} minutes a day</Body><Title>{lesson.title}</Title><Text style={[styles.kanji, { color: "#37469E", fontSize: 40 }]}>{lesson.kanji.join(" ")}</Text><Body>One grammar pattern: {lesson.pattern}</Body><Body>You&apos;ll practise a little kana, word meanings and readings, pronunciation, then a conversation.</Body><Body>By the end: {lesson.outcome.toLowerCase()}.</Body><Body muted>Your interests shape this suggestion. In conversation, you can choose another topic and explore related cultural suggestions when available.</Body><Button label="Start my session" onPress={() => void move("complete")}/>
       </>}
       {error && <Message>{error}</Message>}
       {index > 0 && <Button label="Back" secondary onPress={() => void move(steps[index - 1])}/>}

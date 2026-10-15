@@ -16,3 +16,4 @@ export * from "./grammar-reference.ts";
 export * from "./curriculum.ts";
 export * from "./speech-cues.ts";
 export * from "./lesson-target.ts";
+export * from "./wanikani.ts";

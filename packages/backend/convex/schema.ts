@@ -1,4 +1,5 @@
 import { authTables } from "@convex-dev/auth/server";
+import { importCodeValue, importSnapshotValue } from "./importValues";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { profileValue } from "./profileValues";
@@ -9,6 +10,7 @@ import { culturalEntityValue, culturalTypeValue, culturalSnapshotValue } from ".
 import { speechSourceValue, speechStatusValue, speechSegmentValue } from "./speechValues";
 import { reviewAttemptValue, reviewReceiptValue, reviewTrackValue, reviewOpportunityValue, reviewChangeValue, reviewCardValue, reviewAssessmentResultValue } from "./reviewValues";
 export default defineSchema({
+  wanikaniImports: defineTable({userId:v.id("users"),revision:v.number(),status:v.union(v.literal("running"),v.literal("ready"),v.literal("unavailable"),v.literal("empty")),leaseUntil:v.number(),updatedAt:v.number(),snapshot:v.optional(importSnapshotValue),errorCode:v.optional(importCodeValue)}).index("by_user",["userId"]),
   contentPackages: defineTable({lessonId:v.string(),version:v.number(),sha256:v.string(),files:v.array(v.object({assetId:v.string(),storageId:v.id("_storage")})),publishedAt:v.number()}).index("by_lesson_version",["lessonId","version"]),
   ...authTables,
   reviewTracks: defineTable({userId:v.id("users"),track:reviewTrackValue}).index("by_user_track",["userId","track.id"]).index("by_user_due",["userId","track.dueAt"]),
