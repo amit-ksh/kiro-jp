@@ -5,6 +5,154 @@ import os from "node:os";
 import path from "node:path";
 import { checkLessonAudio } from "../scripts/lib/check-lesson-audio.mjs";
 
+test("audio-only checks request a complete ID-constrained response schema", async () => {
+  const directory = fs.mkdtempSync(
+      path.join(os.tmpdir(), "kiro-schema-check-"),
+    ),
+    originalFetch = globalThis.fetch;
+  try {
+    const clip = { id: "word", text: "よむ" };
+    fs.writeFileSync(path.join(directory, "word.wav"), new Uint8Array([1, 2]));
+    fs.writeFileSync(
+      path.join(directory, "word.json"),
+      JSON.stringify({ ...clip, sha256: "public-fixture-hash" }),
+    );
+    globalThis.fetch = async (_url, init) => {
+      const request = JSON.parse(init.body),
+        schema = request.generationConfig.responseJsonSchema;
+      assert(
+        schema,
+        "Unconstrained output must not be sent for an audio check.",
+      );
+      assert.equal(schema.type, "array");
+      assert.equal(schema.minItems, 1);
+      assert.equal(schema.maxItems, 1);
+      assert.deepEqual(schema.items.required, ["id", "kana"]);
+      assert.deepEqual(schema.items.properties.id.enum, [clip.id]);
+      assert.equal(schema.items.additionalProperties, false);
+      return Response.json({
+        candidates: [
+          {
+            finishReason: "STOP",
+            content: {
+              parts: [
+                { text: JSON.stringify([{ id: clip.id, kana: "よむ" }]) },
+              ],
+            },
+          },
+        ],
+      });
+    };
+    const result = await checkLessonAudio({
+      client: { mutation: async () => ({ start: true }) },
+      env: {},
+      directory,
+      clips: [clip],
+    });
+    assert.equal(result[0].status, "transcript-consistent");
+  } finally {
+    globalThis.fetch = originalFetch;
+    assert(path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep));
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("an explicit audio-check retry is fenced to the immediately preceding malformed response and at most three attempts", async () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "kiro-retry-check-")),
+    originalFetch = globalThis.fetch;
+  try {
+    const clip = { id: "word", text: "よむ" },
+      record = path.join(directory, "word.json");
+    fs.writeFileSync(path.join(directory, "word.wav"), new Uint8Array([1, 2]));
+    fs.writeFileSync(
+      record,
+      JSON.stringify({ ...clip, sha256: "public-fixture-hash" }),
+    );
+    const ids = [];
+    let calls = 0;
+    const client = {
+      mutation: async (name, args) => {
+        if (name === "aiBudget:reserve") {
+          ids.push(args.operationId);
+          return { start: true };
+        }
+        return null;
+      },
+    };
+    globalThis.fetch = async () => {
+      calls++;
+      return Response.json({
+        candidates: [
+          {
+            finishReason: "STOP",
+            content: {
+              parts: [
+                {
+                  text:
+                    calls === 1
+                      ? "["
+                      : JSON.stringify([{ id: clip.id, kana: "よむ" }]),
+                },
+              ],
+            },
+          },
+        ],
+      });
+    };
+    await assert.rejects(
+      checkLessonAudio({
+        client,
+        env: {},
+        directory,
+        clips: [clip],
+        attempt: 2,
+      }),
+    );
+    assert.equal(calls, 0);
+    await assert.rejects(
+      checkLessonAudio({ client, env: {}, directory, clips: [clip] }),
+      /INVALID_AUDIO_CHECK_RESPONSE/,
+    );
+    assert.equal(calls, 1);
+    await assert.rejects(
+      checkLessonAudio({
+        client,
+        env: {},
+        directory,
+        clips: [clip],
+        attempt: 3,
+      }),
+      /AUDIO_CHECK_RETRY_REQUIRES_PRIOR_RESPONSE/,
+    );
+    assert.equal(calls, 1);
+    const result = await checkLessonAudio({
+      client,
+      env: {},
+      directory,
+      clips: [clip],
+      attempt: 2,
+    });
+    assert.equal(result[0].status, "transcript-consistent");
+    assert.equal(ids[1], `${ids[0]}-attempt-2`);
+    assert.equal(calls, 2);
+    await assert.rejects(
+      checkLessonAudio({
+        client,
+        env: {},
+        directory,
+        clips: [clip],
+        attempt: 4,
+      }),
+      /INVALID_AUDIO_CHECK_ATTEMPT/,
+    );
+    assert.equal(calls, 2);
+  } finally {
+    globalThis.fetch = originalFetch;
+    assert(path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep));
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test("katakana source clips compare with the requested hiragana transcript without accepting a different sound", async () => {
   const originalFetch = globalThis.fetch;
   for (const [kana, expected] of [

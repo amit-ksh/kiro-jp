@@ -1,4 +1,5 @@
 import { assessFixed, grammarIntervals, recallIntervals, type Assessment, type PreparedLesson, type SupportFlag } from "./lesson.ts";
+import { lessonEntry } from "./lesson-entry.ts";
 export interface StudySpan { start: number; end: number; localDay: string; offsetMinutes: number; }
 export interface StudyEvent {
   eventId: string; sessionId: string; deviceId: string; sequence: number; lessonId: string; lessonVersion: number; occurredAt: number; localDay: string; timezone: string; offsetMinutes: number;
@@ -63,6 +64,7 @@ export function validateStudyEvent(event: StudyEvent, lesson: PreparedLesson | u
   if(event.kind==="audioActivity" && (event.stepId!=="recap" || !["listening","speaking"].includes(event.input??"") || !event.spans.length || event.support.length || event.context || event.dontKnow!==undefined))throw new Error("Invalid audio practice activity.");
   const step = lessonSteps(lesson).find(item => item.id === event.stepId) ?? (exerciseForStep(lesson, event.stepId) ? { kind: "exercise" } : undefined);
   if (!step || (event.kind === "started" && (event.stepId !== "goal" || !event.context)) || (event.kind === "attempted" && step.kind !== "exercise") || (event.kind === "savedPhrase" && !lesson.grammar.examples.some(example => example.id === event.input)) || (event.context && event.context.theme.length > 120)) throw new Error("Invalid lesson step.");
+  if (event.kind === "started" && !lessonEntry(lesson, event.context!.band).allowed) throw new Error("Choose a lesson matching your accepted level and prepared prerequisite support.");
 }
 export function sessionProjection(lesson: PreparedLesson, source: readonly StudyEvent[], checked: Readonly<Record<string, Assessment>> = {}) {
   const events = [...source].sort((a, b) => a.occurredAt - b.occurredAt || a.deviceId.localeCompare(b.deviceId) || a.sequence - b.sequence || a.eventId.localeCompare(b.eventId));

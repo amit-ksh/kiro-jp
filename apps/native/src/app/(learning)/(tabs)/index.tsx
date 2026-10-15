@@ -29,7 +29,7 @@ export default function Home() {
   const study = useStudy();
   const reviews = useReviews();
   const content = useContent();
-  const lesson = recommendFirstLesson(profile.interests);
+  const lesson = recommendFirstLesson(profile.interests, profile.acceptedBand);
   const sessions = study.events
     .filter((event) => event.kind === "started" && curriculum.forEvent(event))
     .sort((a, b) => b.occurredAt - a.occurredAt);

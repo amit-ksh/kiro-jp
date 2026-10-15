@@ -1,0 +1,30 @@
+{
+  "id": "word-write",
+  "kind": "word",
+  "text": "かく",
+  "display": "書く",
+  "meaning": "write",
+  "lessonId": "ability",
+  "lessonVersion": 1,
+  "scriptHash": "548eaceeffa48bad8cffbad76f8c0975f2b1e7ead4154561be118a76590b0646",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-ability-v1-word-write-548eaceeffa4",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.04,
+  "sampleRate": 24000,
+  "sha256": "37faee02fcdd4c1f02710d46615188700cd511d73565407aae20e007cac7a2fc",
+  "createdAt": "2026-10-15T13:47:16.992Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-3a0606dec1e5783b78a0e5b7811a4aa51d7468054001824ab97e8d0df8ff6570",
+    "checkedAt": "2026-10-15T13:52:56.404Z",
+    "audioHash": "37faee02fcdd4c1f02710d46615188700cd511d73565407aae20e007cac7a2fc",
+    "kana": "かく",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

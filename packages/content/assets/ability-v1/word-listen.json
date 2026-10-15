@@ -1,0 +1,30 @@
+{
+  "id": "word-listen",
+  "kind": "word",
+  "text": "きく",
+  "display": "聞く",
+  "meaning": "hear",
+  "lessonId": "ability",
+  "lessonVersion": 1,
+  "scriptHash": "b95cd7d40a77506cdb2f5b45911ac082d5c553892a9315cbca5e37b46d891a2a",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-ability-v1-word-listen-b95cd7d40a77",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.28,
+  "sampleRate": 24000,
+  "sha256": "a53f3a03cbec861e4b4d3f2e033380c8aee94d4b051dd9c5cbfa84efd93256a6",
+  "createdAt": "2026-10-15T13:47:22.048Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-3a0606dec1e5783b78a0e5b7811a4aa51d7468054001824ab97e8d0df8ff6570",
+    "checkedAt": "2026-10-15T13:52:56.405Z",
+    "audioHash": "a53f3a03cbec861e4b4d3f2e033380c8aee94d4b051dd9c5cbfa84efd93256a6",
+    "kana": "きく",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

@@ -4,6 +4,8 @@ export function checkPreparedLesson(lesson: PreparedLesson) {
   const errors: string[] = [];
   if (lesson.words.length < 3 || lesson.words.length > 5 || !Number.isInteger(lesson.version) || lesson.version < 1) errors.push("Invalid lesson size/version.");
   if (lesson.check.status !== "sourceChecked" || !lesson.check.method || lesson.check.references.length < 2 || lesson.check.references.some(reference => !reference.url.startsWith("https://") || !reference.locator || !reference.checked)) errors.push("Missing source-check record.");
+  if ((lesson.level === "N4" && !lesson.entry) || (lesson.entry && lesson.level !== "N4")) errors.push("Missing checked prerequisite support.");
+  if (lesson.entry && (lesson.entry.minimumBand !== "early-n4" || !lesson.entry.prerequisite.lessonId || !Number.isSafeInteger(lesson.entry.prerequisite.version) || lesson.entry.prerequisite.version < 1 || !lesson.entry.support.explanation.trim() || !lesson.entry.support.examples.length)) errors.push("Missing checked prerequisite support.");
   const ids = lesson.exercises.map(exercise => exercise.id);
   if (new Set(ids).size !== ids.length) errors.push("Duplicate exercise IDs.");
   for (const word of lesson.words) {
@@ -16,7 +18,7 @@ export function checkPreparedLesson(lesson: PreparedLesson) {
     if (exercise.options && exercise.options.filter(option => exercise.accepted.includes(option)).length !== 1) errors.push(`Ambiguous choice: ${exercise.id}.`);
     if (exercise.kind === "tiles" && (!exercise.tiles?.length || exercise.tiles.length > 6 || !arrangements(exercise.tiles).some(answer => exercise.accepted.some(approved => normalizeJapanese(answer) === normalizeJapanese(approved))))) errors.push(`Invalid tiles: ${exercise.id}.`);
   }
-  for (const sentence of [...lesson.words.map(word => word.example), ...lesson.grammar.examples]) {
+  for (const sentence of [...lesson.words.map(word => word.example), ...lesson.grammar.examples, ...(lesson.entry?.support.examples ?? [])]) {
     if (sentence.segments.map(segment => segment.text).join("") !== sentence.text || !sentence.reading || !sentence.meaning || !sentence.romaji) errors.push(`Invalid sentence breakdown: ${sentence.id}.`);
   }
   return errors;

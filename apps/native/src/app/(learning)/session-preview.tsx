@@ -6,6 +6,7 @@ import {
   localDayAt,
   reviewQueue,
   sessionProjection,
+  lessonEntry,
 } from "@packages/learning-core";
 import { useProfile } from "../../data/ProfileProvider";
 import { useStudy } from "../../data/StudyProvider";
@@ -55,6 +56,8 @@ export default function SessionPreview() {
     unfinished.find(
       (event) => event.sessionId === reviews.run?.nextSessionId,
     ) ?? unfinished[0];
+  const entry = preparedLesson ? lessonEntry(preparedLesson, profile.acceptedBand) : null;
+  const canStart = Boolean(resume || entry?.allowed);
   const theme =
     resume?.context?.theme ?? profile.interests[0] ?? "Everyday Japanese";
   const queue = reviewQueue(reviews, Date.now());
@@ -81,6 +84,7 @@ export default function SessionPreview() {
     setError("");
     try {
       if (!preparedLesson) throw new Error("Checked lesson not available.");
+      if (!canStart) throw new Error("Lesson starting point unavailable.");
       const sessionId =
         selectedSessionId.current ?? resume?.sessionId ?? Crypto.randomUUID();
       selectedSessionId.current = sessionId;
@@ -130,7 +134,7 @@ export default function SessionPreview() {
         {preparedLesson ? (
           <>
             <Body>{theme} · {preparedLesson.words.length} kanji, {preparedLesson.kana.length} kana and a useful pattern.</Body>
-            {prerequisite && (
+            {prerequisite && !preparedLesson.entry && (
               <>
                 <Body>
                   Builds on {prerequisite.title}. You can revisit that lesson
@@ -144,6 +148,12 @@ export default function SessionPreview() {
                 />
               </>
             )}
+            {preparedLesson.entry && <>
+              <Body>Early N4 · Builds on {prerequisite?.title ?? preparedLesson.entry.prerequisite.lessonId}. This lesson includes a supported refresher on the required verb forms.</Body>
+              {prerequisite && <Button label={`Review ${prerequisite.title}`} secondary onPress={() => router.push({pathname:"/(learning)/session-preview",params:{lessonId:prerequisite.id}})}/>}
+              {!canStart && <><Body>This lesson is above your saved starting level. Try a foundation lesson, or review your level if your experience has changed.</Body><Button label="Review my level" secondary onPress={() => router.push("/(learning)/(tabs)/profile")}/></>}
+              {resume && !entry?.allowed && <Body muted>Your saved session keeps its original starting point. You can continue it or choose another lesson.</Body>}
+            </>}
             <Body>
               {firstReviews
                 ? `First, ${firstReviews} ${savedReview ? "remaining questions in your saved review set" : "due reviews"}. Then ${resume ? "resume your saved lesson" : "learn the kanji, kana and grammar"}, practise pronunciation and open your interest-led conversation.`
@@ -174,7 +184,7 @@ export default function SessionPreview() {
             </Body>
             <Button
               label={resume ? "Continue my session" : "Start my session"}
-              disabled={study.loading || reviews.loading}
+              disabled={study.loading || reviews.loading || !canStart}
               busy={busy}
               onPress={() => void start()}
             />

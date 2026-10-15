@@ -1,0 +1,30 @@
+{
+  "id": "kana-1",
+  "kind": "kana",
+  "text": "マ",
+  "display": "マ",
+  "meaning": "ma",
+  "lessonId": "ability",
+  "lessonVersion": 1,
+  "scriptHash": "f39955b32657262d0167b64854e7ea16bb74749e5864ab3e8d8fe33292bba25b",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-ability-v1-kana-1-f39955b32657",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.2,
+  "sampleRate": 24000,
+  "sha256": "7ea8cf82808a37bf563ed46375d6ce6c7374048fc4f98d35368a91a2312c30a7",
+  "createdAt": "2026-10-15T13:47:24.565Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-3a0606dec1e5783b78a0e5b7811a4aa51d7468054001824ab97e8d0df8ff6570",
+    "checkedAt": "2026-10-15T13:52:56.405Z",
+    "audioHash": "7ea8cf82808a37bf563ed46375d6ce6c7374048fc4f98d35368a91a2312c30a7",
+    "kana": "ま",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "can-write",
+  "kind": "sentence",
+  "text": "なまえをかくことができます。",
+  "display": "名前を書くことができます。",
+  "meaning": "I can write my name.",
+  "lessonId": "ability",
+  "lessonVersion": 1,
+  "scriptHash": "d2fe87b3b469629575359c442d4f75b818325325ed5948577152f51100d4014e",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-ability-v1-can-write-d2fe87b3b469",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 3.2,
+  "sampleRate": 24000,
+  "sha256": "270910051bdd9bc8e21d078049ffe267dee822ebc220d03806644c3f0a233d1c",
+  "createdAt": "2026-10-15T13:48:44.091Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-983d23247a8a65b9cbf32dd674e4b766a65b417c9d9fd7add0c701b31ff11396-attempt-2",
+    "checkedAt": "2026-10-15T13:58:01.079Z",
+    "audioHash": "270910051bdd9bc8e21d078049ffe267dee822ebc220d03806644c3f0a233d1c",
+    "kana": "なまえをかくことができます",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

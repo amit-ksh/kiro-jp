@@ -1,0 +1,30 @@
+{
+  "id": "can-read",
+  "kind": "sentence",
+  "text": "まんがをよむことができます。",
+  "display": "マンガを読むことができます。",
+  "meaning": "I can read manga.",
+  "lessonId": "ability",
+  "lessonVersion": 1,
+  "scriptHash": "29f133b66c87f2363fa3efaec1ffabfb95cd467764b2e55d9b41dfaab051e4b9",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-ability-v1-can-read-29f133b66c87",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 3.16,
+  "sampleRate": 24000,
+  "sha256": "9ca770c416ce948c6de81c48677581348d642738bfae7e303b128a824cc37513",
+  "createdAt": "2026-10-15T13:48:41.587Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-983d23247a8a65b9cbf32dd674e4b766a65b417c9d9fd7add0c701b31ff11396-attempt-2",
+    "checkedAt": "2026-10-15T13:58:01.076Z",
+    "audioHash": "9ca770c416ce948c6de81c48677581348d642738bfae7e303b128a824cc37513",
+    "kana": "まんがをよむことができます",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "can-listen",
+  "kind": "sentence",
+  "text": "ここでおんがくをきくことができます。",
+  "display": "ここで音楽を聞くことができます。",
+  "meaning": "You can listen to music here.",
+  "lessonId": "ability",
+  "lessonVersion": 1,
+  "scriptHash": "9f1b0e4043e31ca890e0093ab42ad0b800c3961276974cf8e2d3902654ba1586",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-ability-v1-can-listen-9f1b0e4043e3",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 4.12,
+  "sampleRate": 24000,
+  "sha256": "38a413ffc35e55dcd079ba06b8dc510e72da6d5857621de7b9d6737e72e43467",
+  "createdAt": "2026-10-15T13:48:50.928Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-983d23247a8a65b9cbf32dd674e4b766a65b417c9d9fd7add0c701b31ff11396-attempt-2",
+    "checkedAt": "2026-10-15T13:58:01.081Z",
+    "audioHash": "38a413ffc35e55dcd079ba06b8dc510e72da6d5857621de7b9d6737e72e43467",
+    "kana": "ここでおんがくをきくことができます",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

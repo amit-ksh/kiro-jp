@@ -273,6 +273,7 @@ export const run = internalAction({
         culture,
         trace: JSON.stringify({
           provider,
+          familiarityItems: familiarity.length,
           receipts,
           tools: result.steps.flatMap((step) =>
             step.toolCalls.map((call) => call.toolName),

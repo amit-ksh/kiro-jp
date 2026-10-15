@@ -240,6 +240,11 @@ function LessonSession({ sessionId, lesson }: { sessionId: string; lesson: Prepa
                 These text exercises are ready offline. The tutor opens after
                 your lesson. Listen and record short attempts with this session.
               </Body>
+              {lesson.entry && <>
+                <Title>A supported refresher</Title>
+                <Body>{lesson.entry.support.explanation}</Body>
+                {lesson.entry.support.examples.map(sentence => <SentenceView key={sentence.id} sentence={sentence} readings={snapshot.furigana} romaji={snapshot.romaji} translation={snapshot.translations}/>)}
+              </>}
               <Button
                 label="Begin learning"
                 onPress={() => {

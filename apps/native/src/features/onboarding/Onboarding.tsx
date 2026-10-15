@@ -29,7 +29,7 @@ export function Onboarding() {
   const answeredIds = new Set(profile.placementResponses.map(answer => answer.questionId));
   const question = questions.find(q => !answeredIds.has(q.id));
   const recommendation = recommendLevel(placementBank, profile.placementResponses);
-  const lesson = recommendFirstLesson(profile.interests);
+  const lesson = recommendFirstLesson(profile.interests, profile.acceptedBand);
   async function save(patch: Parameters<typeof update>[0]) { setError(""); try { await update(patch); } catch { setError("Your answer couldn't be saved. Keep this screen open and try again."); } }
   async function move(step: OnboardingStep) { await save({ onboardingStep: step }); }
   async function answer(outcome: PlacementResponse["outcome"]) { if (!question) return; await save(current => ({ placementResponses: [...current.placementResponses.filter(item => item.questionId !== question.id), { questionId: question.id, bankVersion: question.bankVersion, outcome }] })); setHeard(false); }

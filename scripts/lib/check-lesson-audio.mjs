@@ -2,7 +2,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { normalizeJapanese } from "../../packages/learning-core/src/lesson.ts";
-export async function checkLessonAudio({ client, env, directory, clips }) {
+export async function checkLessonAudio({
+  client,
+  env,
+  directory,
+  clips,
+  attempt = 1,
+}) {
+  if (!Number.isInteger(attempt) || attempt < 1 || attempt > 3)
+    throw new Error("INVALID_AUDIO_CHECK_ATTEMPT");
   const records = clips.map((clip) =>
     JSON.parse(
       fs.readFileSync(path.join(directory, `${clip.id}.json`), "utf8"),
@@ -24,8 +32,30 @@ export async function checkLessonAudio({ client, env, directory, clips }) {
         JSON.stringify(records.map((record) => [record.id, record.sha256])),
       )
       .digest("hex"),
-    operationId = `lesson-audio-check-${hash}`,
+    originalOperationId = `lesson-audio-check-${hash}`,
+    operationId =
+      attempt === 1
+        ? originalOperationId
+        : `${originalOperationId}-attempt-${attempt}`,
     model = "gemini-3.8-flash";
+  if (attempt > 1) {
+    const prior = JSON.parse(
+      fs.readFileSync(
+        path.join(directory, ".audio-check-failure.json"),
+        "utf8",
+      ),
+    );
+    const previousId =
+      attempt === 2
+        ? originalOperationId
+        : `${originalOperationId}-attempt-${attempt - 1}`;
+    if (
+      prior.code !== "INVALID_AUDIO_CHECK_RESPONSE" ||
+      prior.operationId !== previousId ||
+      prior.responseReceived !== true
+    )
+      throw new Error("AUDIO_CHECK_RETRY_REQUIRES_PRIOR_RESPONSE");
+  }
   const reservation = await client.mutation("aiBudget:reserve", {
     operationId,
     model,
@@ -68,6 +98,20 @@ export async function checkLessonAudio({ client, env, directory, clips }) {
         contents: [{ role: "user", parts }],
         generationConfig: {
           responseMimeType: "application/json",
+          responseJsonSchema: {
+            type: "array",
+            minItems: clips.length,
+            maxItems: clips.length,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["id", "kana"],
+              properties: {
+                id: { type: "string", enum: clips.map((clip) => clip.id) },
+                kana: { type: "string" },
+              },
+            },
+          },
           maxOutputTokens: 2048,
         },
       }),
@@ -108,6 +152,7 @@ export async function checkLessonAudio({ client, env, directory, clips }) {
               ? body.candidates[0].finishReason.slice(0, 80)
               : "unknown",
           reason,
+          visibleTextCharacters: text.length,
           expectedRows: clips.length,
           receivedRows: Array.isArray(answer) ? answer.length : null,
           rows: Array.isArray(answer)

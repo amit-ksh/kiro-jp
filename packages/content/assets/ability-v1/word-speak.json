@@ -1,0 +1,30 @@
+{
+  "id": "word-speak",
+  "kind": "word",
+  "text": "はなす",
+  "display": "話す",
+  "meaning": "talk",
+  "lessonId": "ability",
+  "lessonVersion": 1,
+  "scriptHash": "dce6f0d4d66573140418f83cf9c47c67a43c4dddbb0644293c6c824655ef60c8",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-ability-v1-word-speak-dce6f0d4d665",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.52,
+  "sampleRate": 24000,
+  "sha256": "f5f428db1a9cede9ce9f4a1281c8fa8eee92f87057c7e05c24399c49202d99aa",
+  "createdAt": "2026-10-15T13:47:19.239Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-3a0606dec1e5783b78a0e5b7811a4aa51d7468054001824ab97e8d0df8ff6570",
+    "checkedAt": "2026-10-15T13:52:56.404Z",
+    "audioHash": "f5f428db1a9cede9ce9f4a1281c8fa8eee92f87057c7e05c24399c49202d99aa",
+    "kana": "はなす",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

@@ -4,6 +4,7 @@ export { favoritesLesson } from "./favorites.ts";
 export { availabilityLesson } from "./availability.ts";
 export { desireLesson } from "./desire.ts";
 import { curriculum } from "./curriculum.ts";
+import { lessonEntry, type LearningBand } from "@packages/learning-core";
 export { checkedContentManifests } from "./content-manifests.ts";
 export { grammarReferences } from "./grammar-reference.ts";
 export { curriculum, preparedLessons } from "./curriculum.ts";
@@ -17,8 +18,14 @@ export const lessonCatalog = [
   { id: "ability", title: "Say what you can do", band: "early-n4", kanji: ["読", "書", "話", "聞"], pattern: "〜ことができます", outcome: "Discuss an ability in a simple conversation", themes: ["Manga", "Music", "Japanese places"], prerequisite: "desire" },
   { id: "try", title: "Try something new", band: "early-n4", kanji: ["買", "作", "食", "見"], pattern: "〜てみます", outcome: "Say what you would like to try", themes: ["Food", "Travel", "Anime"], prerequisite: "ability" },
 ] as const;
-export function recommendFirstLesson(chosenInterests: readonly string[]) {
-  return lessonCatalog.find(lesson => curriculum.get(lesson.id) && !lesson.prerequisite && lesson.themes.some(theme => chosenInterests.includes(theme))) ?? lessonCatalog[0];
+export function recommendFirstLesson(chosenInterests: readonly string[], band: LearningBand = "foundations") {
+  const eligible = lessonCatalog.filter(item => {
+    const lesson = curriculum.get(item.id);
+    return lesson && lessonEntry(lesson,band).allowed && (!item.prerequisite || Boolean(lesson.entry));
+  });
+  const matchingBand = band === "early-n4" ? eligible.filter(item => item.band === "early-n4") : [];
+  const pool = matchingBand.length ? matchingBand : eligible;
+  return pool.find(lesson => lesson.themes.some(theme => chosenInterests.includes(theme))) ?? pool[0] ?? lessonCatalog[0];
 }
 export const placementBank = [
   { id: "kana-a", bankVersion: 1, domain: "kana", phase: "starter", prompt: "Which sound does this hiragana make?", japanese: "あ", options: ["a", "i", "u", "e"], correctIndex: 0, explanation: "あ makes the sound a." },

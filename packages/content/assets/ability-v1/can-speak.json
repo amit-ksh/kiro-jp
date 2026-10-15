@@ -1,0 +1,30 @@
+{
+  "id": "can-speak",
+  "kind": "sentence",
+  "text": "にほんごをはなすことができます。",
+  "display": "日本語を話すことができます。",
+  "meaning": "I can speak Japanese.",
+  "lessonId": "ability",
+  "lessonVersion": 1,
+  "scriptHash": "6d7ecf090392ddd36f6ea61ce00177fbadcd62734dc0a56bda6a42c4b55ab267",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-ability-v1-can-speak-6d7ecf090392",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 3.32,
+  "sampleRate": 24000,
+  "sha256": "09a16ca3944d5b554f1e9ac4150a6cc6cb297d1277073c8d0b16e63b07c668bd",
+  "createdAt": "2026-10-15T13:48:47.588Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-983d23247a8a65b9cbf32dd674e4b766a65b417c9d9fd7add0c701b31ff11396-attempt-2",
+    "checkedAt": "2026-10-15T13:58:01.080Z",
+    "audioHash": "09a16ca3944d5b554f1e9ac4150a6cc6cb297d1277073c8d0b16e63b07c668bd",
+    "kana": "にほんごをはなすことができます",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}
