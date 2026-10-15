@@ -120,7 +120,7 @@ export const claim = internalMutation({
   args: { id: v.id("lessonAssessments") },
   handler: async (ctx, args) => {
     const row = await ctx.db.get(args.id);
-    if (!row || row.status !== "queued") return null;
+    if (!row || row.status !== "queued" || !(await ctx.db.get(row.userId))) return null;
     const claim = row.claim + 1;
     await ctx.db.patch(row._id, {
       status: "running",
@@ -141,7 +141,7 @@ export const settle = internalMutation({
   },
   handler: async (ctx, args) => {
     const row = await ctx.db.get(args.id);
-    if (!row || row.claim !== args.claim || row.status !== "running") return;
+    if (!row || row.claim !== args.claim || row.status !== "running" || !(await ctx.db.get(row.userId))) return;
     const lesson = curriculum.forEvent(row.source);
     if (!lesson) throw new Error("Source lesson version missing.");
     const exercise = exerciseForStep(lesson, row.source.stepId);

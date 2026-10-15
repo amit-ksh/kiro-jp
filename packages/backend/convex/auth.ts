@@ -44,6 +44,10 @@ const limitedPassword = ConvexCredentials<DataModel>({
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [limitedPassword],
   callbacks: {
+    async beforeSessionCreation(ctx, { userId }) {
+      // A password action may have fetched credentials before deletion committed.
+      if (!(await ctx.db.get(userId))) throw new ConvexError("ACCOUNT_UNAVAILABLE");
+    },
     async redirect({ redirectTo }) {
       const origin = process.env.SITE_URL;
       if (!origin) throw new Error("SITE_URL must be configured for authentication links.");

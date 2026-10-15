@@ -189,7 +189,7 @@ export const claim = internalMutation({
   args: { phraseId: v.id("savedPhrases") },
   handler: async (ctx, args) => {
     const row = await ctx.db.get(args.phraseId);
-    if (!row || row.status !== "queued") return null;
+    if (!row || row.status !== "queued" || !(await ctx.db.get(row.userId))) return null;
     const claim = row.claim + 1;
     await ctx.db.patch(row._id, {
       claim,
@@ -215,7 +215,7 @@ export const settle = internalMutation({
   },
   handler: async (ctx, args) => {
     const row = await ctx.db.get(args.phraseId);
-    if (!row || row.claim !== args.claim || row.status !== "checking") return;
+    if (!row || row.claim !== args.claim || row.status !== "checking" || !(await ctx.db.get(row.userId))) return;
     if (args.feedback.length > 500) throw new Error("Invalid phrase feedback.");
     await ctx.db.patch(row._id, {
       status: args.decision,

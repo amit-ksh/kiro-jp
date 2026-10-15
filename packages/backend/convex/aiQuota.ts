@@ -15,8 +15,9 @@ export const status = internalQuery({ args: {}, handler: async ctx => {
 // Every real generation consumes capacity, including errors and tool-loop
 // steps. A rolling minute avoids a double burst at a minute boundary.
 export const reserve = internalMutation({
-  args: { operationId: v.string() },
-  handler: async (ctx, { operationId }) => {
+  args: { operationId: v.string(), ownerId: v.optional(v.id("users")) },
+  handler: async (ctx, { operationId, ownerId }) => {
+    if (ownerId && !(await ctx.db.get(ownerId))) return { start: false };
     if (!/^[A-Za-z0-9:._-]{1,180}$/.test(operationId)) throw new ConvexError("INVALID_AI_OPERATION");
     const previous = await ctx.db.query("aiServiceReservations").withIndex("by_operation", q => q.eq("operationId", operationId)).unique();
     if (previous) return { start: false };

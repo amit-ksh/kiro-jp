@@ -11,8 +11,9 @@ export const status = internalQuery({ args: {}, handler: async ctx => {
   return { limitMicros: limit(), reservedMicros: budget?.reservedMicros ?? 0, spentMicros: budget?.spentMicros ?? 0 };
 } });
 export const reserve = internalMutation({
-  args: { operationId: v.string(), model: v.union(v.literal("gemini-3.8-flash-lite-tts"), v.literal("gemini-3.8-flash")), inputTokenBound: v.number(), outputTokenBound: v.number() },
+  args: { ownerId: v.optional(v.id("users")), operationId: v.string(), model: v.union(v.literal("gemini-3.8-flash-lite-tts"), v.literal("gemini-3.8-flash")), inputTokenBound: v.number(), outputTokenBound: v.number() },
   handler: async (ctx, args) => {
+    if (args.ownerId && !(await ctx.db.get(args.ownerId))) return { start: false };
     const cap = limit();
     if (!args.operationId || args.operationId.length > 180 || !Number.isSafeInteger(args.inputTokenBound) || !Number.isSafeInteger(args.outputTokenBound) || args.inputTokenBound < 1 || args.outputTokenBound < 1 || args.inputTokenBound > 1_048_576 || args.outputTokenBound > 65_536) throw new ConvexError("INVALID_AI_RESERVATION");
     const existing = await ctx.db.query("aiCostReservations").withIndex("by_operation", q => q.eq("operationId", args.operationId)).unique();

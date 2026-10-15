@@ -35,6 +35,7 @@ export const get = query({
 export const begin = internalMutation({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
+    if (!(await ctx.db.get(userId))) return null;
     const now = Date.now(),
       row = await ctx.db
         .query("wanikaniImports")
@@ -67,6 +68,7 @@ export const begin = internalMutation({
 export const expire = internalMutation({
   args: { userId: v.id("users"), revision: v.number() },
   handler: async (ctx, args) => {
+    if (!(await ctx.db.get(args.userId))) return;
     const row = await ctx.db
       .query("wanikaniImports")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -93,6 +95,7 @@ export const finish = internalMutation({
     errorCode: v.optional(importCodeValue),
   },
   handler: async (ctx, args) => {
+    if (!(await ctx.db.get(args.userId))) return false;
     const row = await ctx.db
       .query("wanikaniImports")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))

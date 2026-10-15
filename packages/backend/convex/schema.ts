@@ -13,6 +13,10 @@ export default defineSchema({
   wanikaniImports: defineTable({userId:v.id("users"),revision:v.number(),status:v.union(v.literal("running"),v.literal("ready"),v.literal("unavailable"),v.literal("empty")),leaseUntil:v.number(),updatedAt:v.number(),snapshot:v.optional(importSnapshotValue),errorCode:v.optional(importCodeValue)}).index("by_user",["userId"]),
   contentPackages: defineTable({lessonId:v.string(),version:v.number(),sha256:v.string(),files:v.array(v.object({assetId:v.string(),storageId:v.id("_storage")})),publishedAt:v.number()}).index("by_lesson_version",["lessonId","version"]),
   ...authTables,
+  // Extend the installed auth schema only with the index needed for bounded
+  // cleanup; the library's verifier fields and signature index stay intact.
+  authVerifiers: defineTable({sessionId:v.optional(v.id("authSessions")),signature:v.optional(v.string())}).index("signature",["signature"]).index("by_session",["sessionId"]),
+  accountDeletions: defineTable({userId:v.id("users"),receiptHash:v.string(),status:v.union(v.literal("pending"),v.literal("complete")),phase:v.number(),deletedCount:v.number(),createdAt:v.number(),updatedAt:v.number()}).index("by_user",["userId"]).index("by_receipt",["receiptHash"]).index("by_status_updated",["status","updatedAt"]),
   reviewTracks: defineTable({userId:v.id("users"),track:reviewTrackValue}).index("by_user_track",["userId","track.id"]).index("by_user_due",["userId","track.dueAt"]),
   reviewOpportunities: defineTable({userId:v.id("users"),opportunity:reviewOpportunityValue}).index("by_user_opportunity",["userId","opportunity.id"]),
   reviewAttempts: defineTable({userId:v.id("users"),event:reviewAttemptValue,receipt:reviewReceiptValue}).index("by_user_event",["userId","event.eventId"]).index("by_user_parent",["userId","event.parentEventId","receipt.status"]).index("by_user_status",["userId","receipt.status"]).index("by_user_session_track",["userId","event.sessionId","event.trackId","event.occurredAt"]),

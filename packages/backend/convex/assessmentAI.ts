@@ -19,7 +19,7 @@ export const run = internalAction({
       const exercise = exerciseForStep(lesson, row.source.stepId);
       if (!exercise) throw new Error("Exercise unavailable.");
       const result = await generateSentenceFeedback(
-        actionGateway(ctx, `sentence.${row._id}.${row.attempt}.${row.claim}`, receipts),
+        actionGateway(ctx, `sentence.${row._id}.${row.attempt}.${row.claim}`, receipts, undefined, row.userId),
         { eventId: row.eventId, input: row.source.input },
         lesson,
         exercise,

@@ -115,7 +115,7 @@ export const claim = internalMutation({
   args: { jobId: v.id("conversationJobs") },
   handler: async (ctx, args) => {
     const job = await ctx.db.get(args.jobId);
-    if (!job || job.status !== "queued") return null;
+    if (!job || job.status !== "queued" || !(await ctx.db.get(job.userId))) return null;
     const segment = await ctx.db
       .query("conversationSegments")
       .withIndex("by_user_segment", (q) =>
@@ -194,7 +194,7 @@ export const settle = internalMutation({
   },
   handler: async (ctx, args) => {
     const job = await ctx.db.get(args.jobId);
-    if (!job || job.claim !== args.claim || job.status !== "running") return;
+    if (!job || job.claim !== args.claim || job.status !== "running" || !(await ctx.db.get(job.userId))) return;
     const segment = await ctx.db
       .query("conversationSegments")
       .withIndex("by_user_segment", (q) =>

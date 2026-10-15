@@ -157,6 +157,9 @@ importers:
 
   packages/backend:
     dependencies:
+      '@oslojs/crypto':
+        specifier: 1.0.1
+        version: 1.0.1
       '@ai-sdk/google':
         specifier: 4.0.95
         version: 4.0.95(zod@4.6.7)

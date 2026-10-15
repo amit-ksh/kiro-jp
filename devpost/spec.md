@@ -571,6 +571,8 @@ These choices preserve the entire approved loop and real integration proof. Scop
 
 ## Decisions and Open Issues
 
+- October 16 implementation correction: Convex Auth 0.0.96 has no exported delete-user helper. Confirmed deletion atomically removes the user and creates a resumable owner-cleanup job. Existing-user checks serialize learning writes/inference reservations with that fence. Auth sessions are expired, then children and credentials removed in bounded batches; queued work becomes inert and in-flight results are discarded. Shared content and immutable deployment spending/quota records remain. Native confirmation/local retirement is a separate required increment; server checks do not establish its completion.
+
 ### Learner Decisions Already Agreed
 
 Android Expo learning only, Next.js landing only, TypeScript/Turborepo, Convex/Convex Auth replacing Clerk, requested starter; Resend email; SQLite/persistent files/unique-event synchronization/shared rules; Gemini primary and OpenRouter free Nemotron initial alternative; server adapter through Cloudflare AI Gateway; bounded AI SDK tutor with Qloo tools; Whisper recognition/Gemini TTS; free quotas with no automatic paid fallback; EAS standalone APK/Cloudflare Pages/hosted Convex; Google Play deferred; initial AI-assisted, source-checked lesson process; same visual reference and shared MVP for both events.

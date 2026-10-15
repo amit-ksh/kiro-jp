@@ -13,6 +13,7 @@
     "@ai-sdk/openai-compatible": "3.0.68",
     "@auth/core": "^0.41.0",
     "@convex-dev/auth": "0.0.96",
+    "@oslojs/crypto": "1.0.1",
     "@packages/content": "workspace:*",
     "@packages/learning-core": "workspace:*",
     "ai": "7.0.139",

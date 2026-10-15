@@ -36,6 +36,7 @@ export const run = internalAction({
               return false;
             return (
               await ctx.runMutation(internal.aiBudget.reserve, {
+                ownerId: row.userId,
                 operationId,
                 model,
                 inputTokenBound,

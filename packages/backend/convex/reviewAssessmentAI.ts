@@ -25,6 +25,7 @@ export const run = internalAction({
             ...args,
             claim: row.claim,
           }),
+        row.userId,
       );
       const result = await generateSentenceFeedback(
         model,

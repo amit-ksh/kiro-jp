@@ -1,5 +1,6 @@
 "use node";
 import type { ActionCtx } from "../../_generated/server";
+import type { Id } from "../../_generated/dataModel";
 import { internal } from "../../_generated/api.js";
 import {
   createGatewayModel,
@@ -13,6 +14,7 @@ export function actionGateway(
   prefix: string,
   receipts: GatewayReceipt[],
   beforeDispatch?: () => Promise<boolean>,
+  ownerId?: Id<"users">,
 ) {
   const configured = process.env.AI_CONVERSATION_PROVIDER ?? "gemini";
   if (configured !== "gemini" && configured !== "openrouter")
@@ -36,6 +38,7 @@ export function actionGateway(
           ? (
               await ctx.runMutation(internal.aiBudget.reserve, {
                 operationId: dispatch.operationId,
+                ownerId,
                 model: "gemini-3.8-flash",
                 inputTokenBound: dispatch.inputTokenBound,
                 outputTokenBound: dispatch.outputTokenBound,
@@ -44,6 +47,7 @@ export function actionGateway(
           : (
               await ctx.runMutation(internal.aiQuota.reserve, {
                 operationId: dispatch.operationId,
+                ownerId,
               })
             ).start;
       },

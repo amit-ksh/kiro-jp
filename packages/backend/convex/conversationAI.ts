@@ -119,6 +119,8 @@ export const run = internalAction({
         ctx,
         `chat.${job._id}.${job.attempt}.${job.claim}`,
         receipts,
+        undefined,
+        job.userId,
       );
       if (job.kind === "recap") {
         const candidates = messages.filter((message) =>

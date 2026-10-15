@@ -20,6 +20,8 @@ export const check = internalAction({
           ctx,
           `phrase.${row._id}.${row.attempt}.${row.claim}`,
           receipts,
+          undefined,
+          row.userId,
         ),
         output: Output.object({
           schema: z.object({
