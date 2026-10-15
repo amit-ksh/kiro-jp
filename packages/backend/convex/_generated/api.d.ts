@@ -34,6 +34,7 @@ import type * as lib_ai_speech from "../lib/ai/speech.js";
 import type * as lib_email from "../lib/email.js";
 import type * as lib_ownership from "../lib/ownership.js";
 import type * as lib_qloo from "../lib/qloo.js";
+import type * as lib_qlooContext from "../lib/qlooContext.js";
 import type * as lib_speechContract from "../lib/speechContract.js";
 import type * as profile from "../profile.js";
 import type * as profileValues from "../profileValues.js";
@@ -86,6 +87,7 @@ declare const fullApi: ApiFromModules<{
   "lib/email": typeof lib_email;
   "lib/ownership": typeof lib_ownership;
   "lib/qloo": typeof lib_qloo;
+  "lib/qlooContext": typeof lib_qlooContext;
   "lib/speechContract": typeof lib_speechContract;
   profile: typeof profile;
   profileValues: typeof profileValues;

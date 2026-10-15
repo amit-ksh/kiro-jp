@@ -271,7 +271,11 @@ export function createQlooSession(
         )
       )
         context.candidates.push({ query, type, items: result.items });
-      return { ...result, requiresChoice };
+      return {
+        ...result,
+        requiresChoice,
+        confirmedEntityIds: confirmed.map((item) => item.id),
+      };
     },
     async findInterestTags(query: string): Promise<QlooResult<InterestTag>> {
       if (!query.trim() || query.length > 120)

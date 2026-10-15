@@ -30,6 +30,12 @@ export interface GatewayReceipt {
   finishReason?: string;
   visibleCharacters?: number;
   reasoningTokens?: number;
+  responseContentType?: string;
+  responseBytes?: number;
+  responseJsonValid?: boolean;
+  responseReadError?: string;
+  responseReadAborted?: boolean;
+  responseElapsedMs?: number;
 }
 export interface GatewayBudget {
   reserve: (dispatch: Dispatch) => Promise<boolean>;
@@ -97,12 +103,26 @@ export function createGatewayModel(provider: ConversationProvider, config: Gatew
     const signal = init.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(Math.max(1, deadline - Date.now()))]) : AbortSignal.timeout(Math.max(1, deadline - Date.now()));
     const outgoingHeaders = new Headers(init.headers);
     for (const [name, value] of Object.entries(headers)) outgoingHeaders.set(name, value);
+    const responseStarted = Date.now();
     const response = await transport(input, { ...init, headers: outgoingHeaders, redirect: "error", signal });
     const gatewayLogId = response.headers.get("cf-aig-log-id") ?? undefined;
     const receipt: GatewayReceipt = { operationId, provider, model, status: response.status, ...(gatewayLogId ? { gatewayLogId } : {}) };
     budget.record?.(receipt);
     if (response.ok && provider === "openrouter") {
-      const result = await response.clone().json().catch(() => null);
+      const mime = response.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase();
+      receipt.responseContentType = ["application/json", "text/html", "text/plain", "text/event-stream"].includes(mime ?? "") ? mime : "other";
+      let result;
+      try {
+        const body = await response.clone().text();
+        receipt.responseBytes = new TextEncoder().encode(body).byteLength;
+        result = JSON.parse(body);
+        receipt.responseJsonValid = true;
+      } catch (error) {
+        receipt.responseJsonValid = false;
+        receipt.responseReadError = error instanceof Error ? error.name : "unknown";
+        receipt.responseReadAborted = signal.aborted;
+      }
+      receipt.responseElapsedMs = Date.now() - responseStarted;
       const choice = result?.choices?.[0];
       if (typeof choice?.finish_reason === "string") receipt.finishReason = choice.finish_reason;
       if (typeof choice?.message?.content === "string") receipt.visibleCharacters = choice.message.content.length;
@@ -126,6 +146,6 @@ export function createGatewayModel(provider: ConversationProvider, config: Gatew
   if (provider === "gemini") return createGoogle({ apiKey: key, baseURL, headers, fetch: guardedFetch })(model);
   return createOpenAICompatible({
     name: "openrouter", apiKey: key, baseURL, headers, fetch: guardedFetch, supportsStructuredOutputs: true,
-    transformRequestBody: body => ({ ...body, model, ...(model === defaultOpenRouterModel ? { reasoning: { max_tokens: 1024 } } : {}), plugins: [], provider: { allow_fallbacks: false, require_parameters: true, max_price: { prompt: 0, completion: 0, request: 0, image: 0 } } }),
+    transformRequestBody: body => ({ ...body, model, ...(model === defaultOpenRouterModel ? { reasoning: { max_tokens: 256 } } : {}), plugins: [], provider: { allow_fallbacks: false, require_parameters: true, max_price: { prompt: 0, completion: 0, request: 0, image: 0 } } }),
   })(model);
 }

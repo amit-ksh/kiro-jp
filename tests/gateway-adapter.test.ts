@@ -7,6 +7,25 @@ const config: GatewayConfig = { accountId: "test-account", gatewayId: "test-gate
 const googleResponse = () => Response.json({ candidates: [{ content: { role: "model", parts: [{ text: "こんにちは。" }] }, finishReason: "STOP" }], usageMetadata: { promptTokenCount: 5, candidatesTokenCount: 4, thoughtsTokenCount: 3, totalTokenCount: 12 } });
 const routerResponse = () => Response.json({ id: "fixture", created: 1, model: defaultOpenRouterModel, choices: [{ index: 0, message: { role: "assistant", content: "こんにちは。" }, finish_reason: "stop" }], usage: { prompt_tokens: 5, completion_tokens: 4, total_tokens: 9 } });
 
+test("a malformed HTTP200 response is diagnosed without retaining its payload", async () => {
+  const receipts: import("../packages/backend/convex/lib/ai/providers.ts").GatewayReceipt[] = [];
+  const model = createGatewayModel("openrouter", config, "malformed-envelope", {
+    reserve: async () => true,
+    settle: async () => assert.fail("Free inference does not settle Gemini."),
+    record: receipt => receipts.push(receipt),
+  }, async () => new Response('{"choices":[', { status: 200, headers: { "content-type": "application/json", "cf-aig-log-id": "synthetic-receipt" } }));
+  await assert.rejects(generateText({ ...generationPolicy, model, prompt: "Say hello." }), error => {
+    assert.equal((error as Error).name, "AI_APICallError");
+    return true;
+  });
+  assert.equal(receipts[0]?.responseJsonValid, false);
+  assert.equal(receipts[0]?.responseBytes, 12);
+  assert.equal(receipts[0]?.responseContentType, "application/json");
+  assert.equal(receipts[0]?.responseReadError, "SyntaxError");
+  assert.equal(receipts[0]?.responseReadAborted, false);
+  assert.equal(JSON.stringify(receipts).includes('"choices"'), false);
+});
+
 test("Google requests are reserved before dispatch, stay on Gateway, and include reasoning in settlement", async () => {
   const events: string[] = []; let request: Dispatch | undefined; let measured;
   const model = createGatewayModel("gemini", config, "fixture-google", {
@@ -36,6 +55,7 @@ test("OpenRouter has zero-price routing, no model/provider fallback, and no paid
     assert.equal(url, "https://gateway.ai.cloudflare.com/v1/test-account/test-gateway/openrouter/v1/chat/completions");
     const body = JSON.parse(String(init?.body));
     assert.equal(body.model, defaultOpenRouterModel);
+    assert.deepEqual(body.reasoning, { max_tokens: 256 });
     assert.deepEqual(body.plugins, []);
     assert.deepEqual(body.provider, { allow_fallbacks: false, require_parameters: true, max_price: { prompt: 0, completion: 0, request: 0, image: 0 } });
     assert.equal(body.models, undefined);
