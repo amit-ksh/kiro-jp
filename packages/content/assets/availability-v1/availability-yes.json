@@ -1,0 +1,30 @@
+{
+  "id": "availability-yes",
+  "kind": "sentence",
+  "text": "はいあります。",
+  "display": "はい、あります。",
+  "meaning": "Yes, we do.",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "ac602be40e85994e169cc0d275bab0df0bd19c50d3c4865e8c2d5bf34af95149",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-availability-yes-ac602be40e85",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.84,
+  "sampleRate": 24000,
+  "sha256": "a5a9b9ad4746e2fdf3fc648e9d376448c2f866b2bde0cfd1a49e746603e3447a",
+  "createdAt": "2026-10-15T03:25:54.534Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e3fbc4291102e6b3db51f092d8da70c2b45698e8521483a84179f658c9cadea9",
+    "checkedAt": "2026-10-15T03:30:02.977Z",
+    "audioHash": "a5a9b9ad4746e2fdf3fc648e9d376448c2f866b2bde0cfd1a49e746603e3447a",
+    "kana": "はいあります",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

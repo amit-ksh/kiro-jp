@@ -1,0 +1,30 @@
+{
+  "id": "book-short-question",
+  "kind": "sentence",
+  "text": "ほんありますか。",
+  "display": "本、ありますか。",
+  "meaning": "Do you have books?",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "a9d3b3e77ac866df77c63f7cefcca863e731bfc8ed140b3ddee96f861a2afaee",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-book-short-question-a9d3b3e77ac8",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.04,
+  "sampleRate": 24000,
+  "sha256": "9fe4e5e63a251cb3b873d6845a05ca1e2fcc5ca4ef1c55e5e35bb3a6d6e606a8",
+  "createdAt": "2026-10-15T03:25:51.383Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e3fbc4291102e6b3db51f092d8da70c2b45698e8521483a84179f658c9cadea9",
+    "checkedAt": "2026-10-15T03:30:02.977Z",
+    "audioHash": "9fe4e5e63a251cb3b873d6845a05ca1e2fcc5ca4ef1c55e5e35bb3a6d6e606a8",
+    "kana": "ほんありますか",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

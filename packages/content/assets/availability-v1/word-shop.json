@@ -1,0 +1,30 @@
+{
+  "id": "word-shop",
+  "kind": "word",
+  "text": "みせ",
+  "display": "店",
+  "meaning": "shop",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "57e302d015f73d175e575ea7621eabe2a4b4c621ab5f3829db461f2e011a8ba6",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-word-shop-57e302d015f7",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.2,
+  "sampleRate": 24000,
+  "sha256": "784b9424407314af21e2b0dfc2bf6e9a6bcefe5ab4beead94b80946e4350b2cf",
+  "createdAt": "2026-10-15T03:23:19.112Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-c7e2b0bdab1055260e234f7069c45eec444230f1c4db5acd0a60932679f5b0f6",
+    "checkedAt": "2026-10-15T03:29:54.852Z",
+    "audioHash": "784b9424407314af21e2b0dfc2bf6e9a6bcefe5ab4beead94b80946e4350b2cf",
+    "kana": "みせ",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

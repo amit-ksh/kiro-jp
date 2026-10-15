@@ -1,0 +1,30 @@
+{
+  "id": "word-old",
+  "kind": "word",
+  "text": "ふるい",
+  "display": "古い",
+  "meaning": "old",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "0d62ef3b138b870c069b95d77ab404f82f5b4080a667bb0dfa53f7d4a30ba9ed",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-word-old-0d62ef3b138b",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.2,
+  "sampleRate": 24000,
+  "sha256": "77de36b7ef0b20b6d3f02e54665a1d2e7e1af0fc5f3cf90f79c63ef9e218d7ed",
+  "createdAt": "2026-10-15T03:23:27.650Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-c7e2b0bdab1055260e234f7069c45eec444230f1c4db5acd0a60932679f5b0f6",
+    "checkedAt": "2026-10-15T03:29:54.856Z",
+    "audioHash": "77de36b7ef0b20b6d3f02e54665a1d2e7e1af0fc5f3cf90f79c63ef9e218d7ed",
+    "kana": "ふるい",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

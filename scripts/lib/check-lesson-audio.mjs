@@ -86,25 +86,63 @@ export async function checkLessonAudio({ client, env, directory, clips }) {
       outputTokens:
         usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0),
     });
-  const answer = JSON.parse(
+  const text =
     body.candidates?.[0]?.content?.parts
       ?.filter((part) => !part.thought)
       .map((part) => part.text ?? "")
-      .join(""),
-  );
+      .join("") ?? "";
+  const invalid = (answer, reason) => {
+    // These are app-authored public teaching clips. Retain schema diagnostics,
+    // never request headers, credentials or an unbounded provider response.
+    fs.writeFileSync(
+      path.join(directory, ".audio-check-failure.json"),
+      JSON.stringify(
+        {
+          code: "INVALID_AUDIO_CHECK_RESPONSE",
+          operationId,
+          model,
+          responseReceived: true,
+          finishReason:
+            typeof body.candidates?.[0]?.finishReason === "string"
+              ? body.candidates[0].finishReason.slice(0, 80)
+              : "unknown",
+          reason,
+          expectedRows: clips.length,
+          receivedRows: Array.isArray(answer) ? answer.length : null,
+          rows: Array.isArray(answer)
+            ? answer.slice(0, 40).map((row) => ({
+                id: typeof row?.id === "string" ? row.id.slice(0, 80) : null,
+                kana:
+                  typeof row?.kana === "string" ? row.kana.slice(0, 240) : null,
+              }))
+            : [],
+        },
+        null,
+        2,
+      ) + "\n",
+    );
+    throw new Error("INVALID_AUDIO_CHECK_RESPONSE");
+  };
+  let answer;
+  try {
+    answer = JSON.parse(text);
+  } catch {
+    invalid(null, "invalid-json");
+  }
   if (
     !Array.isArray(answer) ||
     answer.length !== clips.length ||
-    new Set(answer.map((row) => row.id)).size !== clips.length ||
+    new Set(answer.map((row) => row?.id)).size !== clips.length ||
     answer.some(
       (row) =>
+        !row ||
         !clips.some((clip) => clip.id === row.id) ||
         typeof row.kana !== "string" ||
         row.kana.length > 240 ||
         !/^[-ーぁ-ゖ\s。、！？!?]*$/u.test(row.kana),
     )
   )
-    throw new Error("INVALID_AUDIO_CHECK_RESPONSE");
+    invalid(answer, "invalid-rows");
   const normalize = (text) =>
     text.normalize("NFKC").replace(/[\s。、！？!?]/gu, "");
   const results = [];

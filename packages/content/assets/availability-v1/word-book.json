@@ -1,0 +1,30 @@
+{
+  "id": "word-book",
+  "kind": "word",
+  "text": "ほん",
+  "display": "本",
+  "meaning": "book",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "6b933a6c92bf4dae134198c2ffcd4b3fb1f8a8e392af33e18d165d595e039612",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-word-book-6b933a6c92bf",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 0.96,
+  "sampleRate": 24000,
+  "sha256": "5ea18c2d9d275f37a23ce7104620ccc0b3e284ee3006889b66e062c29d330240",
+  "createdAt": "2026-10-15T03:23:21.337Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-c7e2b0bdab1055260e234f7069c45eec444230f1c4db5acd0a60932679f5b0f6",
+    "checkedAt": "2026-10-15T03:29:54.855Z",
+    "audioHash": "5ea18c2d9d275f37a23ce7104620ccc0b3e284ee3006889b66e062c29d330240",
+    "kana": "ほん",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

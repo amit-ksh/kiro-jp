@@ -1,0 +1,30 @@
+{
+  "id": "old-books-question",
+  "kind": "sentence",
+  "text": "ふるいほんはありますか。",
+  "display": "古い本はありますか。",
+  "meaning": "Do you have old books?",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "21c0b964e1cacc6f094cbdb5203bb7ed482691873cce4d90ad079352804df6af",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-old-books-question-21c0b964e1ca",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.72,
+  "sampleRate": 24000,
+  "sha256": "1e82774f9e779e777b8eefd14c88a0cb2f4838accc2767238381dd0fa1cae7e7",
+  "createdAt": "2026-10-15T03:25:49.095Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e3fbc4291102e6b3db51f092d8da70c2b45698e8521483a84179f658c9cadea9",
+    "checkedAt": "2026-10-15T03:30:02.977Z",
+    "audioHash": "1e82774f9e779e777b8eefd14c88a0cb2f4838accc2767238381dd0fa1cae7e7",
+    "kana": "ふるいほんはありますか",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

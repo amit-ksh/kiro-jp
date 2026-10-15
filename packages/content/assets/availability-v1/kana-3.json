@@ -1,0 +1,30 @@
+{
+  "id": "kana-3",
+  "kind": "kana",
+  "text": "ふ",
+  "display": "ふ",
+  "meaning": "fu",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "cfc283581cc7e0c0b7c430472a20b70f8048738f9b108c69b876ab346e0e7dc2",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-kana-3-cfc283581cc7",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.08,
+  "sampleRate": 24000,
+  "sha256": "6c1caeccf1c2a77b3877afb4e88b609bc5cc256e594b7392c715a2de7b469588",
+  "createdAt": "2026-10-15T03:24:32.341Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-c7e2b0bdab1055260e234f7069c45eec444230f1c4db5acd0a60932679f5b0f6",
+    "checkedAt": "2026-10-15T03:29:54.858Z",
+    "audioHash": "6c1caeccf1c2a77b3877afb4e88b609bc5cc256e594b7392c715a2de7b469588",
+    "kana": "ふ",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

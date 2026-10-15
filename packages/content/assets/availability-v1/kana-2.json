@@ -1,0 +1,30 @@
+{
+  "id": "kana-2",
+  "kind": "kana",
+  "text": "せ",
+  "display": "せ",
+  "meaning": "se",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "a9085e373d9d07c7fffb1e872efc8fd178863dcd223098842ab6830cfbc22bc7",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-kana-2-a9085e373d9d",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1,
+  "sampleRate": 24000,
+  "sha256": "1a333342e084f8fc1130cc84392f7afcf8385c08313cccd0bef0bb08981e1509",
+  "createdAt": "2026-10-15T03:24:30.142Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-c7e2b0bdab1055260e234f7069c45eec444230f1c4db5acd0a60932679f5b0f6",
+    "checkedAt": "2026-10-15T03:29:54.858Z",
+    "audioHash": "1a333342e084f8fc1130cc84392f7afcf8385c08313cccd0bef0bb08981e1509",
+    "kana": "せ",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

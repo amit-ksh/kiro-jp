@@ -1,0 +1,30 @@
+{
+  "id": "new-books-question",
+  "kind": "sentence",
+  "text": "あたらしいほんはありますか。",
+  "display": "新しい本はありますか。",
+  "meaning": "Do you have new books?",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "b46b49d22a3168c4301f83417b5a0abebb63092beac9addf50e27def8e967d60",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-new-books-question-b46b49d22a31",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 3.16,
+  "sampleRate": 24000,
+  "sha256": "500048ea989672ae189a15a0d68f1fccf51a443ef4eb331d386fea86e526dc7b",
+  "createdAt": "2026-10-15T03:24:41.660Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e3fbc4291102e6b3db51f092d8da70c2b45698e8521483a84179f658c9cadea9",
+    "checkedAt": "2026-10-15T03:30:02.976Z",
+    "audioHash": "500048ea989672ae189a15a0d68f1fccf51a443ef4eb331d386fea86e526dc7b",
+    "kana": "あたらしいほんはありますか",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

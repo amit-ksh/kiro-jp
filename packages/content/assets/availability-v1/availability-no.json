@@ -1,0 +1,30 @@
+{
+  "id": "availability-no",
+  "kind": "sentence",
+  "text": "いいえありません。",
+  "display": "いいえ、ありません。",
+  "meaning": "No, we don't.",
+  "lessonId": "availability",
+  "lessonVersion": 1,
+  "scriptHash": "e7d137a202b09b36ad0aa47840ebb6c24a13a17b716fbb6ca6b42dad0aeb5f6a",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-availability-v1-availability-no-e7d137a202b0",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.28,
+  "sampleRate": 24000,
+  "sha256": "f0be453bc1f4a0b6fb86f679841d6dd20a6bfd33f8345e862fc444092a771837",
+  "createdAt": "2026-10-15T03:25:56.823Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-e3fbc4291102e6b3db51f092d8da70c2b45698e8521483a84179f658c9cadea9",
+    "checkedAt": "2026-10-15T03:30:02.977Z",
+    "audioHash": "f0be453bc1f4a0b6fb86f679841d6dd20a6bfd33f8345e862fc444092a771837",
+    "kana": "いいえありません",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}
