@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
+import { normalizeJapanese } from "../../packages/learning-core/src/lesson.ts";
 export async function checkLessonAudio({ client, env, directory, clips }) {
   const records = clips.map((clip) =>
     JSON.parse(
@@ -143,12 +144,10 @@ export async function checkLessonAudio({ client, env, directory, clips }) {
     )
   )
     invalid(answer, "invalid-rows");
-  const normalize = (text) =>
-    text.normalize("NFKC").replace(/[\s。、！？!?]/gu, "");
   const results = [];
   for (const record of records) {
     const kana = answer.find((row) => row.id === record.id).kana,
-      matches = normalize(kana) === normalize(record.text);
+      matches = normalizeJapanese(kana) === normalizeJapanese(record.text);
     record.languageCheck = {
       kind: "AI transcript consistency, not native-speaker review",
       model,

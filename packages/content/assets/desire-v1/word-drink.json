@@ -1,0 +1,30 @@
+{
+  "id": "word-drink",
+  "kind": "word",
+  "text": "のむ",
+  "display": "飲む",
+  "meaning": "drink",
+  "lessonId": "desire",
+  "lessonVersion": 1,
+  "scriptHash": "a6646c5f973219db4dd530e3f88c40567f34c6683a91906ee5574ecaa22788b5",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-desire-v1-word-drink-a6646c5f9732",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.28,
+  "sampleRate": 24000,
+  "sha256": "34249d466a9fccd7e43a18cd25bd5aab743535e3d0269847c17c38ef267b8f69",
+  "createdAt": "2026-10-15T07:48:38.961Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-352f4cdfd64b0e8b1e46ddd67b1238f09fac13a39e16b8e4c425b75c19668dd8",
+    "checkedAt": "2026-10-15T09:26:16.453Z",
+    "audioHash": "34249d466a9fccd7e43a18cd25bd5aab743535e3d0269847c17c38ef267b8f69",
+    "kana": "のむ",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

@@ -5,6 +5,53 @@ import os from "node:os";
 import path from "node:path";
 import { checkLessonAudio } from "../scripts/lib/check-lesson-audio.mjs";
 
+test("katakana source clips compare with the requested hiragana transcript without accepting a different sound", async () => {
+  const originalFetch = globalThis.fetch;
+  for (const [kana, expected] of [
+    ["あ", "transcript-consistent"],
+    ["に", "needs-audio-review"],
+  ]) {
+    const directory = fs.mkdtempSync(
+      path.join(os.tmpdir(), "kiro-katakana-check-"),
+    );
+    try {
+      const clip = { id: "kana-1", text: "ア" };
+      fs.writeFileSync(
+        path.join(directory, "kana-1.wav"),
+        new Uint8Array([1, 2]),
+      );
+      fs.writeFileSync(
+        path.join(directory, "kana-1.json"),
+        JSON.stringify({
+          ...clip,
+          sha256: "fixture-audio-hash",
+          languageCheck: "pending",
+        }),
+      );
+      globalThis.fetch = async () =>
+        Response.json({
+          candidates: [
+            {
+              content: {
+                parts: [{ text: JSON.stringify([{ id: clip.id, kana }]) }],
+              },
+            },
+          ],
+        });
+      const result = await checkLessonAudio({
+        client: { mutation: async () => ({ start: true }) },
+        env: {},
+        directory,
+        clips: [clip],
+      });
+      assert.equal(result[0].status, expected);
+    } finally {
+      globalThis.fetch = originalFetch;
+      fs.rmSync(directory, { recursive: true, force: true });
+    }
+  }
+});
+
 test("invalid model check results retain bounded diagnostics without approving any clip", async () => {
   const originalFetch = globalThis.fetch;
   for (const content of [

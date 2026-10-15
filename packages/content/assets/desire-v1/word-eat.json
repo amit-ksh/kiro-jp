@@ -1,0 +1,30 @@
+{
+  "id": "word-eat",
+  "kind": "word",
+  "text": "たべる",
+  "display": "食べる",
+  "meaning": "to eat",
+  "lessonId": "desire",
+  "lessonVersion": 1,
+  "scriptHash": "b0a4bdb8b3ea896411bf0bfaee625a468dc792e9c994206553faad2ff1fbf7cb",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-desire-v1-word-eat-b0a4bdb8b3ea",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.2,
+  "sampleRate": 24000,
+  "sha256": "f5d481088c0bd8ef83770f995519d0e07a3ad91a245a2d7a4d3be4f9e46b6871",
+  "createdAt": "2026-10-15T07:48:35.307Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-352f4cdfd64b0e8b1e46ddd67b1238f09fac13a39e16b8e4c425b75c19668dd8",
+    "checkedAt": "2026-10-15T09:26:16.451Z",
+    "audioHash": "f5d481088c0bd8ef83770f995519d0e07a3ad91a245a2d7a4d3be4f9e46b6871",
+    "kana": "たべる",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

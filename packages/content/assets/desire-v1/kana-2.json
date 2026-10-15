@@ -1,0 +1,30 @@
+{
+  "id": "kana-2",
+  "kind": "kana",
+  "text": "ニ",
+  "display": "ニ",
+  "meaning": "ni",
+  "lessonId": "desire",
+  "lessonVersion": 1,
+  "scriptHash": "c25df6ffb91ad29853fa48724dfa9c6fa682cd3377cb730aff78a5a19a4cd388",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-desire-v1-kana-2-c25df6ffb91a",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 0.76,
+  "sampleRate": 24000,
+  "sha256": "925b50a84be4d5bbbd2b20e75f8388ceecb8b3610a24154d4488c5a1ff4d55c1",
+  "createdAt": "2026-10-15T07:50:29.323Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-352f4cdfd64b0e8b1e46ddd67b1238f09fac13a39e16b8e4c425b75c19668dd8",
+    "checkedAt": "2026-10-15T09:26:16.455Z",
+    "audioHash": "925b50a84be4d5bbbd2b20e75f8388ceecb8b3610a24154d4488c5a1ff4d55c1",
+    "kana": "に",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

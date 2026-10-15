@@ -1,0 +1,30 @@
+{
+  "id": "want-watch",
+  "kind": "sentence",
+  "text": "あにめをみたいです。",
+  "display": "アニメを見たいです。",
+  "meaning": "I want to watch anime.",
+  "lessonId": "desire",
+  "lessonVersion": 1,
+  "scriptHash": "1116bfc6ddfc02b87418982b1d0fa5fdfbc18e94b15d929ccb550d65dc8392db",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-desire-v1-want-watch-1116bfc6ddfc",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.56,
+  "sampleRate": 24000,
+  "sha256": "a36e9137b7f7259b6399826a128b5858b96dddda6bb27a49294c31f5b477876a",
+  "createdAt": "2026-10-15T07:50:37.859Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-07c80207132033e2c7523ebd580c0c1529968f9f01fbf3e7665435c556c25514",
+    "checkedAt": "2026-10-15T09:26:28.371Z",
+    "audioHash": "a36e9137b7f7259b6399826a128b5858b96dddda6bb27a49294c31f5b477876a",
+    "kana": "あにめをみたいです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}
