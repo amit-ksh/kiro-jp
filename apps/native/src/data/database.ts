@@ -71,12 +71,44 @@ export async function accountTransaction(
   db: SQLite.SQLiteDatabase,
   task: Parameters<SQLite.SQLiteDatabase["withExclusiveTransactionAsync"]>[0],
 ) {
-  // Expo opens a fresh connection for every exclusive transaction. The timeout
-  // set on the parent handle is not inherited by that connection.
-  await db.withExclusiveTransactionAsync(async (tx) => {
+  // Reserve the write before reading. Expo's exclusive helper starts with a
+  // deferred BEGIN: a concurrent commit can make a later read-to-write upgrade
+  // fail with SQLITE_BUSY_SNAPSHOT even when a busy timeout is configured.
+  // A fresh connection also keeps unrelated parent-handle writes outside this
+  // transaction. Preserve the account/deployment path and connection options.
+  const path = db.databasePath.replace(/\\/g, "/");
+  const separator = path.lastIndexOf("/");
+  const tx = await SQLite.openDatabaseAsync(
+    path.slice(separator + 1),
+    { ...db.options, useNewConnection: true },
+    separator < 0 ? undefined : path.slice(0, separator) || "/",
+  );
+  let started = false;
+  let failed = false;
+  try {
     await tx.execAsync("PRAGMA busy_timeout = 5000");
+    await tx.execAsync("BEGIN IMMEDIATE");
+    started = true;
     await task(tx);
-  });
+    await tx.execAsync("COMMIT");
+    started = false;
+  } catch (error) {
+    failed = true;
+    if (started) {
+      try {
+        await tx.execAsync("ROLLBACK");
+      } catch {
+        // Preserve the original failure; closing releases this connection.
+      }
+    }
+    throw error;
+  } finally {
+    try {
+      await tx.closeAsync();
+    } catch (error) {
+      if (!failed) throw error;
+    }
+  }
 }
 export async function writeLocalProfile(
   db: SQLite.SQLiteDatabase,
