@@ -20,3 +20,4 @@ export * from "./wanikani.ts";
 export * from "./lesson-entry.ts";
 export * from "./progress.ts";
 export * from "./reminders.ts";
+export * from "./data-export.ts";

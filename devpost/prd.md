@@ -79,12 +79,15 @@ Source: `scope.md > The MVP Boundary`; PRD account-method decision.
 - Forgot password? sends a secure reset link. Settings allow sign-out and password changes.
 - Explain failed email delivery and expired links, and allow requesting another email. Recovery and password changes keep learning history linked to the same account.
 - New account access and recovery require internet. A remembered account can use its available offline study material.
+- Account data controls include learning-data export and confirmed account deletion, as retained in the approved build checklist. Export can include cloud learning records and unsynchronized device activity, or clearly offer a device-only copy offline. Credentials and raw audio files are excluded from the JSON learning-data export.
 
 Acceptance criteria:
 
 - **ACC-1:** A newcomer can create and verify an account, sign in, restart the app, and return to saved onboarding/learning progress.
 - **ACC-2:** Password reset and password change preserve the same learning history; expired/failed email actions have a visible retry path.
 - **ACC-3:** Sign-out is available; account progress is not presented as another learner's progress.
+- **ACC-4:** A learner can save their learning-data export without changing progress. The export identifies its device/cloud coverage, retains drafts and pending attempts, and exposes no other account's records or authentication secrets. An incomplete cloud read is not reported as a complete export.
+- **ACC-5:** Confirmed deletion removes the owned account/learning records and private audio, cancels owned jobs/reminders, and removes or quarantines local data so delayed work cannot restore it. Other learners and shared public lesson assets remain intact. This requires its own implementation and verification; export does not establish deletion support.
 
 ### Onboarding, Placement, and Preferences
 
@@ -318,7 +321,7 @@ Preserve the scope's real integration proof, including real Qloo results, workin
 
 ## Possible Later Enhancements
 
-Expanded JLPT curriculum, richer exam planning, advanced flashcard controls, and wider personalized content can build on the same progress records. The original wishlist also retains account-data export/deletion and additional learning conveniences; implementation beyond the approved MVP needs an explicit scope decision.
+Expanded JLPT curriculum, richer exam planning, advanced flashcard controls, and wider personalized content can build on the same progress records. Additional conveniences beyond the approved MVP need an explicit scope decision. Account-data export/deletion are included in the approved build checklist and the account requirements above.
 
 ## Non-Goals
 
