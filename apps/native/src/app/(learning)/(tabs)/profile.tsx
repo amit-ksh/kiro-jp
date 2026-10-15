@@ -17,6 +17,7 @@ export default function Profile() {
   const [error, setError] = useState("");
   const save = (patch: Parameters<typeof update>[0]) => void update(patch).catch(() => setError("Your setting couldn't be saved. Please try again."));
   return <Screen title="Your Japanese, your pace."><Panel><Title>Level and daily goal</Title>{(["foundations", "early-n5", "early-n4"] as LearningBand[]).map(band => <Choice key={band} label={bandLabel(band)} selected={profile.acceptedBand === band} onPress={() => save({ acceptedBand: band })}/>)}{[5, 10, 15, 20, 30].map(minutes => <Choice key={minutes} label={`${minutes} minutes a day`} selected={profile.dailyMinutes === minutes} onPress={() => save({ dailyMinutes: minutes })}/>)}</Panel>
+    <Panel><Title>Your progress</Title><Body>See your week, separate skill practice and useful follow-up reviews.</Body><Button label="View my progress" secondary onPress={() => router.push("/(learning)/progress")}/></Panel>
     <LearningPreferences/>
     <Panel><Title>Your interests</Title>{interests.map(interest => <Choice key={interest} label={interest} selected={profile.interests.includes(interest)} onPress={() => save(current => ({ interests: current.interests.includes(interest) ? current.interests.filter(item => item !== interest) : [...current.interests, interest] }))}/>)}</Panel>
     <CulturalPreferences/>

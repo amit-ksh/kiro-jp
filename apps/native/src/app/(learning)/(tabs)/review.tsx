@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Text, type ScrollView } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import * as Crypto from "expo-crypto";
 import {
   hasStrongRecall,
@@ -25,6 +25,7 @@ import {
   useColors,
 } from "../../../components/ui";
 export default function Review() {
+  const { practiceTrackId } = useLocalSearchParams<{practiceTrackId?:string}>();
   const study = useStudy();
   const reviews = useReviews(),
     colors = useColors(),
@@ -66,6 +67,7 @@ export default function Review() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question?.eventId]);
   const { ready: due, awaitingFeedback } = reviewQueue(reviews, Date.now());
+  const focusedTrack = typeof practiceTrackId === "string" ? reviews.tracks.find(item => item.id === practiceTrackId) : undefined;
   const nextLesson =
     run?.nextSessionId &&
     study.events.some(
@@ -181,6 +183,8 @@ export default function Review() {
       subtitle="Recall now. Remember for longer."
       scrollRef={scroll}
     >
+      {!reviews.loading && !run && focusedTrack && <Panel><Title>Focused extra practice</Title><Body>{focusedTrack.card.label} · {focusedTrack.card.facet}</Body><Body muted>Practise this item from your progress recap. Extra practice keeps the scheduled review interval unchanged.</Body><Button label={`Practise ${focusedTrack.card.label}`} busy={busy} onPress={() => act(async () => { const question = makeQuestion(focusedTrack, true); if (!question) throw new Error("This review is not ready yet."); await reviews.saveRun({id:Crypto.randomUUID(),questions:[question],index:0,input:"",support:[]}); router.setParams({practiceTrackId:undefined}); })}/></Panel>}
+      {!reviews.loading && !run && practiceTrackId && !focusedTrack && <Panel><Body>This saved card is unavailable. Choose from your current reviews below.</Body></Panel>}
       {reviews.loading ? (
         <Panel>
           <Body>Opening reviews saved on this phone…</Body>
@@ -200,7 +204,7 @@ export default function Review() {
               {track.card.facet}
             </Body>
             {track.card.facet === "grammar" ? (
-              <Title>A polite request</Title>
+              <Title>{track.card.label}</Title>
             ) : (
               <Text
                 style={[

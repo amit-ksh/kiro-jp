@@ -1,11 +1,8 @@
 import { router } from "expo-router";
 import { Text } from "react-native";
 import {
-  activeMilliseconds,
   bandLabel,
-  localDayAt,
   sessionProjection,
-  reviewEarnsStreak,
   reviewQueue,
 } from "@packages/learning-core";
 import { recommendFirstLesson, curriculum } from "@packages/content";
@@ -13,6 +10,7 @@ import { useStudy } from "../../../data/StudyProvider";
 import { useReviews } from "../../../data/ReviewProvider";
 import { useProfile } from "../../../data/ProfileProvider";
 import { useContent } from "../../../data/ContentProvider";
+import { useLearningProgress } from "../../../features/profile/useLearningProgress";
 import {
   Body,
   Button,
@@ -29,6 +27,7 @@ export default function Home() {
   const study = useStudy();
   const reviews = useReviews();
   const content = useContent();
+  const progress = useLearningProgress();
   const lesson = recommendFirstLesson(profile.interests, profile.acceptedBand);
   const sessions = study.events
     .filter((event) => event.kind === "started" && curriculum.forEvent(event))
@@ -49,30 +48,8 @@ export default function Home() {
           segment.state === "active",
       ),
     );
-  const today = localDayAt(Date.now(), new Date().getTimezoneOffset());
-  const milliseconds = activeMilliseconds(
-    study.events.flatMap((event) => event.spans),
-    today,
-  );
-  const meaningful =
-    study.events.some(
-      (event) =>
-        event.kind === "conversationTurn" &&
-        event.localDay === today &&
-        event.input === "meaningful",
-    ) ||
-    sessions.some((session) =>
-      sessionProjection(
-        curriculum.forEvent(session)!,
-        study.events.filter((event) => event.sessionId === session.sessionId),
-        study.checked,
-      ).meaningfulDays.includes(today),
-    ) ||
-    reviews.attempts.some(
-      (event) =>
-        event.localDay === today &&
-        reviewEarnsStreak(event, reviews.receipts.get(event.eventId)),
-    );
+  const milliseconds = progress.today.milliseconds;
+  const meaningful = progress.today.meaningful;
   const queue = reviewQueue(reviews, Date.now()),
     due = queue.ready.length;
   if (study.loading || reviews.loading)
@@ -92,6 +69,8 @@ export default function Home() {
             ? "Today's streak day earned through meaningful practice."
             : "Complete a review, lesson exercise or Japanese conversation turn to earn today's streak day."}
         </Body>
+        {progress.streak > 0 && <Body>{progress.streak}-day current streak</Body>}
+        {progress.today.goalMet && <Body>Today&apos;s time goal reached.</Body>}
         <Body muted>
           Active time after study interactions; idle and network waiting are
           excluded.
@@ -217,7 +196,7 @@ export default function Home() {
       {sessions.length > 0 && (
         <Panel>
           <Title>Saved reference</Title>
-          <Body>Your words, request pattern and example sentences.</Body>
+          <Body>Your words, grammar pattern and example sentences.</Body>
           <Button
             label="Open session reference"
             secondary
@@ -246,9 +225,10 @@ export default function Home() {
         </Body>
         {profile.examDate && <Body>Exam date: {profile.examDate}</Body>}
         <Body muted>
-          Your skill progress will reflect actual practice. No speaking or
-          grammar mastery is inferred from your selected level.
+          Independent answers this week: {progress.skills.meaning.independent} meaning, {progress.skills.reading.independent} reading, {progress.skills.grammar.independent} grammar.
         </Body>
+        {progress.suggestions[0] && <Body>Useful next focus: {progress.suggestions[0].label}</Body>}
+        <Button label="See skill progress" secondary onPress={() => router.push("/(learning)/progress")}/>
         <Button
           label="Goals and interests"
           secondary

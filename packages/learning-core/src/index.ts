@@ -18,3 +18,4 @@ export * from "./speech-cues.ts";
 export * from "./lesson-target.ts";
 export * from "./wanikani.ts";
 export * from "./lesson-entry.ts";
+export * from "./progress.ts";

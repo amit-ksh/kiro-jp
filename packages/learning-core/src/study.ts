@@ -19,7 +19,10 @@ export function splitStudySpan(start: number, end: number, offsetMinutes: number
   return end > split ? [...splitStudySpan(start, split, offsetMinutes), ...splitStudySpan(split, end, offsetMinutes)] : [{ start, end, offsetMinutes, localDay: localDayAt(start, offsetMinutes) }];
 }
 export function activeMilliseconds(spans: readonly StudySpan[], day: string) {
-  const sorted = spans.filter(span => span.localDay === day).sort((a, b) => a.start - b.start);
+  return unionStudyMilliseconds(spans.filter(span => span.localDay === day));
+}
+export function unionStudyMilliseconds(spans: readonly StudySpan[]) {
+  const sorted = [...spans].sort((a, b) => a.start - b.start);
   let end = -Infinity, total = 0;
   for (const span of sorted) { total += Math.max(0, span.end - Math.max(end, span.start)); end = Math.max(end, span.end); }
   return total;
