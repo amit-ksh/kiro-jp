@@ -33,6 +33,7 @@ interface ReadyPackage {
   preparedAt: number;
 }
 interface State {
+  manifest: ContentManifest;
   loading: boolean;
   ready: ReadyPackage | null;
   busy: boolean;
@@ -43,7 +44,7 @@ interface State {
   prepare: () => Promise<void>;
   cancel: () => void;
 }
-const Context = createContext<State | null>(null);
+const Context = createContext<Record<string, State> | null>(null);
 const digest = (text: string) =>
   Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, text);
 const bytesHash = async (file: File) =>
@@ -60,6 +61,26 @@ const bytesHash = async (file: File) =>
 const fileName = (asset: ContentAsset) =>
   `${asset.id}.${asset.kind === "lesson" ? "json" : "wav"}`;
 export function ContentProvider({ children }: { children: ReactNode }) {
+  return checkedContentManifests.reduceRight<ReactNode>(
+    (nested, manifest) => (
+      <PackageContent
+        key={`${manifest.lessonId}:${manifest.version}`}
+        expected={manifest}
+      >
+        {nested}
+      </PackageContent>
+    ),
+    children,
+  );
+}
+function PackageContent({
+  children,
+  expected,
+}: {
+  children: ReactNode;
+  expected: ContentManifest;
+}) {
+  const parent = useContext(Context);
   const { accountId } = useStudy(),
     convex = useConvex(),
     auth = useConvexAuth(),
@@ -75,8 +96,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     rootRef = useRef<Directory | null>(null),
     job = useRef<Promise<void> | null>(null),
     abort = useRef<AbortController | null>(null);
-  const expected = checkedContentManifests[0]!,
-    key = `content-ready:${expected.lessonId}:${expected.version}`;
+  const key = `content-ready:${expected.lessonId}:${expected.version}`;
   useEffect(() => {
     const generation = ++epoch.current;
     let owned: SQLiteDatabase | null = null,
@@ -93,7 +113,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     const current = () => epoch.current === generation;
     void (async () => {
       const namespace = await digest(
-          `${process.env.EXPO_PUBLIC_CONVEX_URL}:${accountId}`,
+          `${process.env.EXPO_PUBLIC_CONVEX_URL}:${accountId}${expected.lessonId === "requests" && expected.version === 1 ? "" : `:${expected.lessonId}:${expected.version}`}`,
         ),
         root = new Directory(Paths.document, "content-packages", namespace);
       root.create({ intermediates: true, idempotent: true });
@@ -127,7 +147,12 @@ export function ContentProvider({ children }: { children: ReactNode }) {
           )
             throw new Error("A saved content file needs repair.");
           if (asset.kind === "audio")
-            await cachePreparedModelAudio(asset.id, file.uri);
+            await cachePreparedModelAudio(
+              asset.id,
+              file.uri,
+              expected.lessonId,
+              expected.version,
+            );
           if (!current()) return;
         }
         if (current()) setReady(saved);
@@ -162,7 +187,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
           })
           .catch(() => {});
     };
-  }, [accountId, expected.sha256, key]);
+  }, [accountId, expected, key]);
   const prepare = async () => {
     if (job.current || loading || !online) return;
     const db = dbRef.current,
@@ -282,6 +307,8 @@ export function ContentProvider({ children }: { children: ReactNode }) {
                 await cachePreparedModelAudio(
                   asset.id,
                   new File(stage, fileName(asset)).uri,
+                  expected.lessonId,
+                  expected.version,
                 );
             }
             if (!current()) throw new Error("Preparation cancelled.");
@@ -335,23 +362,33 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
-        loading,
-        ready,
-        busy,
-        online,
-        error,
-        progress,
-        total: expected.assets.length,
-        prepare,
-        cancel: () => abort.current?.abort(),
+        ...parent,
+        [`${expected.lessonId}:${expected.version}`]: {
+          manifest: expected,
+          loading,
+          ready,
+          busy,
+          online,
+          error,
+          progress,
+          total: expected.assets.length,
+          prepare,
+          cancel: () => abort.current?.abort(),
+        },
       }}
     >
       {children}
     </Context.Provider>
   );
 }
-export function useContent() {
+export function useContent(lessonId?: string, version = 1) {
   const value = useContext(Context);
   if (!value) throw new Error("Content storage is not available.");
-  return value;
+  const states = Object.values(value);
+  const selected = lessonId
+    ? value[`${lessonId}:${version}`]
+    : (states.find((state) => state.ready) ?? states[0]);
+  if (!selected)
+    throw new Error("This checked content version is unavailable.");
+  return selected;
 }

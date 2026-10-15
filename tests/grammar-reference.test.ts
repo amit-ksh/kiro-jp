@@ -25,10 +25,11 @@ test("checked grammar can be found by Japanese, romaji, English purpose and norm
     "  BOOK  ",
   ]) {
     const found = searchGrammarReferences(grammarReferences, query);
-    assert.equal(found.length, 1, query);
+    assert(found.length >= 1, query);
     assert.equal(found[0]!.id, "requests-v1-request-kudasai");
   }
-  assert.equal(searchGrammarReferences(grammarReferences, "").length, 1);
+  assert.equal(searchGrammarReferences(grammarReferences, "").length, 2);
+  assert.equal(searchGrammarReferences(grammarReferences, "where entrance")[0]!.id,"directions-v1-location-doko");
   assert.equal(searchGrammarReferences(grammarReferences, "N4").length, 0);
   assert.equal(
     searchGrammarReferences(grammarReferences, "not-a-pattern").length,
@@ -46,7 +47,7 @@ test("planned or unchecked patterns are never exposed as grammar reference resul
   } as unknown as GrammarReference;
   assert.equal(
     searchGrammarReferences([...grammarReferences, draft], "").length,
-    1,
+    grammarReferences.length,
   );
   assert.deepEqual(searchGrammarReferences([draft], "ください"), []);
   const before = JSON.stringify(grammarReferences);

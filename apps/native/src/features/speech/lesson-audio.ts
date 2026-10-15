@@ -2,6 +2,7 @@ import type { AudioSource } from "expo-audio";
 import { Asset } from "expo-asset";
 import { Directory, File, Paths } from "expo-file-system";
 import * as Crypto from "expo-crypto";
+import { directionsAudio, directionsAudioChecks } from "./directions-audio";
 export const lessonAudio: Record<string, AudioSource> = {
   "word-water": require("../../../../../packages/content/assets/requests-v1/word-water.wav"),
   "word-tea": require("../../../../../packages/content/assets/requests-v1/word-tea.wav"),
@@ -32,12 +33,16 @@ const checks: Record<
   "price-yen": require("../../../../../packages/content/assets/requests-v1/price-yen.json"),
 };
 const preparing = new Map<number, Promise<AudioSource>>();
+const audioSets: Record<string,{sources:Record<string,AudioSource>;checks:typeof checks}> = {
+  "requests:1":{sources:lessonAudio,checks},
+  "directions:1":{sources:directionsAudio,checks:directionsAudioChecks},
+};
 export function preparedLessonAudio(id: string, version: number): Record<string, AudioSource> {
   // Never substitute another lesson/version when a clip has not been prepared.
-  return id === "requests" && version === 1 ? lessonAudio : {};
+  return audioSets[`${id}:${version}`]?.sources ?? {};
 }
-export async function cachePreparedModelAudio(id: string, uri: string) {
-  const record = checks[id];
+export async function cachePreparedModelAudio(id: string, uri: string, lessonId="requests", version=1) {
+  const record = audioSets[`${lessonId}:${version}`]?.checks[id];
   if (
     !record?.languageCheck.matches ||
     record.languageCheck.audioHash !== record.sha256
@@ -93,10 +98,9 @@ export async function persistentAudioSource(
   const previous = preparing.get(source);
   if (previous) return previous;
   const work = (async () => {
-    const id = Object.keys(lessonAudio).find(
-        (id) => lessonAudio[id] === source,
-      ),
-      record = id ? checks[id] : undefined;
+    const set = Object.values(audioSets).find(set=>Object.values(set.sources).includes(source));
+    const id = set ? Object.keys(set.sources).find(id=>set.sources[id]===source) : undefined;
+    const record = id ? set?.checks[id] : undefined;
     if (
       !record?.languageCheck.matches ||
       record.languageCheck.audioHash !== record.sha256

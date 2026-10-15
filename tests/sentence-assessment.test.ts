@@ -24,19 +24,19 @@ const semantic = {
 };
 test("novel appropriate requests count independently or with actual assistance, without kana/speech evidence", () => {
   assert.equal(
-    assessNovelSentence(exercise, source, semantic).outcome,
+    assessNovelSentence(exercise, source, semantic, requestsLesson).outcome,
     "independent",
   );
   assert.equal(
     assessNovelSentence(
       exercise,
       { ...source, support: ["wordBank"] },
-      semantic,
+      semantic, requestsLesson,
     ).outcome,
     "assisted",
   );
   assert.equal(
-    assessNovelSentence(exercise, source, semantic).kanaEvidence,
+    assessNovelSentence(exercise, source, semantic, requestsLesson).kanaEvidence,
     false,
   );
 });
@@ -45,14 +45,14 @@ test("foreign attribution, quoted grammar and uncertainty remain pending", () =>
     assessNovelSentence(exercise, source, {
       ...semantic,
       messageId: "someone-else",
-    }).outcome,
+    }, requestsLesson).outcome,
     "pending",
   );
   assert.equal(
     assessNovelSentence(
       exercise,
       { ...source, input: "「コーヒーをください」という例です" },
-      semantic,
+      semantic, requestsLesson,
     ).outcome,
     "pending",
   );
@@ -60,7 +60,7 @@ test("foreign attribution, quoted grammar and uncertainty remain pending", () =>
     assessNovelSentence(exercise, source, {
       ...semantic,
       validity: "uncertain",
-    }).outcome,
+    }, requestsLesson).outcome,
     "pending",
   );
 });
@@ -69,14 +69,14 @@ test("actual errors and valid alternative Japanese patterns remain distinct", ()
     assessNovelSentence(exercise, source, {
       ...semantic,
       validity: "needsCorrection",
-    }).outcome,
+    }, requestsLesson).outcome,
     "incorrect",
   );
   assert.equal(
     assessNovelSentence(
       exercise,
       { ...source, input: "コーヒーがほしいです" },
-      { ...semantic, target: "notUsed", span: "" },
+      { ...semantic, target: "notUsed", span: "" }, requestsLesson,
     ).outcome,
     "validAlternative",
   );
@@ -84,7 +84,7 @@ test("actual errors and valid alternative Japanese patterns remain distinct", ()
     assessNovelSentence(
       exercise,
       { ...source, input: "I want coffee" },
-      { ...semantic, target: "notUsed", meaningfulJapanese: false },
+      { ...semantic, target: "notUsed", meaningfulJapanese: false }, requestsLesson,
     ).outcome,
     "pending",
   );
@@ -108,7 +108,7 @@ test("resolved feedback attaches only to matching immutable pending input and pr
       support: [],
       spans: [],
     };
-  const assessed = assessNovelSentence(exercise, source, semantic);
+  const assessed = assessNovelSentence(exercise, source, semantic, requestsLesson);
   assert.equal(
     sessionProjection(requestsLesson, [event], { [event.eventId]: assessed })
       .grammarState,

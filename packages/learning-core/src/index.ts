@@ -15,3 +15,4 @@ export * from "./content-package.ts";
 export * from "./grammar-reference.ts";
 export * from "./curriculum.ts";
 export * from "./speech-cues.ts";
+export * from "./lesson-target.ts";

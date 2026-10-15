@@ -29,13 +29,13 @@ function checkedPhrase(phrase: TutorPhrase): TutorPhrase | null {
     if (
       normalizeJapanese(word.word) === normalizeJapanese(phrase.japanese) &&
       normalizeJapanese(word.reading) === normalizeJapanese(phrase.reading) &&
-      normalizeEnglish(word.meaning) === normalizeEnglish(phrase.english)
+      normalizeEnglish(word.vocabulary?.meaning ?? word.meaning) === normalizeEnglish(phrase.english)
     )
       return {
         japanese: word.word,
         reading: word.reading,
         romaji: word.romaji[0] ?? "",
-        english: word.meaning,
+        english: word.vocabulary?.meaning ?? word.meaning,
       };
   return null;
 }

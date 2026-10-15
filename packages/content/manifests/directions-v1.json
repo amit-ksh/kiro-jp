@@ -1,0 +1,100 @@
+{
+  "format": 1,
+  "lessonId": "directions",
+  "version": 1,
+  "title": "Find your way",
+  "assets": [
+    {
+      "id": "lesson",
+      "kind": "lesson",
+      "mime": "application/json",
+      "bytes": 18565,
+      "sha256": "ade858091dea38462b34d48361beabb2156bc0aad3b3f82518d6c32bf17948c1"
+    },
+    {
+      "id": "direction-left",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 140514,
+      "sha256": "4b31d6b7e771f53c1636a516e9bcf47eaaefb159be6368ac49e9a38d77ea505b"
+    },
+    {
+      "id": "direction-right",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 138594,
+      "sha256": "688e6f199d5c7cc41614de4d3ba7f67bed64690251eda0d41f50561183e6acf0"
+    },
+    {
+      "id": "kana-1",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 42594,
+      "sha256": "39647dd65334126fd87a349d6b851b912a15ad40880a9152b3e9ebe1996323c6"
+    },
+    {
+      "id": "kana-2",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 52194,
+      "sha256": "42e9f823b6acc26ac9a358fa600c065e2f02fa433c9910e59a35da982f52e005"
+    },
+    {
+      "id": "kana-3",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 61794,
+      "sha256": "e5dc4a867354bb37ffb25589782ffde785c479a34ef2c13f6f1be7e1b6641adf"
+    },
+    {
+      "id": "where-entrance",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 140514,
+      "sha256": "d122a92638df98c3cdb30e072deb77cc1b65608ddfa4454349ae4c6fc37a38db"
+    },
+    {
+      "id": "where-entrance-polite",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 200034,
+      "sha256": "f3361b60c5e8b4c0b5aa17087400c17e008ca7a636f3ac1c6d0ec1d869c94a0e"
+    },
+    {
+      "id": "where-exit",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 153954,
+      "sha256": "488650e85dffa3c42ec903709153ac683795f47f343e929b5ab2275fc2b2e2d0"
+    },
+    {
+      "id": "word-entrance",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 88674,
+      "sha256": "250721fdf8aed6391fb01b154bdccd9827e939030ad1879fba7a0dcf8c8dfa4e"
+    },
+    {
+      "id": "word-exit",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 65634,
+      "sha256": "c92c681268d9efc7d3a8e9f056ce27e05ab86fcaf359c97c6e45a1c55eb5f582"
+    },
+    {
+      "id": "word-left",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 63714,
+      "sha256": "26873d3ec5fd5366b73564470e3d79a2349948b692add9081ab86a3413cdd54d"
+    },
+    {
+      "id": "word-right",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 63714,
+      "sha256": "045b248eccc7dc88a3e4928420b8ec92ce7062b2f6416b105458761ca5460d3e"
+    }
+  ],
+  "sha256": "d79e854e219c45bbd1f2d2d444d74aefc1499c92eb81f0ed87b73529d3d9a711"
+}

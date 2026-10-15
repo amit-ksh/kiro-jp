@@ -1,0 +1,29 @@
+{
+  "id": "word-right",
+  "kind": "word",
+  "text": "みぎ",
+  "display": "右",
+  "meaning": "right",
+  "lessonId": "directions",
+  "lessonVersion": 1,
+  "scriptHash": "55e7f3925620e785cdff825989d5b23a0a1d9d42da4a0d5a6e7286e0601ec197",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-directions-v1-word-right-55e7f3925620",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.2,
+  "sampleRate": 24000,
+  "sha256": "045b248eccc7dc88a3e4928420b8ec92ce7062b2f6416b105458761ca5460d3e",
+  "createdAt": "2026-10-14T16:10:12.277Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-d3b2b467d7a029ca634a951b9ba561d11a9c0c573e058e7d31c0456595d3a544",
+    "checkedAt": "2026-10-14T16:14:22.696Z",
+    "audioHash": "045b248eccc7dc88a3e4928420b8ec92ce7062b2f6416b105458761ca5460d3e",
+    "kana": "みぎ",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

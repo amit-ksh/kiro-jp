@@ -15,6 +15,7 @@ import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { DatabaseSync } from "node:sqlite";
 import { buildContentPackage } from "../scripts/lib/content-package.mjs";
+import { directionsLesson } from "../packages/content/src/directions.ts";
 import {
   validateContentManifest,
   verifyContentManifest,
@@ -28,6 +29,14 @@ import {
 const hash = (bytes: string | Uint8Array) =>
   createHash("sha256").update(bytes).digest("hex");
 const root = resolve(import.meta.dirname, "..");
+test("two checked packages retain separate lesson/audio identities even when their clip names match",()=>{
+ const request=buildContentPackage(root),direction=buildContentPackage(root,directionsLesson);
+ assert.equal(request.manifest.lessonId,"requests");assert.equal(direction.manifest.lessonId,"directions");
+ assert.notEqual(request.manifest.sha256,direction.manifest.sha256);
+ assert.notEqual(request.manifest.assets.find(a=>a.id==="kana-1")!.sha256,direction.manifest.assets.find(a=>a.id==="kana-1")!.sha256);
+ assert.deepEqual(request.manifest,JSON.parse(readFileSync(join(root,"packages/content/manifests/requests-v1.json"),"utf8")));
+ const content=JSON.parse(Buffer.from(direction.files.find(f=>f.id==="lesson")!.data).toString("utf8"));assert.equal(content.words[0].meaning,"enter");assert.equal(content.words[0].vocabulary.meaning,"entrance");
+});
 test("storage checksum normalization accepts the observed base64 or hex representation without weakening digest checks", () => {
   const digest = createHash("sha256").update("checked content").digest();
   assert.equal(
@@ -209,7 +218,7 @@ test("content publisher version, help and unknown flags resolve before configura
     env: {},
   });
   assert.equal(version.status, 0);
-  assert.equal(version.stdout.trim(), "1.0.0");
+  assert.equal(version.stdout.trim(), "1.1.0");
   const help = spawnSync(process.execPath, [cli, "--help"], {
     encoding: "utf8",
     env: {},

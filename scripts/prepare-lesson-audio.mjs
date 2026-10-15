@@ -3,40 +3,49 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 const argv = process.argv.slice(2),
-  version = "1.0.0";
+  version = "1.1.0";
 if (argv.length === 1 && ["--version", "-v", "-V"].includes(argv[0])) {
   console.log(version);
   process.exit(0);
 }
 const help = () => {
   console.log(
-    `bin: ${JSON.stringify(fileURLToPath(import.meta.url))}\ndescription: Prepare source-checked lesson audio through the guarded Gateway.\nflags: --generate, --check, --dry-run (default), --limit <1..11> (default 11), --help\nexamples[3]:\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --dry-run\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --generate --limit 4\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --check`,
+    `bin: ${JSON.stringify(fileURLToPath(import.meta.url))}\ndescription: Prepare source-checked lesson audio through the guarded Gateway.\nflags: --lesson <id> (default requests), --generate, --check, --dry-run (default), --limit <1..100> (default all clips), --attempt <1..3> (generate retry only), --help\nexamples[3]:\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --dry-run\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --lesson directions --generate\n  node --experimental-strip-types scripts/prepare-lesson-audio.mjs --lesson directions --check`,
   );
 };
 let generate = false,
   check = false,
-  limit = 11;
+  limit = 100,
+  lessonId = "requests",
+  attempt = 1;
+const used = new Set();
+if (argv.includes("--help")) { help(); process.exit(0); }
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--help") {
     help();
     process.exit(0);
   }
+  if (used.has(argv[i])) { console.log('error: "Duplicate option; pass each flag once."'); process.exit(2); }
+  used.add(argv[i]);
   if (argv[i] === "--generate") generate = true;
   else if (argv[i] === "--check") check = true;
   else if (argv[i] === "--dry-run") generate = false;
+  else if (argv[i] === "--lesson" && /^[a-z][a-z0-9-]{0,79}$/u.test(argv[i + 1] ?? "")) lessonId = argv[++i];
+  else if (argv[i] === "--attempt" && /^[1-3]$/u.test(argv[i + 1] ?? "")) attempt = Number(argv[++i]);
   else if (argv[i] === "--limit" && /^[1-9][0-9]*$/u.test(argv[i + 1] ?? "")) {
     limit = Number(argv[++i]);
   } else {
     console.log(
-      'error: "Invalid input; use --generate, --check, --dry-run, --limit <1..11>, or --help."',
+      'error: "Invalid input; use --lesson <id>, --generate, --check, --dry-run, --limit <1..100>, --attempt <1..3>, or --help."',
     );
     process.exit(2);
   }
 }
-if (limit < 1 || limit > 11) {
-  console.log('error: "--limit must be between 1 and 11."');
+if (limit < 1 || limit > 100) {
+  console.log('error: "--limit must be between 1 and 100."');
   process.exit(2);
 }
+if (used.has("--attempt") && !generate) { console.log('error: "--attempt is only for an explicit --generate retry; completed clips are retained."'); process.exit(2); }
 if (
   argv.filter((arg) => ["--generate", "--check", "--dry-run"].includes(arg))
     .length > 1
@@ -48,8 +57,9 @@ if (
 }
 const rows = [];
 try {
-  const { requestsLesson: lesson } =
-    await import("../packages/content/src/requests.ts");
+  const { authoringCurriculum } = await import("../packages/content/src/authoring.ts");
+  const lesson = authoringCurriculum.get(lessonId);
+  if (!lesson) { console.log('error: "Unknown authoring lesson."\nhelp: "Use --lesson requests or --lesson directions."'); process.exit(2); }
   const { checkPreparedLesson } =
     await import("../packages/learning-core/src/content-check.ts");
   const { inspectWav } = await import("./lib/wav.mjs");
@@ -69,7 +79,7 @@ try {
       kind: "word",
       text: word.reading,
       display: word.word,
-      meaning: word.meaning,
+      meaning: word.vocabulary?.meaning ?? word.meaning,
     })),
     ...lesson.kana.map((kana, i) => ({
       id: `kana-${i + 1}`,
@@ -140,7 +150,8 @@ try {
       rows.push({ id: clip.id, kind: clip.kind, status: "needs-generation" });
       continue;
     }
-    const operationId = `lesson-audio-${lesson.id}-v${lesson.version}-${clip.id}-${fingerprint.slice(0, 12)}`;
+    const originalOperationId = `lesson-audio-${lesson.id}-v${lesson.version}-${clip.id}-${fingerprint.slice(0, 12)}`;
+    const operationId = attempt === 1 ? originalOperationId : `${originalOperationId}-attempt-${attempt}`;
     const reservation = await client.mutation("aiBudget:reserve", {
       operationId,
       model,
@@ -181,7 +192,7 @@ try {
       }),
     });
     if (!response.ok)
-      throw new Error("GATEWAY_AUDIO_UNAVAILABLE_RESERVATION_RETAINED");
+      throw new Error(`GATEWAY_AUDIO_HTTP_${response.status}_RESERVATION_RETAINED`);
     const body = await response.json(),
       usage = body.usageMetadata;
     if (
@@ -209,6 +220,8 @@ try {
       model,
       voice: "Kore",
       operationId,
+      generationAttempt: attempt,
+      ...(attempt > 1 ? { originalOperationId } : {}),
       routedThrough: "Cloudflare AI Gateway",
       mime: part.mimeType,
       ...format,
@@ -244,7 +257,7 @@ try {
   }
 } catch (error) {
   console.log(
-    `error: ${JSON.stringify(/^[A-Z_]+$/u.test(error.message) ? error.message : "PREPARATION_FAILED_PRIVATE_DETAILS_WITHHELD")}\nhelp: "Keep prepared candidates; inspect the budget and existing reservation before retrying generation."`,
+    `error: ${JSON.stringify(/^[A-Z0-9_]+$/u.test(error.message) ? error.message : "PREPARATION_FAILED_PRIVATE_DETAILS_WITHHELD")}\nhelp: "Keep prepared candidates and reservations. After checking availability/budget, an explicit --generate --attempt 2 (maximum 3) retries only missing clips."`,
   );
   process.exitCode = 1;
 }

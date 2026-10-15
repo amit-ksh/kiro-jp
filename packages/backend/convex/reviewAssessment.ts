@@ -193,6 +193,8 @@ export const settle = internalMutation({
       return;
     const source = await sourceAvailable(ctx, row);
     if (!source) return;
+    const lesson = curriculum.get(row.card.sourceId, row.card.sourceVersion);
+    if (!lesson) return;
     const assessment = args.semantic
       ? assessNovelSentence(
           row.card.exercise,
@@ -202,6 +204,7 @@ export const settle = internalMutation({
             support: row.source.support,
           },
           args.semantic,
+          lesson,
         )
       : undefined;
     const ready = Boolean(

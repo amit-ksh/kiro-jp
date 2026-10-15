@@ -1,0 +1,29 @@
+{
+  "id": "direction-right",
+  "kind": "sentence",
+  "text": "いりぐちはみぎです。",
+  "display": "入口は右です。",
+  "meaning": "The entrance is on the right.",
+  "lessonId": "directions",
+  "lessonVersion": 1,
+  "scriptHash": "502079fe65575438f1e0571792e45e8906774e670041055426a2b7643aeed7d5",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-directions-v1-direction-right-502079fe6557",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.76,
+  "sampleRate": 24000,
+  "sha256": "688e6f199d5c7cc41614de4d3ba7f67bed64690251eda0d41f50561183e6acf0",
+  "createdAt": "2026-10-14T16:10:33.359Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-d3b2b467d7a029ca634a951b9ba561d11a9c0c573e058e7d31c0456595d3a544",
+    "checkedAt": "2026-10-14T16:14:22.699Z",
+    "audioHash": "688e6f199d5c7cc41614de4d3ba7f67bed64690251eda0d41f50561183e6acf0",
+    "kana": "いりぐちはみぎです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

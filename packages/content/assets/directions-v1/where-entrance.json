@@ -1,0 +1,29 @@
+{
+  "id": "where-entrance",
+  "kind": "sentence",
+  "text": "いりぐちはどこですか。",
+  "display": "入口はどこですか。",
+  "meaning": "Where is the entrance?",
+  "lessonId": "directions",
+  "lessonVersion": 1,
+  "scriptHash": "204fc77e84c7e09805d8b86f8b581547611f666925c436c64559ff3ab81e74db",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-directions-v1-where-entrance-204fc77e84c7",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.8,
+  "sampleRate": 24000,
+  "sha256": "d122a92638df98c3cdb30e072deb77cc1b65608ddfa4454349ae4c6fc37a38db",
+  "createdAt": "2026-10-14T16:10:25.567Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-d3b2b467d7a029ca634a951b9ba561d11a9c0c573e058e7d31c0456595d3a544",
+    "checkedAt": "2026-10-14T16:14:22.698Z",
+    "audioHash": "d122a92638df98c3cdb30e072deb77cc1b65608ddfa4454349ae4c6fc37a38db",
+    "kana": "いりぐちはどこですか",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

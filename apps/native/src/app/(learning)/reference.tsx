@@ -63,6 +63,7 @@ export default function Reference() {
           </Title>
           <Body>
             {word.word} · {word.reading}
+            {word.vocabulary ? ` · ${word.vocabulary.meaning}` : ""}
             {context?.romaji ? ` · ${word.romaji[0]}` : ""}
           </Body>
           <Body>{word.mnemonic}</Body>

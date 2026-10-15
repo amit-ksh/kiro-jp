@@ -1,0 +1,29 @@
+{
+  "id": "word-entrance",
+  "kind": "word",
+  "text": "いりぐち",
+  "display": "入口",
+  "meaning": "entrance",
+  "lessonId": "directions",
+  "lessonVersion": 1,
+  "scriptHash": "151ccb33e664477a4d08cf12da06818fa9f22b51ecf25bbce8cba69a47b6e122",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-directions-v1-word-entrance-151ccb33e664",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.72,
+  "sampleRate": 24000,
+  "sha256": "250721fdf8aed6391fb01b154bdccd9827e939030ad1879fba7a0dcf8c8dfa4e",
+  "createdAt": "2026-10-14T16:10:06.158Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-d3b2b467d7a029ca634a951b9ba561d11a9c0c573e058e7d31c0456595d3a544",
+    "checkedAt": "2026-10-14T16:14:22.694Z",
+    "audioHash": "250721fdf8aed6391fb01b154bdccd9827e939030ad1879fba7a0dcf8c8dfa4e",
+    "kana": "いりぐち",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

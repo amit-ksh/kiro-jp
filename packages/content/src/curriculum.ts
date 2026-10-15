@@ -1,4 +1,5 @@
 import { createCurriculum } from "@packages/learning-core";
 import { requestsLesson } from "./requests.ts";
-export const preparedLessons = [requestsLesson] as const;
+import { directionsLesson } from "./directions.ts";
+export const preparedLessons = [requestsLesson, directionsLesson] as const;
 export const curriculum = createCurriculum(preparedLessons);

@@ -6,6 +6,7 @@ import { ConvexError, v } from "convex/values";
 import { requireUser } from "./lib/ownership";
 import { supportValue } from "./studyValues";
 import { practiceStampValue } from "./conversationValues";
+import { curriculum } from "@packages/content";
 const uuid = (value: string) => {
   if (!/^[a-zA-Z0-9_-]{8,100}$/u.test(value))
     throw new ConvexError("Invalid conversation identifier.");
@@ -143,15 +144,13 @@ export const start = mutation({
       throw new ConvexError("Use a new identifier for a new conversation.");
     if (!args.topic.trim() || args.topic.length > 500)
       throw new ConvexError("Choose a topic under 500 characters.");
-    if (
-      args.lessonSessionId &&
-      !(await ctx.db
+    const lessonSession = args.lessonSessionId ? await ctx.db
         .query("studySessions")
         .withIndex("by_user_session", (q) =>
           q.eq("userId", userId).eq("sessionId", args.lessonSessionId!),
         )
-        .unique())
-    )
+        .unique() : null;
+    if (args.lessonSessionId && (!lessonSession || !curriculum.get(lessonSession.lessonId,lessonSession.version)))
       throw new ConvexError(
         "Synchronize your saved lesson before starting its conversation.",
       );

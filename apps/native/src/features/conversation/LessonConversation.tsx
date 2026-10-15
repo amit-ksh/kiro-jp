@@ -9,6 +9,7 @@ import * as Crypto from "expo-crypto";
 import { router } from "expo-router";
 import { api } from "@packages/backend/convex/_generated/api";
 import { strongestGoal } from "@packages/learning-core";
+import { curriculum } from "@packages/content";
 import { useStudy } from "../../data/StudyProvider";
 import { Body, Button, Message } from "../../components/ui";
 export function LessonConversation({
@@ -21,6 +22,7 @@ export function LessonConversation({
   const auth = useConvexAuth(),
     connection = useConvexConnectionState(),
     study = useStudy();
+  const lesson = curriculum.forSession(study.events,sessionId);
   const goal = useQuery(
     api.conversation.lessonGoal,
     auth.isAuthenticated ? { sessionId } : "skip",
@@ -81,7 +83,7 @@ export function LessonConversation({
     try {
       const result = await start({
         ...ids.current,
-        topic: `Let's talk about ${theme.toLowerCase()}. Help me use today's request pattern naturally when it fits.`,
+        topic: `Let's talk about ${theme.toLowerCase()}. Help me use ${lesson?.grammar.pattern ?? "today's grammar pattern"} naturally when it fits.`,
         lessonSessionId: sessionId,
       });
       if (active.current) {

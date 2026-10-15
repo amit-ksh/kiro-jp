@@ -205,6 +205,12 @@ export function lessonReviewIntroductions(
     });
   }
   const projection = sessionProjection(lesson, events, checked);
+  for (const word of lesson.words) {
+    if (!word.vocabulary) continue;
+    const exercise = lesson.exercises.find(exercise => exercise.id === `vocabulary-${word.id}` && exercise.facet === "meaning" && exercise.targetId === word.id);
+    const advance = exercise && projection.events.find(event => event.kind === "advanced" && event.stepId === exercise.id && projection.attempts.some(attempt => attempt.event.stepId === exercise.id && attempt.event.occurredAt <= event.occurredAt));
+    if (exercise && advance) introductions.push({introducedAt:advance.occurredAt,card:{id:`${lesson.id}:${lesson.version}:${word.id}:vocabulary-meaning`,facet:"meaning",source:"lesson",sourceId:lesson.id,sourceVersion:lesson.version,label:word.word,exercise}});
+  }
   for (const kana of lesson.kana) {
     const exercise = lesson.exercises.find(
       (exercise) =>
@@ -235,6 +241,29 @@ export function lessonReviewIntroductions(
           exercise,
         },
       });
+  }
+  const saved = new Set<string>();
+  for (const event of projection.events) {
+    if (event.kind !== "savedPhrase" || !event.input || saved.has(event.input)) continue;
+    const sentence = lesson.grammar.examples.find(example => example.id === event.input);
+    if (!sentence) continue;
+    saved.add(sentence.id);
+    for (const item of phraseReviewIntroductions(sentence.id, {
+      japanese: sentence.text,
+      reading: sentence.reading,
+      romaji: sentence.romaji,
+      english: sentence.meaning,
+    }, event.occurredAt)) introductions.push({
+      ...item,
+      card: {
+        ...item.card,
+        id: `${lesson.id}:${lesson.version}:saved-phrase:${sentence.id}:${item.card.facet}`,
+        source: "lesson",
+        sourceId: lesson.id,
+        sourceVersion: lesson.version,
+        exercise: {...item.card.exercise,id:`saved-${sentence.id}-${item.card.facet}`},
+      },
+    });
   }
   return introductions;
 }

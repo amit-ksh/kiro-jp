@@ -45,7 +45,7 @@ test("audio CLI version and rejected input run before private configuration or i
       encoding: "utf8",
     });
     assert.equal(result.status, 0);
-    assert.equal(result.stdout.trim(), "1.0.0");
+    assert.equal(result.stdout.trim(), "1.1.0");
     assert.equal(result.stderr, "");
   }
   const invalid = spawnSync(process.execPath, [script, "--generte"], {
@@ -60,7 +60,7 @@ test("audio CLI version and rejected input run before private configuration or i
     encoding: "utf8",
   });
   assert.equal(limit.status, 2);
-  assert.match(limit.stdout, /between 1 and 11/u);
+  assert.match(limit.stdout, /between 1 and 100/u);
   const mixed = spawnSync(process.execPath, [script, "--check", "--dry-run"], {
     cwd: tmpdir(),
     encoding: "utf8",
@@ -68,4 +68,7 @@ test("audio CLI version and rejected input run before private configuration or i
   assert.equal(mixed.status, 2);
   assert.match(mixed.stdout, /exactly one mode/u);
   assert.equal(mixed.stderr, "");
+  for (const args of [["--generate","--attempt","4"],["--check","--attempt","2"],["--lesson","../other"],["--lesson","directions","--lesson","requests"]]) {
+    const result=spawnSync(process.execPath,[script,...args],{cwd:tmpdir(),encoding:"utf8"});assert.equal(result.status,2);assert.equal(result.stderr,"");
+  }
 });

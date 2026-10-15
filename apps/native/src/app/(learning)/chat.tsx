@@ -298,7 +298,7 @@ export default function Chat() {
         )}
         {segment.lessonSessionId && (
           <Body>
-            Lesson request goal:{" "}
+            Lesson conversation goal:{" "}
             {goal === "independent"
               ? "demonstrated independently"
               : goal === "assisted"

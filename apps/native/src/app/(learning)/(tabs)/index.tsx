@@ -8,7 +8,7 @@ import {
   reviewEarnsStreak,
   reviewQueue,
 } from "@packages/learning-core";
-import { lessonCatalog, curriculum } from "@packages/content";
+import { recommendFirstLesson, curriculum } from "@packages/content";
 import { useStudy } from "../../../data/StudyProvider";
 import { useReviews } from "../../../data/ReviewProvider";
 import { useProfile } from "../../../data/ProfileProvider";
@@ -29,7 +29,7 @@ export default function Home() {
   const study = useStudy();
   const reviews = useReviews();
   const content = useContent();
-  const lesson = lessonCatalog[0];
+  const lesson = recommendFirstLesson(profile.interests);
   const sessions = study.events
     .filter((event) => event.kind === "started" && curriculum.forEvent(event))
     .sort((a, b) => b.occurredAt - a.occurredAt);
@@ -116,7 +116,7 @@ export default function Home() {
                   })
                 : due
                   ? router.push("/(learning)/(tabs)/review")
-                  : router.push("/(learning)/session-preview")
+                  : router.push({pathname:"/(learning)/session-preview",params:{lessonId:lesson.id}})
             }
           />
           <Body muted>
@@ -146,7 +146,7 @@ export default function Home() {
         </Body>
         <Button
           label="Start today's session"
-          onPress={() => router.push("/(learning)/session-preview")}
+          onPress={() => router.push({pathname:"/(learning)/session-preview",params:{lessonId:lesson.id}})}
         />
         <Button
           label="Choose another session"

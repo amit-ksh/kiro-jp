@@ -22,6 +22,7 @@ import {
   type Assessment,
   type ReviewFeedback,
   type StudyEvent,
+  exerciseForStep,
 } from "@packages/learning-core";
 import { requireUser } from "./lib/ownership";
 import { reviewAttemptValue } from "./reviewValues";
@@ -96,7 +97,7 @@ async function introduce(
   return true;
 }
 export const ensureLesson = mutation({
-  args: { sessionId: v.string() },
+  args: { sessionId: v.string(), sourceEventIds: v.optional(v.array(v.string())) },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
     const session = await ctx.db
@@ -120,12 +121,17 @@ export const ensureLesson = mutation({
       throw new ConvexError(
         "This long session needs a paginated review preparation. Your study is retained.",
       );
+    // A successful preparation is cached by the client. Do not acknowledge
+    // its snapshot until every local advancement has reached this transaction.
+    const sourceIds = new Set(rows.filter(row => row.event.kind === "advanced" || row.event.kind === "savedPhrase").map(row => row.event.eventId));
+    if (args.sourceEventIds && (args.sourceEventIds.length > 1000 || args.sourceEventIds.some(id => !sourceIds.has(id))))
+      throw new ConvexError("Your latest answers are still synchronizing. Review preparation will retry; your study is retained.");
     // Read only the source attempts which actually need a semantic assessment.
     const checked: Record<string, Assessment> = {};
     for (const row of rows)
       if (
         row.event.kind === "attempted" &&
-        row.event.stepId.includes("request-own")
+        exerciseForStep(lesson, row.event.stepId)?.kind === "sentence"
       ) {
         const result = await ctx.db
           .query("lessonAssessments")

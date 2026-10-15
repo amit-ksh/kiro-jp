@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { lessonCatalog } from "@packages/content";
+import { lessonCatalog, curriculum, preparedLessons } from "@packages/content";
 import { Body, Button, Panel, Screen, Title } from "../../../components/ui";
 import { OfflineLesson } from "../../../features/lessons/OfflineLesson";
 export default function Lessons() {
@@ -10,12 +10,10 @@ export default function Lessons() {
     >
       <Panel>
         <Body>
-          A polite request has checked text exercises. The other templates are
-          the planned starter inventory and will follow the tested learning
-          loop.
+          {preparedLessons.length} checked starter lessons are ready. Other templates remain upcoming as their content and audio are prepared.
         </Body>
       </Panel>
-      <OfflineLesson />
+      {preparedLessons.map(lesson=><OfflineLesson key={`${lesson.id}:${lesson.version}`} lessonId={lesson.id} version={lesson.version}/>)}
       <Panel>
         <Title>Grammar reference</Title>
         <Body>
@@ -37,9 +35,7 @@ export default function Lessons() {
           <Body muted>{lesson.outcome}</Body>
           <Button
             label={
-              lesson.id === "requests"
-                ? "Learn a polite request"
-                : "Preview upcoming lesson"
+              curriculum.get(lesson.id) ? lesson.id === "requests" ? "Learn a polite request" : "Open lesson" : "Preview upcoming lesson"
             }
             secondary
             onPress={() =>

@@ -225,7 +225,7 @@ export function ReviewProvider({
   const introductionKey = useMemo(
     () =>
       JSON.stringify([
-        study.events.filter((e) => e.kind === "advanced").map((e) => e.eventId),
+        study.events.filter((e) => e.kind === "advanced" || e.kind === "savedPhrase").map((e) => e.eventId),
         Object.keys(study.checked),
         study.phrases
           .filter((p) => p.status === "approved")
@@ -254,7 +254,7 @@ export function ReviewProvider({
       const sessions = [
         ...new Set(
           source.events
-            .filter((e) => e.kind === "advanced")
+            .filter((e) => e.kind === "advanced" || e.kind === "savedPhrase")
             .map((e) => e.sessionId),
         ),
       ];
@@ -262,7 +262,12 @@ export function ReviewProvider({
         const key = `${sessionId}:${introductionKey}`;
         if (prepared.current.has(key)) continue;
         if (!active || generation !== epoch.current) return;
-        await ensureLesson({ sessionId });
+        await ensureLesson({
+          sessionId,
+          sourceEventIds: source.events
+            .filter(event => event.sessionId === sessionId && (event.kind === "advanced" || event.kind === "savedPhrase"))
+            .map(event => event.eventId),
+        });
         prepared.current.add(key);
       }
       for (const phrase of source.phrases) {

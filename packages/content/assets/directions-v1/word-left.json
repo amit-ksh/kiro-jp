@@ -1,0 +1,29 @@
+{
+  "id": "word-left",
+  "kind": "word",
+  "text": "ひだり",
+  "display": "左",
+  "meaning": "left",
+  "lessonId": "directions",
+  "lessonVersion": 1,
+  "scriptHash": "976a0a71c5ac6bbae36353304808dc0e2a1b5ad518978b4908a7eb697ee313d3",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-directions-v1-word-left-976a0a71c5ac",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.2,
+  "sampleRate": 24000,
+  "sha256": "26873d3ec5fd5366b73564470e3d79a2349948b692add9081ab86a3413cdd54d",
+  "createdAt": "2026-10-14T16:10:14.783Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-d3b2b467d7a029ca634a951b9ba561d11a9c0c573e058e7d31c0456595d3a544",
+    "checkedAt": "2026-10-14T16:14:22.697Z",
+    "audioHash": "26873d3ec5fd5366b73564470e3d79a2349948b692add9081ab86a3413cdd54d",
+    "kana": "ひだり",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

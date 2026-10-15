@@ -41,10 +41,15 @@ export function ReviewAudio({
   const lesson = curriculum.get(card.sourceId, card.sourceVersion);
   if (!lesson) return null;
   const lessonAudio = preparedLessonAudio(lesson.id, lesson.version);
+  const savedSentence = lesson.grammar.examples.find(sentence =>
+    sentence.id === card.exercise.targetId &&
+    sentence.text === card.exercise.japanese &&
+    card.exercise.id === `saved-${sentence.id}-${card.facet}`,
+  );
   const exercise = lesson.exercises.find(
     (item) =>
       item.id === card.exercise.id && item.targetId === card.exercise.targetId,
-  );
+  ) ?? (savedSentence ? card.exercise : undefined);
   if (!exercise) return null;
   const word = lesson.words.find(
     (item) => item.id === exercise.targetId,
@@ -52,7 +57,7 @@ export function ReviewAudio({
   const kanaIndex = lesson.kana.findIndex(
     (item) => item.character === exercise.targetId,
   );
-  const sentences = word
+  const sentences = savedSentence ? [savedSentence] : word
     ? [word.example]
     : exercise.targetId === lesson.grammar.id
       ? lesson.grammar.examples

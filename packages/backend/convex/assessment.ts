@@ -155,6 +155,7 @@ export const settle = internalMutation({
             support: row.source.support,
           },
           args.semantic,
+          lesson,
         )
       : undefined;
     await ctx.db.patch(row._id, {

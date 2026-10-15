@@ -256,6 +256,7 @@ function LessonSession({ sessionId, lesson }: { sessionId: string; lesson: Prepa
                 {word.kanji}
               </Text>
               <Title>{word.meaning}</Title>
+              {word.vocabulary && <Body>Word: {word.word} — {word.vocabulary.meaning}</Body>}
               <Body>
                 {word.word} · {word.reading}
                 {settings.romaji ? ` · ${word.romaji[0]}` : ""}
@@ -307,8 +308,10 @@ function LessonSession({ sessionId, lesson }: { sessionId: string; lesson: Prepa
                 </View>
               ))}
               <Body>
-                In おちゃ, ちゃ combines ち with a small ゃ. You can use romaji
-                while these characters become familiar.
+                {lesson.id === "requests"
+                  ? "In おちゃ, ちゃ combines ち with a small ゃ. "
+                  : "Reuse these sounds in this lesson’s words. "}
+                You can use romaji while these characters become familiar.
               </Body>
               <Button
                 label="Continue to grammar"
@@ -322,7 +325,7 @@ function LessonSession({ sessionId, lesson }: { sessionId: string; lesson: Prepa
           )}
           {step.kind === "grammar" && (
             <>
-              <Title>Request an item politely.</Title>
+              <Title>One useful grammar pattern.</Title>
               <Body style={{ fontSize: 24, fontWeight: "700" }}>
                 {lesson.grammar.pattern}
               </Body>

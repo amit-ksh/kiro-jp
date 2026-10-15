@@ -588,7 +588,7 @@ async function novelGrammar(id: string, input = "この本をください") {
       span: input,
       explanation:
         "The item is followed by をください to make a polite request.",
-    },
+    }, requestsLesson,
   );
   return { ...grammar, event, assessment };
 }
@@ -708,7 +708,7 @@ test("resolved missing-parent feedback survives provisional replay and later can
       target: "used",
       span: child.input!,
       explanation: "A polite request using the target pattern.",
-    },
+    }, requestsLesson,
   );
   const waiting = await decideReview(
     value.track,

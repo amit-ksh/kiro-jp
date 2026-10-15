@@ -1,6 +1,6 @@
 # Starter curriculum source checks
 
-Work in progress, retrieved October 14, 2026. These notes prepare original teaching content. They do not publish a lesson, certify audio or claim native-speaker review. The checked app registry still contains requests v1 only.
+Source records retrieved October 14, 2026, with implementation checks continued October 15. These notes support original teaching content; they do not certify native-speaker review. The checked registry now contains requests v1 and directions v1. Build evidence records the actual audio, package and Android checks separately.
 
 ## Directions: verified records
 
@@ -10,10 +10,12 @@ Work in progress, retrieved October 14, 2026. These notes prepare original teach
 - [Irodori Starter lesson 8](https://www.irodori.jpf.go.jp/assets/data/starter/pdf/X_L08.pdf), L8-18 and L8-21: location questions and short です answers; distinguishes people with います from things with あります. The new lesson can focus on the simpler location question and supported right/left answers without teaching both verb systems as mastered grammar.
 - [Marugoto Starter English wordbook](https://www.marugoto-online.jp/a1/support/pdf/MarugotoStarterWordbook_eng.pdf), printed page 58: corroborates the four kana readings. Some English glyphs are garbled in extracted text, so the clear Irodori records above are the primary lexical checks.
 
-## Modeling issue to resolve before activation
+## Separate kanji and vocabulary meanings
 
-The existing `LessonWord.meaning` serves both the kanji and its vocabulary word. This works for 水/water but is insufficient for 入 paired with 入口: a compound's meaning must not become the accepted meaning of its individual kanji. Add a separate word gloss while preserving the immutable requests v1 snapshot. Explain supported 口 in 入口/出口, teach the whole-word readings, and keep kanji meaning recall, word reading and vocabulary understanding distinct. Check the individual kanji glosses against an appropriate primary dictionary/source before marking the new lesson source-checked.
+`LessonWord.meaning` originally served both kanji and vocabulary. Directions now adds a separate optional vocabulary gloss, preserving the immutable requests v1 snapshot. 入 means enter; 入口 means entrance and is read いりぐち. Separate exercises and review cards check the two meanings. The explanation identifies supported 口 in 入口/出口 and teaches the whole-word readings. [WaniKani 入](https://www.wanikani.com/kanji/%E5%85%A5), [出](https://www.wanikani.com/kanji/%E5%87%BA) and [口](https://www.wanikani.com/kanji/%E5%8F%A3) corroborate the individual meanings. Mnemonics are original memory aids, not copied WaniKani prose.
+
+The Starter word list above, L1-1, also checks こんにちは / konnichiwa and こんばんは / konbanwa. Tutor transliteration preserves these greetings and validated spoken particles wa/o/e without globally replacing lexical ha/wo/he syllables.
 
 ## Activation work still required
 
-Author the original examples, mnemonics, word-specific reading notes, kana group and approved-answer exercises; check complete sentence segments/readings, alternative patterns and politeness. Bind the tutor to the selected lesson's target instead of the request-only rubric/forms. Add exact-version audio records, consistency checks and an immutable content package; generalize authoring/validation/publishing commands and native package/audio selection. Register only after those gates pass, then verify the full new lesson, speech, conversation, recap and reviews on Android. Repeat for the remaining five templates and their prerequisite rules. No textbook text, audio or PDF is being redistributed from these checks.
+Directions v1 has original examples, mnemonics, reading notes, three kana, nineteen approved-answer exercises and complete sentence segments. Its target now binds the tutor and novel lesson/review assessment, with actual Gemini/OpenRouter checks recorded in build evidence. Twelve generated clips passed an independent audio-only kana consistency check; this is not expert pronunciation acceptance. The immutable development package has thirteen files and 1,230,493 bytes. Native package/audio selection and authoring/check/publication commands support both lessons without changing requests v1. The Android text, linked conversation, saved phrase, review introductions and offline restart/playback checks passed; the transient download rejection and wider open gates are recorded separately. Repeat this process for the remaining five templates and prerequisite rules. No textbook text, audio or PDF is redistributed.

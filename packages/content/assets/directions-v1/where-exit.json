@@ -1,0 +1,29 @@
+{
+  "id": "where-exit",
+  "kind": "sentence",
+  "text": "でぐちはどこですか。",
+  "display": "出口はどこですか。",
+  "meaning": "Where is the exit?",
+  "lessonId": "directions",
+  "lessonVersion": 1,
+  "scriptHash": "a653f7c7606e6b295ee0da082e2782f8df91093757a7e89ed94fffea02be2ff8",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-directions-v1-where-exit-a653f7c7606e",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 3.08,
+  "sampleRate": 24000,
+  "sha256": "488650e85dffa3c42ec903709153ac683795f47f343e929b5ab2275fc2b2e2d0",
+  "createdAt": "2026-10-14T16:10:29.499Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-d3b2b467d7a029ca634a951b9ba561d11a9c0c573e058e7d31c0456595d3a544",
+    "checkedAt": "2026-10-14T16:14:22.698Z",
+    "audioHash": "488650e85dffa3c42ec903709153ac683795f47f343e929b5ab2275fc2b2e2d0",
+    "kana": "でぐちはどこですか",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

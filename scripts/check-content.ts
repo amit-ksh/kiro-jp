@@ -1,57 +1,64 @@
-import { requestsLesson } from "../packages/content/src/requests.ts";
-import { checkPreparedLesson } from "../packages/learning-core/src/content-check.ts";
-import fs from "node:fs";
-import { createHash } from "node:crypto";
-const errors = checkPreparedLesson(requestsLesson);
-const audioDirectory = "packages/content/assets/requests-v1";
-const expectedAudio = new Map([
-  ...requestsLesson.words.map(
-    (word) => [`word-${word.id}`, word.reading] as const,
-  ),
-  ...requestsLesson.kana.map(
-    (kana, index) => [`kana-${index + 1}`, kana.character] as const,
-  ),
-  ...[
-    ...requestsLesson.words.map((word) => word.example),
-    ...requestsLesson.grammar.examples,
-  ].map((sentence) => [sentence.id, sentence.reading + "。"] as const),
-]);
-for (const id of expectedAudio.keys())
-  if (
-    !fs.existsSync(`${audioDirectory}/${id}.json`) ||
-    !fs.existsSync(`${audioDirectory}/${id}.wav`)
-  )
-    errors.push(`${id}: model audio is missing.`);
-for (const name of fs
-  .readdirSync(audioDirectory)
-  .filter((name) => name.endsWith(".json"))) {
-  const record = JSON.parse(
-    fs.readFileSync(`${audioDirectory}/${name}`, "utf8"),
-  );
-  const audio = fs.readFileSync(`${audioDirectory}/${record.id}.wav`);
-  if (
-    record.lessonVersion !== requestsLesson.version ||
-    record.id !== name.slice(0, -5) ||
-    record.text !== expectedAudio.get(record.id) ||
-    record.languageCheck?.matches !== true ||
-    record.languageCheck.audioHash !== record.sha256 ||
-    createHash("sha256").update(audio).digest("hex") !== record.sha256
-  )
-    errors.push(`${record.id}: audio consistency/hash gate is incomplete.`);
+import { fileURLToPath } from "node:url";
+const args = process.argv.slice(2);
+if (args.length === 1 && ["--version", "-v", "-V"].includes(args[0]!)) {
+  console.log("1.1.0");
+  process.exit(0);
 }
-if (errors.length) {
-  console.error(errors.join("\n"));
-  process.exitCode = 1;
-} else
+if (args.includes("--help")) {
   console.log(
-    JSON.stringify({
-      lesson: requestsLesson.id,
-      version: requestsLesson.version,
-      words: requestsLesson.words.length,
-      kana: requestsLesson.kana.length,
-      exercises: requestsLesson.exercises.length,
-      check: requestsLesson.check.status,
-      availability:
-        "text and AI-transcript-consistent audio; native playback/speech gates separate",
-    }),
+    "description: Validate every released lesson and its immutable audio package.\nflags: --help, --version\nexample: pnpm check:content",
   );
+  process.exit(0);
+}
+if (args.length) {
+  console.log(
+    "error: unknown arguments\nhelp: use pnpm check:content without arguments, or --help",
+  );
+  process.exit(2);
+}
+try {
+  const { preparedLessons } =
+    await import("../packages/content/src/curriculum.ts");
+  const { checkedContentManifests } =
+    await import("../packages/content/src/content-manifests.ts");
+  const { buildContentPackage } = await import("./lib/content-package.mjs");
+  const root = fileURLToPath(new URL("../", import.meta.url));
+  if (
+    !preparedLessons.length ||
+    checkedContentManifests.length !== preparedLessons.length
+  )
+    throw Error("inventory");
+  const rows = [];
+  for (const lesson of preparedLessons) {
+    const { manifest } = buildContentPackage(root, lesson);
+    const expected = checkedContentManifests.find(
+      (m) => m.lessonId === lesson.id && m.version === lesson.version,
+    );
+    if (!expected || JSON.stringify(manifest) !== JSON.stringify(expected))
+      throw Error("package");
+    rows.push({
+      id: lesson.id,
+      version: lesson.version,
+      exercises: lesson.exercises.length,
+      assets: manifest.assets.length,
+    });
+  }
+  console.log(
+    "status: checked\ncount: " +
+      rows.length +
+      "\nlessons[" +
+      rows.length +
+      "]{id,version,exercises,assets}:\n" +
+      rows
+        .map(
+          (row) =>
+            "  " + [row.id, row.version, row.exercises, row.assets].join(","),
+        )
+        .join("\n"),
+  );
+} catch {
+  console.log(
+    "error: content source or package gate failed\nhelp: Check reviewed text, audio records and versioned manifests before publishing. Audio/playback and live conversation checks remain separate.",
+  );
+  process.exitCode = 1;
+}

@@ -1,0 +1,29 @@
+{
+  "id": "kana-2",
+  "kind": "kana",
+  "text": "り",
+  "display": "り",
+  "meaning": "ri",
+  "lessonId": "directions",
+  "lessonVersion": 1,
+  "scriptHash": "fe84c75dec87b7d53882f80d3b8f4acf70e4196e2a2b2e523c635d8c1c68cc9e",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-directions-v1-kana-2-fe84c75dec87",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 0.96,
+  "sampleRate": 24000,
+  "sha256": "42e9f823b6acc26ac9a358fa600c065e2f02fa433c9910e59a35da982f52e005",
+  "createdAt": "2026-10-14T16:10:19.750Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-d3b2b467d7a029ca634a951b9ba561d11a9c0c573e058e7d31c0456595d3a544",
+    "checkedAt": "2026-10-14T16:14:22.697Z",
+    "audioHash": "42e9f823b6acc26ac9a358fa600c065e2f02fa433c9910e59a35da982f52e005",
+    "kana": "り",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

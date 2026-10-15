@@ -13,7 +13,7 @@ export function lessonSpeechCues(lesson: PreparedLesson) {
       id: `word-${word.id}`,
       text: word.word,
       reading: word.reading,
-      meaning: word.meaning,
+      meaning: word.vocabulary?.meaning ?? word.meaning,
     })),
     ...sentences.map((sentence) => ({
       id: sentence.id,

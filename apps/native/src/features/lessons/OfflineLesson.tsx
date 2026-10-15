@@ -1,7 +1,20 @@
 import { Body, Button, Panel, Title } from "../../components/ui";
 import { useContent } from "../../data/ContentProvider";
-export function OfflineLesson() {
-  const content = useContent();
+export function OfflineLesson({
+  lessonId = "requests",
+  version = 1,
+}: {
+  lessonId?: string;
+  version?: number;
+}) {
+  const content = useContent(lessonId, version);
+  const audioCount = content.manifest.assets.filter(
+    (asset) => asset.kind === "audio",
+  ).length;
+  const megabytes = (
+    content.manifest.assets.reduce((total, asset) => total + asset.bytes, 0) /
+    1_000_000
+  ).toFixed(1);
   return (
     <Panel>
       <Title>Study without a connection</Title>
@@ -9,8 +22,8 @@ export function OfflineLesson() {
         {content.loading
           ? "Checking saved content on this phone…"
           : content.ready
-            ? "Downloaded · A polite request, its exercises and references, and all 11 model-audio clips."
-            : "Checked lesson text, exercises and saved answers work on this phone. Prepare all 11 audio clips for reliable offline listening too (about 0.8 MB)."}
+            ? `Downloaded · ${content.manifest.title}, its exercises and references, and all ${audioCount} model-audio clips.`
+            : `${content.manifest.title}: checked text, exercises and saved answers work on this phone. Prepare all ${audioCount} audio clips for reliable offline listening too (about ${megabytes} MB).`}
       </Body>
       {content.busy ? (
         <>

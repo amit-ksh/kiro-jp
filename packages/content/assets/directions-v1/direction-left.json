@@ -1,0 +1,29 @@
+{
+  "id": "direction-left",
+  "kind": "sentence",
+  "text": "でぐちはひだりです。",
+  "display": "出口は左です。",
+  "meaning": "The exit is on the left.",
+  "lessonId": "directions",
+  "lessonVersion": 1,
+  "scriptHash": "64b4ca192ee9190c8cd09247307a07448700c24ef918148b9ff1b81a30ee9dfa",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-directions-v1-direction-left-64b4ca192ee9",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.8,
+  "sampleRate": 24000,
+  "sha256": "4b31d6b7e771f53c1636a516e9bcf47eaaefb159be6368ac49e9a38d77ea505b",
+  "createdAt": "2026-10-14T16:10:36.860Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-d3b2b467d7a029ca634a951b9ba561d11a9c0c573e058e7d31c0456595d3a544",
+    "checkedAt": "2026-10-14T16:14:22.699Z",
+    "audioHash": "4b31d6b7e771f53c1636a516e9bcf47eaaefb159be6368ac49e9a38d77ea505b",
+    "kana": "でぐちはひだりです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

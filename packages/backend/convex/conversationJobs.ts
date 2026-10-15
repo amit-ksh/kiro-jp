@@ -10,7 +10,9 @@ import {
   localDayAt,
   validateStudyEvent,
   type StudyEvent,
+  lessonConversationTarget,
 } from "@packages/learning-core";
+import { curriculum } from "@packages/content";
 import { assessmentValue, replyValue } from "./conversationValues";
 import { culturalSnapshotValue } from "./cultureValues";
 async function storeEvidence(
@@ -19,6 +21,8 @@ async function storeEvidence(
   message: Doc<"conversationMessages">,
   assessment: TutorReply["assessment"],
 ) {
+  const session = segment.lessonSessionId ? await ctx.db.query("studySessions").withIndex("by_user_session",q=>q.eq("userId",segment.userId).eq("sessionId",segment.lessonSessionId!)).unique() : null;
+  const target = lessonConversationTarget(session ? curriculum.get(session.lessonId,session.version) : undefined);
   const goal = validateConversationEvidence(
     { assessment },
     {
@@ -27,7 +31,7 @@ async function storeEvidence(
       intent: message.intent,
       support: message.support,
     },
-    segment.lessonSessionId ? ["をください", "o kudasai", "wo kudasai"] : [],
+    target?.forms ?? [],
   );
   await ctx.db.patch(message._id, {
     goal: segment.lessonSessionId ? goal : { ...goal, state: "notObserved" },
@@ -133,6 +137,12 @@ export const claim = internalMutation({
       await ctx.db.patch(job._id, { status: "stale", updatedAt: Date.now() });
       return null;
     }
+    const session = segment.lessonSessionId ? await ctx.db.query("studySessions").withIndex("by_user_session",q=>q.eq("userId",segment.userId).eq("sessionId",segment.lessonSessionId!)).unique() : null;
+    const lesson = session ? curriculum.get(session.lessonId,session.version) : undefined;
+    if (segment.lessonSessionId && !lesson) {
+      await ctx.db.patch(job._id,{status:"failed",failureCode:"LESSON_VERSION_UNAVAILABLE",updatedAt:Date.now()});
+      return null;
+    }
     const claim = job.claim + 1;
     await ctx.db.patch(job._id, {
       status: "running",
@@ -156,6 +166,7 @@ export const claim = internalMutation({
     return {
       job: { ...job, claim },
       segment,
+      lesson: lesson ?? null,
       messages: messages.filter(
         (message) =>
           job.sourceMessageIds.includes(message.messageId) && !message.stale,

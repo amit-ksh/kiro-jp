@@ -1,4 +1,6 @@
 export { requestsLesson } from "./requests.ts";
+export { directionsLesson } from "./directions.ts";
+import { curriculum } from "./curriculum.ts";
 export { checkedContentManifests } from "./content-manifests.ts";
 export { grammarReferences } from "./grammar-reference.ts";
 export { curriculum, preparedLessons } from "./curriculum.ts";
@@ -13,7 +15,7 @@ export const lessonCatalog = [
   { id: "try", title: "Try something new", band: "early-n4", kanji: ["買", "作", "食", "見"], pattern: "〜てみます", outcome: "Say what you would like to try", themes: ["Food", "Travel", "Anime"], prerequisite: "ability" },
 ] as const;
 export function recommendFirstLesson(chosenInterests: readonly string[]) {
-  return lessonCatalog.find(lesson => !lesson.prerequisite && lesson.themes.some(theme => chosenInterests.includes(theme))) ?? lessonCatalog[0];
+  return lessonCatalog.find(lesson => curriculum.get(lesson.id) && !lesson.prerequisite && lesson.themes.some(theme => chosenInterests.includes(theme))) ?? lessonCatalog[0];
 }
 export const placementBank = [
   { id: "kana-a", bankVersion: 1, domain: "kana", phase: "starter", prompt: "Which sound does this hiragana make?", japanese: "あ", options: ["a", "i", "u", "e"], correctIndex: 0, explanation: "あ makes the sound a." },

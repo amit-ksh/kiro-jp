@@ -9,6 +9,7 @@ export function checkPreparedLesson(lesson: PreparedLesson) {
   for (const word of lesson.words) {
     if (!word.meaningAliases.length || !word.readingAliases.includes(word.reading) || !word.romaji.length || !word.mnemonic) errors.push(`Missing checked word data: ${word.id}.`);
     for (const facet of ["meaning", "reading"] as const) if (!lesson.exercises.some(exercise => exercise.targetId === word.id && exercise.facet === facet)) errors.push(`Missing ${facet} exercise: ${word.id}.`);
+    if (word.vocabulary && (!word.vocabulary.meaning || !word.vocabulary.meaningAliases.includes(word.vocabulary.meaning) || !lesson.exercises.some(exercise => exercise.id === `vocabulary-${word.id}` && exercise.facet === "meaning" && exercise.targetId === word.id && exercise.japanese === word.word && exercise.expected === word.vocabulary!.meaning && word.vocabulary!.meaningAliases.every(alias => exercise.accepted.includes(alias))))) errors.push(`Missing separate vocabulary meaning: ${word.id}.`);
   }
   for (const exercise of lesson.exercises) {
     if (!exercise.accepted.length || !exercise.explanation || !exercise.hints.length || exercise.accepted.some(answer => !["independent", "assisted"].includes(assessFixed(exercise, answer, []).outcome))) errors.push(`Invalid approved answers: ${exercise.id}.`);
