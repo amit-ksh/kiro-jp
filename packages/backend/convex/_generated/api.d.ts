@@ -27,6 +27,7 @@ import type * as emailLimits from "../emailLimits.js";
 import type * as http from "../http.js";
 import type * as lib_ai_providers from "../lib/ai/providers.js";
 import type * as lib_ai_readback from "../lib/ai/readback.js";
+import type * as lib_ai_recap from "../lib/ai/recap.js";
 import type * as lib_ai_sentence from "../lib/ai/sentence.js";
 import type * as lib_ai_service from "../lib/ai/service.js";
 import type * as lib_ai_speech from "../lib/ai/speech.js";
@@ -78,6 +79,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "lib/ai/providers": typeof lib_ai_providers;
   "lib/ai/readback": typeof lib_ai_readback;
+  "lib/ai/recap": typeof lib_ai_recap;
   "lib/ai/sentence": typeof lib_ai_sentence;
   "lib/ai/service": typeof lib_ai_service;
   "lib/ai/speech": typeof lib_ai_speech;

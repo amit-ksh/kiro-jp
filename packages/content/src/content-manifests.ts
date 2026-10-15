@@ -307,5 +307,119 @@ export const checkedContentManifests = [
       }
     ],
     "sha256": "294cd229c6bf3216e973d8ebf70b3fcb37b5686718b62edb874e04b2966dfa8f"
+  },
+  {
+    "format": 1,
+    "lessonId": "availability",
+    "version": 1,
+    "title": "Ask what is available",
+    "assets": [
+      {
+        "id": "lesson",
+        "kind": "lesson",
+        "mime": "application/json",
+        "bytes": 21452,
+        "sha256": "ae5d3e6da4e666a27fbcba99dec6976b330359ddde625e7fa68e7bd96c70007d"
+      },
+      {
+        "id": "availability-no",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 115552,
+        "sha256": "f0be453bc1f4a0b6fb86f679841d6dd20a6bfd33f8345e862fc444092a771837"
+      },
+      {
+        "id": "availability-yes",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 94432,
+        "sha256": "a5a9b9ad4746e2fdf3fc648e9d376448c2f866b2bde0cfd1a49e746603e3447a"
+      },
+      {
+        "id": "book-question",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 123232,
+        "sha256": "129242fe204e598826260380ae2e557f7f65b79bd9e4fba7ee25fc7b66180bb7"
+      },
+      {
+        "id": "book-short-question",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 104032,
+        "sha256": "9fe4e5e63a251cb3b873d6845a05ca1e2fcc5ca4ef1c55e5e35bb3a6d6e606a8"
+      },
+      {
+        "id": "kana-1",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 56032,
+        "sha256": "3c64011018f614bbc5a9309492be66e640c36cd5f9d0f1e365570b22e514813f"
+      },
+      {
+        "id": "kana-2",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 54112,
+        "sha256": "1a333342e084f8fc1130cc84392f7afcf8385c08313cccd0bef0bb08981e1509"
+      },
+      {
+        "id": "kana-3",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 57952,
+        "sha256": "6c1caeccf1c2a77b3877afb4e88b609bc5cc256e594b7392c715a2de7b469588"
+      },
+      {
+        "id": "new-books-question",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 157792,
+        "sha256": "500048ea989672ae189a15a0d68f1fccf51a443ef4eb331d386fea86e526dc7b"
+      },
+      {
+        "id": "old-books-question",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 136672,
+        "sha256": "1e82774f9e779e777b8eefd14c88a0cb2f4838accc2767238381dd0fa1cae7e7"
+      },
+      {
+        "id": "shop-question",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 127072,
+        "sha256": "a057acbf319685267a6d613b521bb3c198996f99df53c4c569885b0aae7f3e81"
+      },
+      {
+        "id": "word-book",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 52192,
+        "sha256": "5ea18c2d9d275f37a23ce7104620ccc0b3e284ee3006889b66e062c29d330240"
+      },
+      {
+        "id": "word-new",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 82912,
+        "sha256": "46c365f77938a2550aa1358353950942260f4152dcc3d2f06ba3235bbb1fb548"
+      },
+      {
+        "id": "word-old",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 63712,
+        "sha256": "77de36b7ef0b20b6d3f02e54665a1d2e7e1af0fc5f3cf90f79c63ef9e218d7ed"
+      },
+      {
+        "id": "word-shop",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 63712,
+        "sha256": "784b9424407314af21e2b0dfc2bf6e9a6bcefe5ab4beead94b80946e4350b2cf"
+      }
+    ],
+    "sha256": "073abfd3b58493c66f392f1f291c4f736ad3422170371867545013dcccdad973"
   }
 ] satisfies ContentManifest[];

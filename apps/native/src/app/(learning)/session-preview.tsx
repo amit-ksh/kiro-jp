@@ -32,6 +32,9 @@ export default function SessionPreview() {
   const lesson = lessonCatalog.find((item) => item.id === lessonId);
   if (!lesson) return <Screen title="Lesson unavailable"><Panel><Body>This lesson is not in the current library. Choose an available lesson; your saved progress is retained.</Body><Button label="Show lessons" onPress={() => router.replace("/(learning)/(tabs)/lessons")} /></Panel></Screen>;
   const preparedLesson = curriculum.get(lesson.id);
+  const prerequisite = lesson.prerequisite
+    ? lessonCatalog.find(item => item.id === lesson.prerequisite)
+    : undefined;
   const unfinished = study.events
     .filter(
       (event) =>
@@ -127,6 +130,20 @@ export default function SessionPreview() {
         {preparedLesson ? (
           <>
             <Body>{theme} · {preparedLesson.words.length} kanji, {preparedLesson.kana.length} kana and a useful pattern.</Body>
+            {prerequisite && (
+              <>
+                <Body>
+                  Builds on {prerequisite.title}. You can revisit that lesson
+                  first. This N5 session teaches its words and readings with
+                  support, including any familiar kanji it reinforces.
+                </Body>
+                <Button
+                  label={`Revisit ${prerequisite.title}`}
+                  secondary
+                  onPress={() => router.push({pathname: "/(learning)/session-preview", params: {lessonId: prerequisite.id}})}
+                />
+              </>
+            )}
             <Body>
               {firstReviews
                 ? `First, ${firstReviews} ${savedReview ? "remaining questions in your saved review set" : "due reviews"}. Then ${resume ? "resume your saved lesson" : "learn the kanji, kana and grammar"}, practise pronunciation and open your interest-led conversation.`

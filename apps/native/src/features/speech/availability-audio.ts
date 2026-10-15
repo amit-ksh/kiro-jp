@@ -1,0 +1,33 @@
+// Checked availability v1 model clips. Revise only under a new content version.
+export const availabilityAudio = {
+  "availability-no": require("../../../../../packages/content/assets/availability-v1/availability-no.wav"),
+  "availability-yes": require("../../../../../packages/content/assets/availability-v1/availability-yes.wav"),
+  "book-question": require("../../../../../packages/content/assets/availability-v1/book-question.wav"),
+  "book-short-question": require("../../../../../packages/content/assets/availability-v1/book-short-question.wav"),
+  "kana-1": require("../../../../../packages/content/assets/availability-v1/kana-1.wav"),
+  "kana-2": require("../../../../../packages/content/assets/availability-v1/kana-2.wav"),
+  "kana-3": require("../../../../../packages/content/assets/availability-v1/kana-3.wav"),
+  "new-books-question": require("../../../../../packages/content/assets/availability-v1/new-books-question.wav"),
+  "old-books-question": require("../../../../../packages/content/assets/availability-v1/old-books-question.wav"),
+  "shop-question": require("../../../../../packages/content/assets/availability-v1/shop-question.wav"),
+  "word-book": require("../../../../../packages/content/assets/availability-v1/word-book.wav"),
+  "word-new": require("../../../../../packages/content/assets/availability-v1/word-new.wav"),
+  "word-old": require("../../../../../packages/content/assets/availability-v1/word-old.wav"),
+  "word-shop": require("../../../../../packages/content/assets/availability-v1/word-shop.wav"),
+};
+export const availabilityAudioChecks = {
+  "availability-no": require("../../../../../packages/content/assets/availability-v1/availability-no.json"),
+  "availability-yes": require("../../../../../packages/content/assets/availability-v1/availability-yes.json"),
+  "book-question": require("../../../../../packages/content/assets/availability-v1/book-question.json"),
+  "book-short-question": require("../../../../../packages/content/assets/availability-v1/book-short-question.json"),
+  "kana-1": require("../../../../../packages/content/assets/availability-v1/kana-1.json"),
+  "kana-2": require("../../../../../packages/content/assets/availability-v1/kana-2.json"),
+  "kana-3": require("../../../../../packages/content/assets/availability-v1/kana-3.json"),
+  "new-books-question": require("../../../../../packages/content/assets/availability-v1/new-books-question.json"),
+  "old-books-question": require("../../../../../packages/content/assets/availability-v1/old-books-question.json"),
+  "shop-question": require("../../../../../packages/content/assets/availability-v1/shop-question.json"),
+  "word-book": require("../../../../../packages/content/assets/availability-v1/word-book.json"),
+  "word-new": require("../../../../../packages/content/assets/availability-v1/word-new.json"),
+  "word-old": require("../../../../../packages/content/assets/availability-v1/word-old.json"),
+  "word-shop": require("../../../../../packages/content/assets/availability-v1/word-shop.json"),
+};
