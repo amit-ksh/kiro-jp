@@ -16,6 +16,7 @@ import { spawnSync } from "node:child_process";
 import { DatabaseSync } from "node:sqlite";
 import { buildContentPackage } from "../scripts/lib/content-package.mjs";
 import { directionsLesson } from "../packages/content/src/directions.ts";
+import { favoritesLesson } from "../packages/content/src/favorites.ts";
 import {
   validateContentManifest,
   verifyContentManifest,
@@ -29,11 +30,14 @@ import {
 const hash = (bytes: string | Uint8Array) =>
   createHash("sha256").update(bytes).digest("hex");
 const root = resolve(import.meta.dirname, "..");
-test("two checked packages retain separate lesson/audio identities even when their clip names match",()=>{
+test("three checked packages retain separate lesson/audio identities even when their clip names match",()=>{
  const request=buildContentPackage(root),direction=buildContentPackage(root,directionsLesson);
  assert.equal(request.manifest.lessonId,"requests");assert.equal(direction.manifest.lessonId,"directions");
  assert.notEqual(request.manifest.sha256,direction.manifest.sha256);
  assert.notEqual(request.manifest.assets.find(a=>a.id==="kana-1")!.sha256,direction.manifest.assets.find(a=>a.id==="kana-1")!.sha256);
+ const favorites=buildContentPackage(root,favoritesLesson);
+ const kanaHashes=[request,direction,favorites].map(p=>p.manifest.assets.find(a=>a.id==="kana-1")!.sha256);assert.equal(new Set(kanaHashes).size,3);
+ assert.notEqual(request.manifest.assets.find(a=>a.id==="word-book")!.sha256,favorites.manifest.assets.find(a=>a.id==="word-book")!.sha256);
  assert.deepEqual(request.manifest,JSON.parse(readFileSync(join(root,"packages/content/manifests/requests-v1.json"),"utf8")));
  const content=JSON.parse(Buffer.from(direction.files.find(f=>f.id==="lesson")!.data).toString("utf8"));assert.equal(content.words[0].meaning,"enter");assert.equal(content.words[0].vocabulary.meaning,"entrance");
 });

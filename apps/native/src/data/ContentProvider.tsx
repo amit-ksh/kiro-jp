@@ -25,6 +25,7 @@ import {
 import { openAccountDatabase } from "./database";
 import { useStudy } from "./StudyProvider";
 import { installContent } from "./installContent";
+import { readContentBytes } from "./contentBytes";
 import { cachePreparedModelAudio } from "../features/speech/lesson-audio";
 
 interface ReadyPackage {
@@ -264,29 +265,11 @@ function PackageContent({
                   asset.bytes
               )
                 throw new Error("Content download could not finish.");
-              const reader = response.body.getReader(),
-                chunks: Uint8Array[] = [];
-              let bytes = 0;
-              try {
-                while (true) {
-                  const part = await reader.read();
-                  if (part.done) break;
-                  bytes += part.value.length;
-                  if (bytes > asset.bytes || !current())
-                    throw new Error("Content download was interrupted.");
-                  chunks.push(part.value);
-                }
-              } finally {
-                await reader.cancel().catch(() => {});
-              }
-              if (bytes !== asset.bytes)
-                throw new Error("Content download is incomplete.");
-              const data = new Uint8Array(bytes);
-              let offset = 0;
-              for (const chunk of chunks) {
-                data.set(chunk, offset);
-                offset += chunk.length;
-              }
+              const data = await readContentBytes(
+                response.body.getReader(),
+                asset.bytes,
+                current,
+              );
               new File(stage, fileName(asset)).write(data);
             } finally {
               clearTimeout(timeout);

@@ -35,7 +35,7 @@ export default function Lessons() {
           <Body muted>{lesson.outcome}</Body>
           <Button
             label={
-              curriculum.get(lesson.id) ? lesson.id === "requests" ? "Learn a polite request" : "Open lesson" : "Preview upcoming lesson"
+              curriculum.get(lesson.id) ? lesson.id === "requests" ? "Learn a polite request" : `Open ${lesson.title}` : "Preview upcoming lesson"
             }
             secondary
             onPress={() =>

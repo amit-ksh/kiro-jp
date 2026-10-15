@@ -1,0 +1,33 @@
+// Checked favorites v1 model clips. Add a new content version to revise them.
+export const favoritesAudio = {
+  "kana-1": require("../../../../../packages/content/assets/favorites-v1/kana-1.wav"),
+  "kana-2": require("../../../../../packages/content/assets/favorites-v1/kana-2.wav"),
+  "kana-3": require("../../../../../packages/content/assets/favorites-v1/kana-3.wav"),
+  "like-books": require("../../../../../packages/content/assets/favorites-v1/like-books.wav"),
+  "like-japan": require("../../../../../packages/content/assets/favorites-v1/like-japan.wav"),
+  "like-music": require("../../../../../packages/content/assets/favorites-v1/like-music.wav"),
+  "like-sound": require("../../../../../packages/content/assets/favorites-v1/like-sound.wav"),
+  "likes-question": require("../../../../../packages/content/assets/favorites-v1/likes-question.wav"),
+  "likes-response": require("../../../../../packages/content/assets/favorites-v1/likes-response.wav"),
+  "music-question": require("../../../../../packages/content/assets/favorites-v1/music-question.wav"),
+  "word-book": require("../../../../../packages/content/assets/favorites-v1/word-book.wav"),
+  "word-japan": require("../../../../../packages/content/assets/favorites-v1/word-japan.wav"),
+  "word-music": require("../../../../../packages/content/assets/favorites-v1/word-music.wav"),
+  "word-sound": require("../../../../../packages/content/assets/favorites-v1/word-sound.wav"),
+};
+export const favoritesAudioChecks = {
+  "kana-1": require("../../../../../packages/content/assets/favorites-v1/kana-1.json"),
+  "kana-2": require("../../../../../packages/content/assets/favorites-v1/kana-2.json"),
+  "kana-3": require("../../../../../packages/content/assets/favorites-v1/kana-3.json"),
+  "like-books": require("../../../../../packages/content/assets/favorites-v1/like-books.json"),
+  "like-japan": require("../../../../../packages/content/assets/favorites-v1/like-japan.json"),
+  "like-music": require("../../../../../packages/content/assets/favorites-v1/like-music.json"),
+  "like-sound": require("../../../../../packages/content/assets/favorites-v1/like-sound.json"),
+  "likes-question": require("../../../../../packages/content/assets/favorites-v1/likes-question.json"),
+  "likes-response": require("../../../../../packages/content/assets/favorites-v1/likes-response.json"),
+  "music-question": require("../../../../../packages/content/assets/favorites-v1/music-question.json"),
+  "word-book": require("../../../../../packages/content/assets/favorites-v1/word-book.json"),
+  "word-japan": require("../../../../../packages/content/assets/favorites-v1/word-japan.json"),
+  "word-music": require("../../../../../packages/content/assets/favorites-v1/word-music.json"),
+  "word-sound": require("../../../../../packages/content/assets/favorites-v1/word-sound.json"),
+};

@@ -1,0 +1,114 @@
+{
+  "format": 1,
+  "lessonId": "favorites",
+  "version": 1,
+  "title": "Talk about what you like",
+  "assets": [
+    {
+      "id": "lesson",
+      "kind": "lesson",
+      "mime": "application/json",
+      "bytes": 20839,
+      "sha256": "981e4cfe71be3a07327b4db80824c096ab28410a1d80ed6527405cc0922938e6"
+    },
+    {
+      "id": "kana-1",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 50272,
+      "sha256": "8db46cd19269d237236a4a1319ebe2440a56244ec68e0709fff216b5a3266c72"
+    },
+    {
+      "id": "kana-2",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 42592,
+      "sha256": "44192a1d3333372c774dad2bbfc689125b349ae277398777bdee2ebf264ee8a8"
+    },
+    {
+      "id": "kana-3",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 54112,
+      "sha256": "c6206b1c2a428d007ba7f16824d01808e3be90e8ea06d972d0d17b9ccd4cf190"
+    },
+    {
+      "id": "like-books",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 115552,
+      "sha256": "7dde642d643d193cd589d41ee41e1749f27c5e1429f69bd7353dc96c4e5dbc75"
+    },
+    {
+      "id": "like-japan",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 115552,
+      "sha256": "a55e5985fc1aa2999c63038c14f0b7e760dc11f4b5097c4268de2ce292fccb69"
+    },
+    {
+      "id": "like-music",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 115552,
+      "sha256": "d324746f3d3e858c8dc6aa81adbaba0241a6d1e8402ba91460064ffe1cdf2383"
+    },
+    {
+      "id": "like-sound",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 136672,
+      "sha256": "51f10c0b4a4155d2952216aa3f0f2c4c76a831a62bc5f95b691c533505cfdc09"
+    },
+    {
+      "id": "likes-question",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 105952,
+      "sha256": "eac9498d1a74853d1e23d6fd02c2c5184715c3e807bc2134240024b7235400cf"
+    },
+    {
+      "id": "likes-response",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 98272,
+      "sha256": "6610bbdf1b1788fe1f1bf2bbb89c9fe04fb9b1d0a80da1a7b4eae516b1ce274d"
+    },
+    {
+      "id": "music-question",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 123232,
+      "sha256": "5378224279358f5bfcdbf0a222db51a1ddcd40149aee750bd807db805a20e8ea"
+    },
+    {
+      "id": "word-book",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 69472,
+      "sha256": "cef2114a2d81c4ab20c91d9b3a0e7aceff9c2150940456090202025f19ef150d"
+    },
+    {
+      "id": "word-japan",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 54112,
+      "sha256": "2777c2535cb2681b6cffe879d3aef4bbe4ec7fde6689c7a4c114a5addf68803a"
+    },
+    {
+      "id": "word-music",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 75232,
+      "sha256": "987540c7b3937c534e0fbdbc3e966c840bf8932546fafae34a1288c028dea97a"
+    },
+    {
+      "id": "word-sound",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 63712,
+      "sha256": "27aec1253ca6206b1b362987e661c1ecfe911ac430bc0fd8184d450b18b2a227"
+    }
+  ],
+  "sha256": "294cd229c6bf3216e973d8ebf70b3fcb37b5686718b62edb874e04b2966dfa8f"
+}

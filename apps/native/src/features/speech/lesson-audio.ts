@@ -3,6 +3,7 @@ import { Asset } from "expo-asset";
 import { Directory, File, Paths } from "expo-file-system";
 import * as Crypto from "expo-crypto";
 import { directionsAudio, directionsAudioChecks } from "./directions-audio";
+import { favoritesAudio, favoritesAudioChecks } from "./favorites-audio";
 export const lessonAudio: Record<string, AudioSource> = {
   "word-water": require("../../../../../packages/content/assets/requests-v1/word-water.wav"),
   "word-tea": require("../../../../../packages/content/assets/requests-v1/word-tea.wav"),
@@ -36,6 +37,7 @@ const preparing = new Map<number, Promise<AudioSource>>();
 const audioSets: Record<string,{sources:Record<string,AudioSource>;checks:typeof checks}> = {
   "requests:1":{sources:lessonAudio,checks},
   "directions:1":{sources:directionsAudio,checks:directionsAudioChecks},
+  "favorites:1":{sources:favoritesAudio,checks:favoritesAudioChecks},
 };
 export function preparedLessonAudio(id: string, version: number): Record<string, AudioSource> {
   // Never substitute another lesson/version when a clip has not been prepared.
