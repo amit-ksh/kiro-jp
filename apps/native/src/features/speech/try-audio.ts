@@ -1,0 +1,33 @@
+// Checked try v1 model clips. Revise only under a new content version.
+export const tryAudio = {
+  "kana-1": require("../../../../../packages/content/assets/try-v1/kana-1.wav"),
+  "kana-2": require("../../../../../packages/content/assets/try-v1/kana-2.wav"),
+  "kana-3": require("../../../../../packages/content/assets/try-v1/kana-3.wav"),
+  "word-buy": require("../../../../../packages/content/assets/try-v1/word-buy.wav"),
+  "word-make": require("../../../../../packages/content/assets/try-v1/word-make.wav"),
+  "word-eat": require("../../../../../packages/content/assets/try-v1/word-eat.wav"),
+  "word-watch": require("../../../../../packages/content/assets/try-v1/word-watch.wav"),
+  "try-buy": require("../../../../../packages/content/assets/try-v1/try-buy.wav"),
+  "try-make": require("../../../../../packages/content/assets/try-v1/try-make.wav"),
+  "try-eat": require("../../../../../packages/content/assets/try-v1/try-eat.wav"),
+  "try-watch": require("../../../../../packages/content/assets/try-v1/try-watch.wav"),
+  "try-make-question": require("../../../../../packages/content/assets/try-v1/try-make-question.wav"),
+  "try-make-yes": require("../../../../../packages/content/assets/try-v1/try-make-yes.wav"),
+  "want-try-eat": require("../../../../../packages/content/assets/try-v1/want-try-eat.wav"),
+};
+export const tryAudioChecks = {
+  "kana-1": require("../../../../../packages/content/assets/try-v1/kana-1.json"),
+  "kana-2": require("../../../../../packages/content/assets/try-v1/kana-2.json"),
+  "kana-3": require("../../../../../packages/content/assets/try-v1/kana-3.json"),
+  "word-buy": require("../../../../../packages/content/assets/try-v1/word-buy.json"),
+  "word-make": require("../../../../../packages/content/assets/try-v1/word-make.json"),
+  "word-eat": require("../../../../../packages/content/assets/try-v1/word-eat.json"),
+  "word-watch": require("../../../../../packages/content/assets/try-v1/word-watch.json"),
+  "try-buy": require("../../../../../packages/content/assets/try-v1/try-buy.json"),
+  "try-make": require("../../../../../packages/content/assets/try-v1/try-make.json"),
+  "try-eat": require("../../../../../packages/content/assets/try-v1/try-eat.json"),
+  "try-watch": require("../../../../../packages/content/assets/try-v1/try-watch.json"),
+  "try-make-question": require("../../../../../packages/content/assets/try-v1/try-make-question.json"),
+  "try-make-yes": require("../../../../../packages/content/assets/try-v1/try-make-yes.json"),
+  "want-try-eat": require("../../../../../packages/content/assets/try-v1/want-try-eat.json"),
+};

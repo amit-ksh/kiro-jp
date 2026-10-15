@@ -1,0 +1,114 @@
+{
+  "format": 1,
+  "lessonId": "try",
+  "version": 1,
+  "title": "Try something new",
+  "assets": [
+    {
+      "id": "lesson",
+      "kind": "lesson",
+      "mime": "application/json",
+      "bytes": 24554,
+      "sha256": "dd8af349218d106d2ca572b2536dbf80883a642d9d6d58c031a6b27a50b3fb01"
+    },
+    {
+      "id": "kana-1",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 50272,
+      "sha256": "abc89cd71807a83c99a2694bc9bc3dac869423d994dc2098d0890e8235c36b19"
+    },
+    {
+      "id": "kana-2",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 46432,
+      "sha256": "5710b63ba10328d7c6bf50856abbb7e64f01cedb2d37b2afa66eba38fa420a76"
+    },
+    {
+      "id": "kana-3",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 57952,
+      "sha256": "0a80e142923113aa84e14e60283f7c50c25b5b80e2afd49a91757d613b5d10cc"
+    },
+    {
+      "id": "try-buy",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 157792,
+      "sha256": "db314e7fc88bc3a9ef4964f6e25c8015944a0b9b6675510b3c35bdd54e02f7fe"
+    },
+    {
+      "id": "try-eat",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 144352,
+      "sha256": "72b216384a3c02d9c5d84688d747f23cd453d2a71d91c5a873f467bc8f80b3a8"
+    },
+    {
+      "id": "try-make",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 157792,
+      "sha256": "54ce52c92cc14bb0349cbb8203fd7e2d4d7d8c39f5b5882e5b7ac4664745e610"
+    },
+    {
+      "id": "try-make-question",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 157792,
+      "sha256": "6361a7736cd3018d232777383b8482318efb84f3018b679d1c3a5177097e643d"
+    },
+    {
+      "id": "try-make-yes",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 123232,
+      "sha256": "0f554d7b845a8b037cca59bc5a01feffe804ec742bf7a9000a18152565a3180e"
+    },
+    {
+      "id": "try-watch",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 157792,
+      "sha256": "e58360f3a45efe9bbec8a6b667d648b8287dbfe5599841b4945f682fa351dbbf"
+    },
+    {
+      "id": "want-try-eat",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 155872,
+      "sha256": "331c43a46ad8c7fd064202ccaeec5e1aaf4d3bbafd17fc5ba469e5d6c94d576c"
+    },
+    {
+      "id": "word-buy",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 65632,
+      "sha256": "d88c8553ce309ebd60c44d048fc51aaa75ed7934866cc337037c6f5e9b500c43"
+    },
+    {
+      "id": "word-eat",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 59872,
+      "sha256": "46a60c1aa7a5cfe8743b44d68cdd20f9aca4b8b01a4caf30dda72e877d68b6f4"
+    },
+    {
+      "id": "word-make",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 67552,
+      "sha256": "219174e6c054a30c5a20ec55527d66a0f4e7276770d7c9aac576dff6d7f14f32"
+    },
+    {
+      "id": "word-watch",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 57952,
+      "sha256": "0cabc96103ae40f355a192c6c6300ab79f5e4ac6f6823cddebf0c7bde37f0a39"
+    }
+  ],
+  "sha256": "dff7b6127ed4ffc2d62dcfee23849877eef42ba983a42d5ba293994cfeee8a15"
+}

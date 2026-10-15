@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { tryLesson as lesson } from "../packages/content/src/try.ts";
 import { authoringCurriculum } from "../packages/content/src/authoring.ts";
 import { curriculum } from "../packages/content/src/curriculum.ts";
+import { recommendFirstLesson } from "../packages/content/src/index.ts";
 import { checkPreparedLesson } from "../packages/learning-core/src/content-check.ts";
 import {
   assessFixed,
@@ -18,7 +19,7 @@ import {
 } from "../packages/learning-core/src/study.ts";
 const exercise = (id: string) => lesson.exercises.find((e) => e.id === id)!;
 
-test("the final four-kanji candidate has checked breakdowns and explicit supported prerequisite forms", () => {
+test("the final registered four-kanji lesson has checked breakdowns and explicit prerequisite support", () => {
   assert.deepEqual(checkPreparedLesson(lesson), []);
   assert.deepEqual(
     lesson.words.map((w) => w.kanji),
@@ -26,7 +27,7 @@ test("the final four-kanji candidate has checked breakdowns and explicit support
   );
   assert.equal(lesson.exercises.length, 19);
   assert.equal(authoringCurriculum.get("try", 1), lesson);
-  assert.equal(curriculum.get("try"), undefined);
+  assert.equal(curriculum.get("try", 1), lesson);
   assert(
     authoringCurriculum.get(
       lesson.entry!.prerequisite.lessonId,
@@ -59,6 +60,15 @@ test("the final four-kanji candidate has checked breakdowns and explicit support
   }
   assert(lessonEntry(lesson, "early-n4").allowed);
   assert.equal(lessonEntry(lesson, "foundations").allowed, false);
+});
+
+test("early N4 recommendations match food and media interests while lower bands keep foundations", () => {
+  assert.equal(recommendFirstLesson(["Food"], "early-n4").id, "try");
+  assert.equal(recommendFirstLesson(["Anime"], "early-n4").id, "try");
+  assert.equal(recommendFirstLesson(["Manga"], "early-n4").id, "ability");
+  for (const band of ["foundations", "early-n5"] as const)
+    for (const interests of [["Food"], ["Anime"], ["Manga"]])
+      assert.notEqual(curriculum.get(recommendFirstLesson(interests, band).id)!.level, "N4");
 });
 
 test("try keeps dictionary readings, te-form practice and kana literacy distinct", () => {

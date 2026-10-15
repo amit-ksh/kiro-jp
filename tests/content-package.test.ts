@@ -20,6 +20,7 @@ import { favoritesLesson } from "../packages/content/src/favorites.ts";
 import { availabilityLesson } from "../packages/content/src/availability.ts";
 import { desireLesson } from "../packages/content/src/desire.ts";
 import { abilityLesson } from "../packages/content/src/ability.ts";
+import { tryLesson } from "../packages/content/src/try.ts";
 import {
   validateContentManifest,
   verifyContentManifest,
@@ -33,7 +34,7 @@ import {
 const hash = (bytes: string | Uint8Array) =>
   createHash("sha256").update(bytes).digest("hex");
 const root = resolve(import.meta.dirname, "..");
-test("six checked packages retain separate lesson/audio identities even when their clip names match",()=>{
+test("seven checked packages retain separate lesson/audio identities even when their clip names match",()=>{
  const request=buildContentPackage(root),direction=buildContentPackage(root,directionsLesson);
  assert.equal(request.manifest.lessonId,"requests");assert.equal(direction.manifest.lessonId,"directions");
  assert.notEqual(request.manifest.sha256,direction.manifest.sha256);
@@ -42,9 +43,11 @@ test("six checked packages retain separate lesson/audio identities even when the
  const availability=buildContentPackage(root,availabilityLesson);
  const desire=buildContentPackage(root,desireLesson);
  const ability=buildContentPackage(root,abilityLesson);
+ const trying=buildContentPackage(root,tryLesson);
  assert.equal(desire.manifest.assets.length,15);
  assert.equal(ability.manifest.assets.length,15);
- const kanaHashes=[request,direction,favorites,availability,desire,ability].map(p=>p.manifest.assets.find(a=>a.id==="kana-1")!.sha256);assert.equal(new Set(kanaHashes).size,6);
+ assert.equal(trying.manifest.assets.length,15);
+ const kanaHashes=[request,direction,favorites,availability,desire,ability,trying].map(p=>p.manifest.assets.find(a=>a.id==="kana-1")!.sha256);assert.equal(new Set(kanaHashes).size,7);
  assert.notEqual(request.manifest.assets.find(a=>a.id==="word-book")!.sha256,availability.manifest.assets.find(a=>a.id==="word-book")!.sha256);
  assert.notEqual(request.manifest.assets.find(a=>a.id==="word-book")!.sha256,favorites.manifest.assets.find(a=>a.id==="word-book")!.sha256);
  assert.deepEqual(request.manifest,JSON.parse(readFileSync(join(root,"packages/content/manifests/requests-v1.json"),"utf8")));

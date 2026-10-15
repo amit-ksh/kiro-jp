@@ -10,7 +10,7 @@ export default function Lessons() {
     >
       <Panel>
         <Body>
-          {preparedLessons.length} checked starter lessons are ready. Other templates remain upcoming as their content and audio are prepared.
+          {preparedLessons.length} starter lessons connect words, grammar and conversation. Choose a situation to practise.
         </Body>
       </Panel>
       {preparedLessons.map(lesson=><OfflineLesson key={`${lesson.id}:${lesson.version}`} lessonId={lesson.id} version={lesson.version}/>)}

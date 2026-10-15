@@ -5,5 +5,6 @@ import { favoritesLesson } from "./favorites.ts";
 import { availabilityLesson } from "./availability.ts";
 import { desireLesson } from "./desire.ts";
 import { abilityLesson } from "./ability.ts";
-export const preparedLessons = [requestsLesson, directionsLesson, favoritesLesson, availabilityLesson, desireLesson, abilityLesson] as const;
+import { tryLesson } from "./try.ts";
+export const preparedLessons = [requestsLesson, directionsLesson, favoritesLesson, availabilityLesson, desireLesson, abilityLesson, tryLesson] as const;
 export const curriculum = createCurriculum(preparedLessons);
