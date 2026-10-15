@@ -5,6 +5,7 @@ import * as Crypto from "expo-crypto";
 import { directionsAudio, directionsAudioChecks } from "./directions-audio";
 import { favoritesAudio, favoritesAudioChecks } from "./favorites-audio";
 import { availabilityAudio, availabilityAudioChecks } from "./availability-audio";
+import { desireAudio, desireAudioChecks } from "./desire-audio";
 export const lessonAudio: Record<string, AudioSource> = {
   "word-water": require("../../../../../packages/content/assets/requests-v1/word-water.wav"),
   "word-tea": require("../../../../../packages/content/assets/requests-v1/word-tea.wav"),
@@ -40,6 +41,7 @@ const audioSets: Record<string,{sources:Record<string,AudioSource>;checks:typeof
   "directions:1":{sources:directionsAudio,checks:directionsAudioChecks},
   "favorites:1":{sources:favoritesAudio,checks:favoritesAudioChecks},
   "availability:1":{sources:availabilityAudio,checks:availabilityAudioChecks},
+  "desire:1":{sources:desireAudio,checks:desireAudioChecks},
 };
 export function preparedLessonAudio(id: string, version: number): Record<string, AudioSource> {
   // Never substitute another lesson/version when a clip has not been prepared.

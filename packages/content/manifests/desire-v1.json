@@ -1,0 +1,114 @@
+{
+  "format": 1,
+  "lessonId": "desire",
+  "version": 1,
+  "title": "Say what you want to do",
+  "assets": [
+    {
+      "id": "lesson",
+      "kind": "lesson",
+      "mime": "application/json",
+      "bytes": 24546,
+      "sha256": "75ce9ef5036f27e88724b669f0c4eb21a5d5546b5f64c60881841bf6352fc708"
+    },
+    {
+      "id": "kana-1",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 50272,
+      "sha256": "0ffab4ef4280b0b9134d25eed8c99dbd4634da1d183c677125cf35a4ad2bfddd"
+    },
+    {
+      "id": "kana-2",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 42592,
+      "sha256": "925b50a84be4d5bbbd2b20e75f8388ceecb8b3610a24154d4488c5a1ff4d55c1"
+    },
+    {
+      "id": "kana-3",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 48352,
+      "sha256": "198839a34138f46f72d71b60880c28a8dbdcc3cff826a8a541599789082d4ae0"
+    },
+    {
+      "id": "want-drink",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 117472,
+      "sha256": "299b7131aa1684ed05926a2994e3f433591062db7b66aeeedd6dfcae4a4055ff"
+    },
+    {
+      "id": "want-drink-ga",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 115552,
+      "sha256": "6ac0358a2521f015168a3214aa2e4c493cb4523b7b993c8d7b1deb3a938573f8"
+    },
+    {
+      "id": "want-eat",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 148192,
+      "sha256": "b18eff69f3d73b52e1100055c8de1e54ff88c52788c162ceb5f797dfb7766978"
+    },
+    {
+      "id": "want-go",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 130912,
+      "sha256": "84a16c53bb0288b295c8acc48fd7442cd32d057cf7b8e78a7c887e268592dcaa"
+    },
+    {
+      "id": "want-watch",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 128992,
+      "sha256": "a36e9137b7f7259b6399826a128b5858b96dddda6bb27a49294c31f5b477876a"
+    },
+    {
+      "id": "want-watch-question",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 119392,
+      "sha256": "8670e203c2788c2ba98257e187954bac0a54486ff18fd17999482102fd048fb3"
+    },
+    {
+      "id": "want-watch-yes",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 94432,
+      "sha256": "19c789216ed499791849084cc057f83e823db62076d1bd629d1b12fccbea7186"
+    },
+    {
+      "id": "word-drink",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 67552,
+      "sha256": "34249d466a9fccd7e43a18cd25bd5aab743535e3d0269847c17c38ef267b8f69"
+    },
+    {
+      "id": "word-eat",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 63712,
+      "sha256": "f5d481088c0bd8ef83770f995519d0e07a3ad91a245a2d7a4d3be4f9e46b6871"
+    },
+    {
+      "id": "word-go",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 71392,
+      "sha256": "fd5add09ffd7fadc1632434ef7b674ce22b9b2baf65603fb308e5f805d966b85"
+    },
+    {
+      "id": "word-watch",
+      "kind": "audio",
+      "mime": "audio/wav",
+      "bytes": 63712,
+      "sha256": "90c48ecf895e0ade8a2493ade3a83da0ed6d28c4d47eff654de6df781bbc0d99"
+    }
+  ],
+  "sha256": "63e79e2845e9e2a6f5bd51b8d313c3ae1cf0bfd90f1d49dc8fbba14d082ba05b"
+}

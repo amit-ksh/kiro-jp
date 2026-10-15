@@ -28,10 +28,11 @@ test("checked grammar can be found by Japanese, romaji, English purpose and norm
     assert(found.length >= 1, query);
     assert.equal(found[0]!.id, "requests-v1-request-kudasai");
   }
-  assert.equal(searchGrammarReferences(grammarReferences, "").length, 4);
+  assert.equal(searchGrammarReferences(grammarReferences, "").length, 5);
   assert.equal(searchGrammarReferences(grammarReferences, "where entrance")[0]!.id,"directions-v1-location-doko");
   assert.equal(searchGrammarReferences(grammarReferences, "ga suki")[0]!.id,"favorites-v1-likes-suki");
   assert.equal(searchGrammarReferences(grammarReferences, "available")[0]!.id,"availability-v1-availability-arimasu");
+  assert.equal(searchGrammarReferences(grammarReferences, "tai desu")[0]!.id,"desire-v1-desire-tai");
   assert.equal(searchGrammarReferences(grammarReferences, "N4").length, 0);
   assert.equal(
     searchGrammarReferences(grammarReferences, "not-a-pattern").length,

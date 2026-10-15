@@ -1,0 +1,33 @@
+// Checked desire v1 model clips. Revise only under a new content version.
+export const desireAudio = {
+  "kana-1": require("../../../../../packages/content/assets/desire-v1/kana-1.wav"),
+  "kana-2": require("../../../../../packages/content/assets/desire-v1/kana-2.wav"),
+  "kana-3": require("../../../../../packages/content/assets/desire-v1/kana-3.wav"),
+  "want-drink-ga": require("../../../../../packages/content/assets/desire-v1/want-drink-ga.wav"),
+  "want-drink": require("../../../../../packages/content/assets/desire-v1/want-drink.wav"),
+  "want-eat": require("../../../../../packages/content/assets/desire-v1/want-eat.wav"),
+  "want-go": require("../../../../../packages/content/assets/desire-v1/want-go.wav"),
+  "want-watch-question": require("../../../../../packages/content/assets/desire-v1/want-watch-question.wav"),
+  "want-watch-yes": require("../../../../../packages/content/assets/desire-v1/want-watch-yes.wav"),
+  "want-watch": require("../../../../../packages/content/assets/desire-v1/want-watch.wav"),
+  "word-drink": require("../../../../../packages/content/assets/desire-v1/word-drink.wav"),
+  "word-eat": require("../../../../../packages/content/assets/desire-v1/word-eat.wav"),
+  "word-go": require("../../../../../packages/content/assets/desire-v1/word-go.wav"),
+  "word-watch": require("../../../../../packages/content/assets/desire-v1/word-watch.wav"),
+};
+export const desireAudioChecks = {
+  "kana-1": require("../../../../../packages/content/assets/desire-v1/kana-1.json"),
+  "kana-2": require("../../../../../packages/content/assets/desire-v1/kana-2.json"),
+  "kana-3": require("../../../../../packages/content/assets/desire-v1/kana-3.json"),
+  "want-drink-ga": require("../../../../../packages/content/assets/desire-v1/want-drink-ga.json"),
+  "want-drink": require("../../../../../packages/content/assets/desire-v1/want-drink.json"),
+  "want-eat": require("../../../../../packages/content/assets/desire-v1/want-eat.json"),
+  "want-go": require("../../../../../packages/content/assets/desire-v1/want-go.json"),
+  "want-watch-question": require("../../../../../packages/content/assets/desire-v1/want-watch-question.json"),
+  "want-watch-yes": require("../../../../../packages/content/assets/desire-v1/want-watch-yes.json"),
+  "want-watch": require("../../../../../packages/content/assets/desire-v1/want-watch.json"),
+  "word-drink": require("../../../../../packages/content/assets/desire-v1/word-drink.json"),
+  "word-eat": require("../../../../../packages/content/assets/desire-v1/word-eat.json"),
+  "word-go": require("../../../../../packages/content/assets/desire-v1/word-go.json"),
+  "word-watch": require("../../../../../packages/content/assets/desire-v1/word-watch.json"),
+};

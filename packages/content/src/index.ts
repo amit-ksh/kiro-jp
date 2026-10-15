@@ -2,6 +2,7 @@ export { requestsLesson } from "./requests.ts";
 export { directionsLesson } from "./directions.ts";
 export { favoritesLesson } from "./favorites.ts";
 export { availabilityLesson } from "./availability.ts";
+export { desireLesson } from "./desire.ts";
 import { curriculum } from "./curriculum.ts";
 export { checkedContentManifests } from "./content-manifests.ts";
 export { grammarReferences } from "./grammar-reference.ts";
