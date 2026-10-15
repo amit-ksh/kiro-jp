@@ -1,0 +1,30 @@
+{
+  "id": "like-music",
+  "kind": "sentence",
+  "text": "おんがくがすきです。",
+  "display": "音楽が好きです。",
+  "meaning": "I like music.",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "edff96ebe77f86b361d2c21273ebe9c3fc68308483f20f1df00b9feeef15f7af",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-like-music-edff96ebe77f",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.28,
+  "sampleRate": 24000,
+  "sha256": "d324746f3d3e858c8dc6aa81adbaba0241a6d1e8402ba91460064ffe1cdf2383",
+  "createdAt": "2026-10-15T00:10:50.565Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.588Z",
+    "audioHash": "d324746f3d3e858c8dc6aa81adbaba0241a6d1e8402ba91460064ffe1cdf2383",
+    "kana": "おんがくがすきです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

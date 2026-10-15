@@ -1,0 +1,30 @@
+{
+  "id": "likes-response",
+  "kind": "sentence",
+  "text": "はいすきです。",
+  "display": "はい、好きです。",
+  "meaning": "Yes, I do.",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "5f69c836d220e89e5bc2f2f44ee41e77d3cb70541187891dfa839afc74d42427",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-likes-response-5f69c836d220",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.92,
+  "sampleRate": 24000,
+  "sha256": "6610bbdf1b1788fe1f1bf2bbb89c9fe04fb9b1d0a80da1a7b4eae516b1ce274d",
+  "createdAt": "2026-10-15T00:12:54.329Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.588Z",
+    "audioHash": "6610bbdf1b1788fe1f1bf2bbb89c9fe04fb9b1d0a80da1a7b4eae516b1ce274d",
+    "kana": "はいすきです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

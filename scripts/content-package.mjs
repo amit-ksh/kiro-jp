@@ -9,7 +9,7 @@ let phase='source checks',status=mode==='--publish'?'published':mode==='--prepar
 try{
   const fs=await import('node:fs'),path=await import('node:path'),{fileURLToPath}=await import('node:url');
   const root=fileURLToPath(new URL('../',import.meta.url)),{buildContentPackage}=await import('./lib/content-package.mjs');
-  const {authoringCurriculum,authoringLessons}=await import('./../packages/content/src/authoring.ts');const lesson=authoringCurriculum.get(lessonId);if(!lesson){console.log('error: unknown authoring lesson\nhelp: use --lesson requests or --lesson directions');process.exit(2)}
+  const {authoringCurriculum,authoringLessons}=await import('./../packages/content/src/authoring.ts');const lesson=authoringCurriculum.get(lessonId);if(!lesson){console.log('error: unknown authoring lesson\nhelp: '+JSON.stringify('Use --lesson with '+authoringLessons.map(item=>item.id).join(', ')));process.exit(2)}
   const {manifest,files}=buildContentPackage(root,lesson),snapshot=path.join(root,`packages/content/manifests/${lesson.id}-v${lesson.version}.json`),generated=path.join(root,'packages/content/src/content-manifests.ts');
   if(mode==='--prepare'){fs.mkdirSync(path.dirname(snapshot),{recursive:true});fs.writeFileSync(snapshot,JSON.stringify(manifest,null,2)+'\n')}
   const manifests=authoringLessons.flatMap(candidate=>{const saved=path.join(root,`packages/content/manifests/${candidate.id}-v${candidate.version}.json`);return fs.existsSync(saved)?[JSON.parse(fs.readFileSync(saved,'utf8'))]:[]});

@@ -1,0 +1,30 @@
+{
+  "id": "like-books",
+  "kind": "sentence",
+  "text": "ほんがすきです。",
+  "display": "本が好きです。",
+  "meaning": "I like books.",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "806bee2e94f67fe04949e66096e6a88690e66fcd0c9cb80637f70c2ca8556154",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-like-books-806bee2e94f6",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.28,
+  "sampleRate": 24000,
+  "sha256": "7dde642d643d193cd589d41ee41e1749f27c5e1429f69bd7353dc96c4e5dbc75",
+  "createdAt": "2026-10-15T00:10:45.806Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.587Z",
+    "audioHash": "7dde642d643d193cd589d41ee41e1749f27c5e1429f69bd7353dc96c4e5dbc75",
+    "kana": "ほんがすきです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

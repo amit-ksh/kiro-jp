@@ -1,0 +1,30 @@
+{
+  "id": "word-japan",
+  "kind": "word",
+  "text": "にほん",
+  "display": "日本",
+  "meaning": "Japan",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "19a3aaabed777e462e7754a2616b6344245db6d3e0b3447f0d146b04b5aabdda",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-word-japan-19a3aaabed77",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1,
+  "sampleRate": 24000,
+  "sha256": "2777c2535cb2681b6cffe879d3aef4bbe4ec7fde6689c7a4c114a5addf68803a",
+  "createdAt": "2026-10-15T00:10:26.740Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.583Z",
+    "audioHash": "2777c2535cb2681b6cffe879d3aef4bbe4ec7fde6689c7a4c114a5addf68803a",
+    "kana": "にほん",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

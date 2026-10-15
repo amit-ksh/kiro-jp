@@ -1,5 +1,15 @@
 # Build evidence — 2026-10-13
 
+## Favorites preparation checkpoint — October 15
+
+Authored an original candidate for 日・本・音・楽 through 日本・本・音・音楽, kana に・ほ・ん and `[thing] + が好きです`. Nineteen exercises separate kanji and whole-word meanings, word-specific readings, kana and preference use. The question/ask-back/short-response examples support an interest-led exchange. Both にほん and にっぽん are approved for 日本. Kanji comfort/ease/pleasure aliases cannot answer the whole-word 音楽 meaning question. See curriculum-source-research.md for the first-party source records and limitations; no source mnemonics, skit, PDF or audio is redistributed.
+
+All 138 shared tests and all six workspace typechecks passed; the final plural book alias also passed the affected content/CLI tests. Six new favorites cases cover every approved answer and breakdown, mixed readings, supported practice, novel exact-span target evidence, fourteen initial review tracks and sixteen after a checked sentence save. The two released lesson/package gates still pass. Favorites remains outside the released registry pending integration, immutable package, actual Android and live provider checks.
+
+Fourteen candidate Kore WAVs were generated through Cloudflare AI Gateway with the existing budget reservations. The first run completed eleven, then returned HTTP 429 on music-question; its reservation remains held. After the cooldown, an explicit attempt 2 generated that missing clip while reusing the eleven completed files. The two never-attempted final clips were then generated normally. All fourteen passed the independent audio-only kana consistency check and WAV/hash validation; this is not human pronunciation acceptance. Current sanitized Gemini ledger: 206,256 micro-USD estimated confirmed-token spend and 1,236,992 micro-USD held against the 10,000,000 micro-USD total cap, not an invoice claim.
+
+Automatic approval review temporarily rejected the next inspection because account usage prevented review, not because the command was deemed unsafe. A later account check reported ordinary usage available; normal reviewed execution resumed. No approval bypass or duplicate active generation was used. The original learner/runtime/credential files and incidental Expo tsconfig edit remain excluded from this checkpoint. The full approved MVP and all remaining gates stay open.
+
 ## Directions lesson and two-package curriculum — October 15
 
 Added source-checked directions v1 with 入・出・右・左, the words 入口・出口・右・左, kana い・り・ぐ, nineteen exercises and `[place] + はどこですか`. Its question/short-answer examples prepare asking where the entrance/exit is and understanding right/left. A separate optional vocabulary gloss prevents treating 入 (enter) as 入口 (entrance); separate exercises/review cards preserve that distinction. The existing requests v1 data and manifest remain unchanged. New shrine-interest recommendations can select directions; both checked patterns appear in offline grammar search. Five approved starter templates remain required.

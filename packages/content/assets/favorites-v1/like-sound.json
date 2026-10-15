@@ -1,0 +1,30 @@
+{
+  "id": "like-sound",
+  "kind": "sentence",
+  "text": "このおとがすきです。",
+  "display": "この音が好きです。",
+  "meaning": "I like this sound.",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "0467b1459ecf1ef025bf81c1e3665f8427b828baf6d25f92f37e178cd46d5805",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-like-sound-0467b1459ecf",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.72,
+  "sampleRate": 24000,
+  "sha256": "51f10c0b4a4155d2952216aa3f0f2c4c76a831a62bc5f95b691c533505cfdc09",
+  "createdAt": "2026-10-15T00:10:48.276Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.587Z",
+    "audioHash": "51f10c0b4a4155d2952216aa3f0f2c4c76a831a62bc5f95b691c533505cfdc09",
+    "kana": "このおとがすきです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

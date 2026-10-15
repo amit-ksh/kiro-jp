@@ -1,0 +1,30 @@
+{
+  "id": "word-sound",
+  "kind": "word",
+  "text": "おと",
+  "display": "音",
+  "meaning": "sound",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "ecfd4f6a3b4bcbbc0d4c42759b28b2bff5184a0620cc4c10bc02b00627d6ccb4",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-word-sound-ecfd4f6a3b4b",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.2,
+  "sampleRate": 24000,
+  "sha256": "27aec1253ca6206b1b362987e661c1ecfe911ac430bc0fd8184d450b18b2a227",
+  "createdAt": "2026-10-15T00:10:31.990Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.585Z",
+    "audioHash": "27aec1253ca6206b1b362987e661c1ecfe911ac430bc0fd8184d450b18b2a227",
+    "kana": "おと",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

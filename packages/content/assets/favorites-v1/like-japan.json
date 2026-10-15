@@ -1,0 +1,30 @@
+{
+  "id": "like-japan",
+  "kind": "sentence",
+  "text": "にほんがすきです。",
+  "display": "日本が好きです。",
+  "meaning": "I like Japan.",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "1efd4512b1065f665016531b7f26673ce6dd3bff1a1f2aa09bac70d6ecdb7af9",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-like-japan-1efd4512b106",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.28,
+  "sampleRate": 24000,
+  "sha256": "a55e5985fc1aa2999c63038c14f0b7e760dc11f4b5097c4268de2ce292fccb69",
+  "createdAt": "2026-10-15T00:10:43.382Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.587Z",
+    "audioHash": "a55e5985fc1aa2999c63038c14f0b7e760dc11f4b5097c4268de2ce292fccb69",
+    "kana": "にほんがすきです",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

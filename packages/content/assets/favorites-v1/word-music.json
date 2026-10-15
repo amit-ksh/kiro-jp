@@ -1,0 +1,30 @@
+{
+  "id": "word-music",
+  "kind": "word",
+  "text": "おんがく",
+  "display": "音楽",
+  "meaning": "music",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "024e983cccf3341346ba889bc0941dc26ea06031a11fd74b02b75ef3314f6dd0",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-word-music-024e983cccf3",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 1.44,
+  "sampleRate": 24000,
+  "sha256": "987540c7b3937c534e0fbdbc3e966c840bf8932546fafae34a1288c028dea97a",
+  "createdAt": "2026-10-15T00:10:34.160Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.586Z",
+    "audioHash": "987540c7b3937c534e0fbdbc3e966c840bf8932546fafae34a1288c028dea97a",
+    "kana": "おんがく",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

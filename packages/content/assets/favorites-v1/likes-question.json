@@ -1,0 +1,30 @@
+{
+  "id": "likes-question",
+  "kind": "sentence",
+  "text": "なにがすきですか。",
+  "display": "何が好きですか。",
+  "meaning": "What do you like?",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "fba9674611f4d2a22e8d3455f91f04d2c2add0726cd94a7b514126aca7ae6b0b",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-likes-question-fba9674611f4",
+  "generationAttempt": 1,
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.08,
+  "sampleRate": 24000,
+  "sha256": "eac9498d1a74853d1e23d6fd02c2c5184715c3e807bc2134240024b7235400cf",
+  "createdAt": "2026-10-15T00:12:52.019Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.588Z",
+    "audioHash": "eac9498d1a74853d1e23d6fd02c2c5184715c3e807bc2134240024b7235400cf",
+    "kana": "なにがすきですか",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

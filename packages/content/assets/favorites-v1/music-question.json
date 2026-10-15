@@ -1,0 +1,31 @@
+{
+  "id": "music-question",
+  "kind": "sentence",
+  "text": "おんがくがすきですか。",
+  "display": "音楽が好きですか。",
+  "meaning": "Do you like music?",
+  "lessonId": "favorites",
+  "lessonVersion": 1,
+  "scriptHash": "1a0655d222a7b941c0509e6d40cd13ced714a9874ce275c136f9d973cb65f89f",
+  "model": "gemini-3.8-flash-lite-tts",
+  "voice": "Kore",
+  "operationId": "lesson-audio-favorites-v1-music-question-1a0655d222a7-attempt-2",
+  "generationAttempt": 2,
+  "originalOperationId": "lesson-audio-favorites-v1-music-question-1a0655d222a7",
+  "routedThrough": "Cloudflare AI Gateway",
+  "mime": "audio/wav",
+  "seconds": 2.44,
+  "sampleRate": 24000,
+  "sha256": "5378224279358f5bfcdbf0a222db51a1ddcd40149aee750bd807db805a20e8ea",
+  "createdAt": "2026-10-15T00:12:49.360Z",
+  "languageCheck": {
+    "kind": "AI transcript consistency, not native-speaker review",
+    "model": "gemini-3.8-flash",
+    "operationId": "lesson-audio-check-9dd2e0faa762895cba8c26d93c5df2a8199c60fa359e0aded965c56c0b39827f",
+    "checkedAt": "2026-10-15T00:13:39.588Z",
+    "audioHash": "5378224279358f5bfcdbf0a222db51a1ddcd40149aee750bd807db805a20e8ea",
+    "kana": "おんがくがすきですか",
+    "matches": true
+  },
+  "source": "https://ai.google.dev/gemini-api/docs/generate-content/speech-generation"
+}

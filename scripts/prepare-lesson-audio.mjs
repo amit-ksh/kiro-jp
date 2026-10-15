@@ -57,9 +57,9 @@ if (
 }
 const rows = [];
 try {
-  const { authoringCurriculum } = await import("../packages/content/src/authoring.ts");
+  const { authoringCurriculum, authoringLessons } = await import("../packages/content/src/authoring.ts");
   const lesson = authoringCurriculum.get(lessonId);
-  if (!lesson) { console.log('error: "Unknown authoring lesson."\nhelp: "Use --lesson requests or --lesson directions."'); process.exit(2); }
+  if (!lesson) { console.log('error: "Unknown authoring lesson."\nhelp: '+JSON.stringify('Use --lesson with '+authoringLessons.map(item=>item.id).join(', ')+'.')); process.exit(2); }
   const { checkPreparedLesson } =
     await import("../packages/learning-core/src/content-check.ts");
   const { inspectWav } = await import("./lib/wav.mjs");
