@@ -244,6 +244,7 @@ export default function Home() {
         <Body>
           {bandLabel(profile.acceptedBand)} · Target {profile.targetJlpt}
         </Body>
+        {profile.examDate && <Body>Exam date: {profile.examDate}</Body>}
         <Body muted>
           Your skill progress will reflect actual practice. No speaking or
           grammar mastery is inferred from your selected level.

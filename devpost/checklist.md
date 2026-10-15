@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- October 15 preferences increment: Profile now edits the four goals, five JLPT targets and optional calendar date; Home shows the date. Shared/server date validation rejects rollover and ambiguous formats. Live isolated-account save/clear/rejection checks preserve study/review records; the original account is unchanged. All 202 tests, six types, native lint, deploy and Android export pass. Actual native keyboard/theme/offline/restart checks remain open with constrained host RAM; other progress/reminder/data and learner gates remain required.
+
 - October 15 full starter registry: Activated try v1, completing all seven approved templates in content, native audio, grammar reference and immutable package registries. All 200 tests, six types, native lint/content/export, served hashes, Gemini target/recap/deduplication, novel feedback-to-review and synthetic study/snapshot checks pass. Earlier manifests and original account history remain unchanged. Newer native interaction/offline, broader reliability/controls, free-provider quota-dependent and human gates remain open; no whole slice is ticked. See the newest build-evidence.md checkpoint.
 
 - October 15 final-template preparation: Authored the original source-checked try v1 lesson with nineteen exercises, supported te-forms and fourteen checked audio clips. A rejected isolated ン remains private; explicit regeneration passed without weakening the transcript gate. All 199 tests, six types and the existing six-package gate pass. The fifteen-file candidate remains unreleased pending activation/integration and actual native/learner checks. See the latest build-evidence.md checkpoint.

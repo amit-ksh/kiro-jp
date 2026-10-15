@@ -1,5 +1,13 @@
 # Build evidence — 2026-10-13
 
+## Editable goals, JLPT target and calendar date — October 15
+
+Profile now exposes all four learning goals, five JLPT targets and an optional exam date through the existing account-scoped profile queue. Goal/target changes save automatically. The date uses an explicit save/remove action, retains invalid or failed input for correction and confirms local persistence without claiming completed cloud synchronization. Home displays a saved date. Higher targets retain the current starter-content boundary, and selected level/targets remain separate from skill evidence. The controls reuse existing indigo/white panels, choices, accessible fields and buttons; no visual identity or auth behavior changed.
+
+A shared calendar parser keeps YYYY-MM-DD dates independent of timezone, supports clearing and rejects rollover dates, invalid leap days, timestamps and locale-dependent forms. The deployed backend accepts only the canonical date or an omitted field. Live checks on an isolated synthetic account saved every goal and JLPT target, saved/cleared a valid leap day, and rejected invalid dates without changing the profile revision. Its study/review records stayed identical, and the prior profile data was restored afterward. The original account still exactly retains 88 study events, eighteen review changes and its profile. No inference or budget modification was required.
+
+All 202 tests, six workspace typechecks, native lint, development deployment and Android export pass. An initial JSX apostrophe lint error was corrected and lint passed again. Final bundle: `index-879829f6b6013bd4b9b27e2f8418bdca.hbc` (3.9 MB). Actual Profile layout, keyboard, dark/large-text and offline/restart interaction remain open with about 3.4 GB host RAM free; the earlier native shared-component screenshot is incumbent style evidence, not verification of these new controls. No emulator or EAS job was started. Remaining progress/reminder/data controls, broader reliability and learner/release gates are still required; no whole slice is accepted from this increment.
+
 ## Seven-template registry and try integration — October 15
 
 The full approved starter inventory is now registered: requests, directions, favorites, availability, desire, ability and try v1. Try includes its fourteen checked native clips, N4 grammar search and fifteen-file / 1,484,842-byte immutable development package. All served files match their sizes/SHA-256 hashes; repeat publication returned already published. The six earlier manifest files retain their exact bytes. Early N4 food/anime interests recommend try, manga recommends ability, and lower bands retain N5 foundations. The app's lesson introduction describes the complete available starter set.
