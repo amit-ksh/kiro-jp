@@ -3,6 +3,7 @@ export { directionsLesson } from "./directions.ts";
 export { favoritesLesson } from "./favorites.ts";
 export { availabilityLesson } from "./availability.ts";
 export { desireLesson } from "./desire.ts";
+export { abilityLesson } from "./ability.ts";
 import { curriculum } from "./curriculum.ts";
 import { lessonEntry, type LearningBand } from "@packages/learning-core";
 export { checkedContentManifests } from "./content-manifests.ts";

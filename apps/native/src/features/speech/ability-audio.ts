@@ -1,0 +1,33 @@
+// Checked ability v1 model clips. Revise only under a new content version.
+export const abilityAudio = {
+  "kana-1": require("../../../../../packages/content/assets/ability-v1/kana-1.wav"),
+  "kana-2": require("../../../../../packages/content/assets/ability-v1/kana-2.wav"),
+  "kana-3": require("../../../../../packages/content/assets/ability-v1/kana-3.wav"),
+  "word-read": require("../../../../../packages/content/assets/ability-v1/word-read.wav"),
+  "word-write": require("../../../../../packages/content/assets/ability-v1/word-write.wav"),
+  "word-speak": require("../../../../../packages/content/assets/ability-v1/word-speak.wav"),
+  "word-listen": require("../../../../../packages/content/assets/ability-v1/word-listen.wav"),
+  "can-read": require("../../../../../packages/content/assets/ability-v1/can-read.wav"),
+  "can-write": require("../../../../../packages/content/assets/ability-v1/can-write.wav"),
+  "can-speak": require("../../../../../packages/content/assets/ability-v1/can-speak.wav"),
+  "can-listen": require("../../../../../packages/content/assets/ability-v1/can-listen.wav"),
+  "can-speak-question": require("../../../../../packages/content/assets/ability-v1/can-speak-question.wav"),
+  "can-read-yes": require("../../../../../packages/content/assets/ability-v1/can-read-yes.wav"),
+  "cannot-speak-yet": require("../../../../../packages/content/assets/ability-v1/cannot-speak-yet.wav"),
+};
+export const abilityAudioChecks = {
+  "kana-1": require("../../../../../packages/content/assets/ability-v1/kana-1.json"),
+  "kana-2": require("../../../../../packages/content/assets/ability-v1/kana-2.json"),
+  "kana-3": require("../../../../../packages/content/assets/ability-v1/kana-3.json"),
+  "word-read": require("../../../../../packages/content/assets/ability-v1/word-read.json"),
+  "word-write": require("../../../../../packages/content/assets/ability-v1/word-write.json"),
+  "word-speak": require("../../../../../packages/content/assets/ability-v1/word-speak.json"),
+  "word-listen": require("../../../../../packages/content/assets/ability-v1/word-listen.json"),
+  "can-read": require("../../../../../packages/content/assets/ability-v1/can-read.json"),
+  "can-write": require("../../../../../packages/content/assets/ability-v1/can-write.json"),
+  "can-speak": require("../../../../../packages/content/assets/ability-v1/can-speak.json"),
+  "can-listen": require("../../../../../packages/content/assets/ability-v1/can-listen.json"),
+  "can-speak-question": require("../../../../../packages/content/assets/ability-v1/can-speak-question.json"),
+  "can-read-yes": require("../../../../../packages/content/assets/ability-v1/can-read-yes.json"),
+  "cannot-speak-yet": require("../../../../../packages/content/assets/ability-v1/cannot-speak-yet.json"),
+};

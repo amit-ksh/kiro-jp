@@ -535,5 +535,119 @@ export const checkedContentManifests = [
       }
     ],
     "sha256": "63e79e2845e9e2a6f5bd51b8d313c3ae1cf0bfd90f1d49dc8fbba14d082ba05b"
+  },
+  {
+    "format": 1,
+    "lessonId": "ability",
+    "version": 1,
+    "title": "Say what you can do",
+    "assets": [
+      {
+        "id": "lesson",
+        "kind": "lesson",
+        "mime": "application/json",
+        "bytes": 28709,
+        "sha256": "de0e3e20c10a6de4b2abd105575d5abe24012364ee375ccf621b63e35feb6972"
+      },
+      {
+        "id": "can-listen",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 203872,
+        "sha256": "38a413ffc35e55dcd079ba06b8dc510e72da6d5857621de7b9d6737e72e43467"
+      },
+      {
+        "id": "can-read",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 157792,
+        "sha256": "9ca770c416ce948c6de81c48677581348d642738bfae7e303b128a824cc37513"
+      },
+      {
+        "id": "can-read-yes",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 169312,
+        "sha256": "d8de27b7971a822f760d1ccc4e90ab1a40dd7735121e9ceeca84238f49d8e5af"
+      },
+      {
+        "id": "can-speak",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 165472,
+        "sha256": "09a16ca3944d5b554f1e9ac4150a6cc6cb297d1277073c8d0b16e63b07c668bd"
+      },
+      {
+        "id": "can-speak-question",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 175072,
+        "sha256": "181259de9a663d0f515706fe57e4dab2b984c8542697c3251036f5e669faee36"
+      },
+      {
+        "id": "can-write",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 159712,
+        "sha256": "270910051bdd9bc8e21d078049ffe267dee822ebc220d03806644c3f0a233d1c"
+      },
+      {
+        "id": "cannot-speak-yet",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 211552,
+        "sha256": "f8bf530f71cdc805417ffb76df83fcc6acdacffd5ae5e72cb0a6c2b485c81b78"
+      },
+      {
+        "id": "kana-1",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 63712,
+        "sha256": "7ea8cf82808a37bf563ed46375d6ce6c7374048fc4f98d35368a91a2312c30a7"
+      },
+      {
+        "id": "kana-2",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 52192,
+        "sha256": "b08aa94f10b82a0baf576b5bebfa3143fed3945704af52f7487dc76c8fe75fec"
+      },
+      {
+        "id": "kana-3",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 59872,
+        "sha256": "b1ec5894b278b95d0415b96d38b845caf1b34307068e5e3c1eca79382c52281d"
+      },
+      {
+        "id": "word-listen",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 67552,
+        "sha256": "a53f3a03cbec861e4b4d3f2e033380c8aee94d4b051dd9c5cbfa84efd93256a6"
+      },
+      {
+        "id": "word-read",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 61792,
+        "sha256": "cb139aef5462757a14dda9ebfb31ddc5130eaf905cb6df297e3885ceaf5c77d4"
+      },
+      {
+        "id": "word-speak",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 79072,
+        "sha256": "f5f428db1a9cede9ce9f4a1281c8fa8eee92f87057c7e05c24399c49202d99aa"
+      },
+      {
+        "id": "word-write",
+        "kind": "audio",
+        "mime": "audio/wav",
+        "bytes": 56032,
+        "sha256": "37faee02fcdd4c1f02710d46615188700cd511d73565407aae20e007cac7a2fc"
+      }
+    ],
+    "sha256": "2b20a476971d3c14166b78b5ade7eca12bd90db571b9881180a5cf31396a69ee"
   }
 ] satisfies ContentManifest[];

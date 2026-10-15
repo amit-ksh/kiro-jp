@@ -4,6 +4,7 @@ import { abilityLesson as lesson } from "../packages/content/src/ability.ts";
 import { requestsLesson } from "../packages/content/src/requests.ts";
 import { authoringCurriculum } from "../packages/content/src/authoring.ts";
 import { curriculum } from "../packages/content/src/curriculum.ts";
+import { recommendFirstLesson } from "../packages/content/src/index.ts";
 import { checkPreparedLesson } from "../packages/learning-core/src/content-check.ts";
 import {
   assessFixed,
@@ -20,7 +21,7 @@ import {
 } from "../packages/learning-core/src/study.ts";
 const exercise = (id: string) =>
   lesson.exercises.find((item) => item.id === id)!;
-test("ability is a source-checked, unreleased four-kanji N4 candidate with complete supported examples", () => {
+test("ability is a checked, registered four-kanji N4 lesson with complete supported examples", () => {
   assert.deepEqual(checkPreparedLesson(lesson), []);
   assert.deepEqual(
     lesson.words.map((word) => word.kanji),
@@ -28,7 +29,7 @@ test("ability is a source-checked, unreleased four-kanji N4 candidate with compl
   );
   assert.equal(lesson.exercises.length, 18);
   assert.equal(authoringCurriculum.get("ability"), lesson);
-  assert.equal(curriculum.get("ability"), undefined);
+  assert.equal(curriculum.get("ability", 1), lesson);
   assert(
     authoringCurriculum.get(
       lesson.entry!.prerequisite.lessonId,
@@ -60,6 +61,20 @@ test("ability is a source-checked, unreleased four-kanji N4 candidate with compl
     );
   }
   assert.match(lesson.words[0]!.example.text, /マンガ/);
+});
+
+test("new recommendations respect accepted level and retain the supported N5 foundation route", () => {
+  for (const band of ["foundations", "early-n5"] as const) {
+    for (const interests of [["Manga"], ["Music"], ["Food"], []]) {
+      const recommendation = recommendFirstLesson(interests, band);
+      const selected = curriculum.get(recommendation.id)!;
+      assert.notEqual(selected.level, "N4");
+      assert(lessonEntry(selected, band).allowed);
+    }
+  }
+  assert.equal(recommendFirstLesson(["Manga"], "early-n4").id, "ability");
+  assert.equal(recommendFirstLesson([], "early-n4").id, "ability");
+  assert.equal(recommendFirstLesson(["Shrines"], "foundations").id, "directions");
 });
 test("whole-word reading requires dictionary endings, without treating romaji as kana literacy", () => {
   for (const [id, reading, roman, wrong] of [
