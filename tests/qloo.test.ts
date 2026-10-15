@@ -16,6 +16,84 @@ const entity = {
   subtype: "urn:entity:book",
   properties: { description: "A synthetic context." },
 };
+test("provisioned search accepts a typed results array without a success flag", async () => {
+  const qloo = createQlooSession(
+    { baseUrl: "https://hackathon.api.qloo.com", apiKey: "synthetic-key" },
+    async () =>
+      Response.json({
+        results: [
+          {
+            entity_id: entity.entity_id,
+            name: entity.name,
+            types: ["urn:entity:book"],
+            properties: entity.properties,
+          },
+        ],
+      }),
+  );
+  const result = await qloo.resolveFavorite(
+    "Synthetic book",
+    "urn:entity:book",
+  );
+  assert.equal(result.status, "ready");
+  assert.equal(result.items[0]?.id, entity.entity_id);
+  assert.equal(result.items[0]?.type, "urn:entity:book");
+  assert.equal(result.requiresChoice, false);
+});
+test("search's omitted success flag is not accepted for failed searches or other routes", async () => {
+  for (const envelope of [
+    { success: false, results: [entity] },
+    { error: { message: "Synthetic error" }, results: [entity] },
+    { errors: [], results: [entity] },
+    { results: { entities: [entity] } },
+  ]) {
+    const qloo = createQlooSession(
+      { baseUrl: "https://hackathon.api.qloo.com", apiKey: "synthetic-key" },
+      async () => Response.json(envelope),
+    );
+    assert.equal(
+      (await qloo.resolveFavorite("Synthetic book", "urn:entity:book")).status,
+      "unavailable",
+    );
+  }
+  const qloo = createQlooSession(
+    {
+      baseUrl: "https://hackathon.api.qloo.com",
+      apiKey: "synthetic-key",
+      tagIdField: "id",
+    },
+    async () =>
+      Response.json({
+        results: {
+          tags: [{ id: "urn:tag:synthetic:book", name: "Synthetic book" }],
+        },
+      }),
+  );
+  assert.equal((await qloo.findInterestTags("books")).status, "unavailable");
+});
+test("search entity type lists reject ambiguity and unsupported categories", () => {
+  const search = { entity_id: entity.entity_id, name: entity.name };
+  assert.deepEqual(
+    decodeEntities([
+      { ...search, types: ["urn:entity:book", "urn:entity:place"] },
+    ]),
+    [],
+  );
+  assert.deepEqual(
+    decodeEntities([{ ...search, types: ["urn:entity:script"] }]),
+    [],
+  );
+  assert.deepEqual(
+    decodeEntities([{ ...search, types: "urn:entity:book" }]),
+    [],
+  );
+  assert.deepEqual(
+    decodeEntities([
+      { ...search, subtype: "urn:entity:script", types: ["urn:entity:book"] },
+    ]),
+    [],
+  );
+});
 test("ambiguous identities require a saved choice, and provenance names resolved signals", async () => {
   const other = {
     ...entity,

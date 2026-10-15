@@ -52,7 +52,12 @@ export function decodeEntities(value: unknown): CulturalEntity[] {
   if (!Array.isArray(value)) throw new Error("Invalid Qloo entity envelope.");
   return value.slice(0, 5).flatMap((item) => {
     const row = record(item),
-      type = row.subtype ?? row.type,
+      type =
+        row.subtype ??
+        row.type ??
+        (Array.isArray(row.types) && row.types.length === 1
+          ? row.types[0]
+          : undefined),
       properties = record(row.properties);
     if (
       typeof row.entity_id !== "string" ||
@@ -131,7 +136,7 @@ export function createQlooSession(
       return { status: "notConfigured", items: [], inputs };
     const cacheKey = cache?.key(
       JSON.stringify([
-        "decoded-context-v2",
+        "decoded-context-v3",
         root,
         operation,
         config.tagIdField ?? "",
@@ -181,7 +186,16 @@ export function createQlooSession(
       const text = await response.text();
       if (text.length > 2_000_000) throw new Error("Qloo response too large.");
       const data = record(JSON.parse(text));
-      if (data.success !== true) throw new Error("Invalid Qloo envelope.");
+      // Provisioned /search omits success and returns types[] on each item.
+      // Tags/Insights still require their documented success:true envelope.
+      const searchEnvelope =
+        operation === "resolveFavorite" &&
+        data.success === undefined &&
+        Array.isArray(data.results) &&
+        !("error" in data) &&
+        !("errors" in data);
+      if (data.success !== true && !searchEnvelope)
+        throw new Error("Invalid Qloo envelope.");
       const items = decode(data);
       const checkedAt = Date.now();
       if (cache && cacheKey) {
