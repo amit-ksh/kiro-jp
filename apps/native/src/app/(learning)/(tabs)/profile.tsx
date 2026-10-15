@@ -10,6 +10,7 @@ import { useSignOut } from "../../../features/auth/AuthProvider";
 import { CulturalPreferences } from "../../../features/conversation/CulturalPreferences";
 import { WaniKaniImport } from "../../../features/imports/WaniKaniImport";
 import { LearningPreferences } from "../../../features/profile/LearningPreferences";
+import { ReminderSettings } from "../../../features/reminders/ReminderSettings";
 import { Body, Button, Choice, Message, Panel, Screen, Title, useColors } from "../../../components/ui";
 export default function Profile() {
   const { profile, update } = useProfile(); const colors = useColors(); const signOut = useSignOut(); const { isAuthenticated } = useConvexAuth(); const email = useQuery(api.account.passwordResetEmail, isAuthenticated ? {} : "skip");
@@ -19,6 +20,7 @@ export default function Profile() {
   return <Screen title="Your Japanese, your pace."><Panel><Title>Level and daily goal</Title>{(["foundations", "early-n5", "early-n4"] as LearningBand[]).map(band => <Choice key={band} label={bandLabel(band)} selected={profile.acceptedBand === band} onPress={() => save({ acceptedBand: band })}/>)}{[5, 10, 15, 20, 30].map(minutes => <Choice key={minutes} label={`${minutes} minutes a day`} selected={profile.dailyMinutes === minutes} onPress={() => save({ dailyMinutes: minutes })}/>)}</Panel>
     <Panel><Title>Your progress</Title><Body>See your week, separate skill practice and useful follow-up reviews.</Body><Button label="View my progress" secondary onPress={() => router.push("/(learning)/progress")}/></Panel>
     <LearningPreferences/>
+    <ReminderSettings/>
     <Panel><Title>Your interests</Title>{interests.map(interest => <Choice key={interest} label={interest} selected={profile.interests.includes(interest)} onPress={() => save(current => ({ interests: current.interests.includes(interest) ? current.interests.filter(item => item !== interest) : [...current.interests, interest] }))}/>)}</Panel>
     <CulturalPreferences/>
     <Panel><WaniKaniImport/></Panel>

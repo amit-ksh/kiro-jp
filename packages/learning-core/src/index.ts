@@ -19,3 +19,4 @@ export * from "./lesson-target.ts";
 export * from "./wanikani.ts";
 export * from "./lesson-entry.ts";
 export * from "./progress.ts";
+export * from "./reminders.ts";

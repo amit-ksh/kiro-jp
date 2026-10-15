@@ -10,6 +10,7 @@ import { StudyProvider } from "../../data/StudyProvider";
 import { ReviewProvider } from "../../data/ReviewProvider";
 import { Loading, Panel, Body, Screen, Button } from "../../components/ui";
 import { authNamespace, clearUsableTokens, flushRevocations, queueRevocation } from "./revocations";
+import { studyReminders } from "../reminders/nativeReminders";
 
 const url = process.env.EXPO_PUBLIC_CONVEX_URL;
 const Control = createContext<((token: string | null) => Promise<void>) | null>(null);
@@ -18,6 +19,7 @@ function SessionRuntime({ changed }: { changed: (session: string | null) => void
   const { isLoading } = useConvexAuth();
   const session = localSessionFromToken(token, process.env.EXPO_PUBLIC_CONVEX_SITE_URL ?? "");
   useEffect(() => { if (!isLoading) changed(session); }, [session, isLoading, changed]);
+  useEffect(() => { if (!isLoading && !session) void studyReminders.retire().catch(() => {}); }, [isLoading, session]);
   return null;
 }
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -55,6 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [runtime, storage]);
   if (!convex) return <Screen title="Japanese Learning App"><Panel><Body>The Android configuration is not ready. Run pnpm config:local using your private environment file, then restart the development build.</Body></Panel></Screen>;
   const immediateSignOut = async (token: string | null) => {
+    // Invalidate in-flight schedules before clearing identity or unmounting.
+    await studyReminders.retire();
     previousSession.current = null;
     retired.current = true; storage.guard.active = false; setSigningOut(true);
     try { await storageWrites.current; await queueRevocation(token); }

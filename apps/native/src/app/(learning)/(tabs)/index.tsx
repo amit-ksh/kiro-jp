@@ -11,6 +11,7 @@ import { useReviews } from "../../../data/ReviewProvider";
 import { useProfile } from "../../../data/ProfileProvider";
 import { useContent } from "../../../data/ContentProvider";
 import { useLearningProgress } from "../../../features/profile/useLearningProgress";
+import { ReminderOffer } from "../../../features/reminders/ReminderSettings";
 import {
   Body,
   Button,
@@ -235,6 +236,7 @@ export default function Home() {
           onPress={() => router.push("/(learning)/(tabs)/profile")}
         />
       </Panel>
+      <ReminderOffer />
       {syncState === "conflict" ? (
         <Panel>
           <Body>

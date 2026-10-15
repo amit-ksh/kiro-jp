@@ -11,7 +11,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       predictiveBackGestureEnabled: true,
       ...(host ? { intentFilters: [{ action: "VIEW", autoVerify: true, category: ["BROWSABLE", "DEFAULT"], data: [{ scheme: "https", host, pathPrefix: "/auth/reset" }] }] } : {}),
     },
-    plugins: [["expo-router", { root: "./src/app" }], "expo-secure-store", "expo-sqlite", "expo-asset", "expo-font", ["expo-audio", { microphonePermission: "Allow Japanese Learning App to record your speaking practice.",enableBackgroundRecording:false,enableBackgroundPlayback:false }]],
+    plugins: [["expo-router", { root: "./src/app" }], "expo-secure-store", "expo-sqlite", "expo-asset", "expo-font", ["expo-notifications", { color: "#37469E" }], ["expo-audio", { microphonePermission: "Allow Japanese Learning App to record your speaking practice.",enableBackgroundRecording:false,enableBackgroundPlayback:false }]],
     experiments: { typedRoutes: false },
     extra: { eas: { projectId: "48bd39bd-9a50-4802-a67a-63eeda132992" } },
   };

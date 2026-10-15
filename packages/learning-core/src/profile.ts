@@ -24,6 +24,8 @@ export interface LearningProfile {
   textScale: number;
   audioSpeed: number;
   reminderEnabled: boolean;
+  reminderTime?: string;
+  reminderOfferDismissed?: boolean;
 }
 export function initialProfile(): LearningProfile {
   return { estimatedLevel: "not-sure", acceptedBand: "foundations", goal: "conversation", dailyMinutes: 15, targetJlpt: "N5", interests: [], favorites: [], dislikes: [], onboardingStep: "setup", placementResponses: [], placementSkipped: false, importSkipped: false, furigana: true, romaji: true, translations: true, textScale: 1, audioSpeed: 1, reminderEnabled: false };

@@ -7,5 +7,5 @@ export const profileValue = v.object({
   interests: v.array(v.string()), favorites: v.array(v.string()), dislikes: v.array(v.string()),
   onboardingStep: v.union(v.literal("setup"), v.literal("import"), v.literal("placement"), v.literal("interests"), v.literal("preview"), v.literal("complete")),
   placementResponses: v.array(v.object({ questionId: v.string(), bankVersion: v.number(), outcome: v.union(v.literal("correct"), v.literal("incorrect"), v.literal("dontKnow"), v.literal("unavailable")) })),
-  placementSkipped: v.boolean(), importSkipped: v.boolean(), furigana: v.boolean(), romaji: v.boolean(), translations: v.boolean(), textScale: v.number(), audioSpeed: v.number(), reminderEnabled: v.boolean(),
+  placementSkipped: v.boolean(), importSkipped: v.boolean(), furigana: v.boolean(), romaji: v.boolean(), translations: v.boolean(), textScale: v.number(), audioSpeed: v.number(), reminderEnabled: v.boolean(), reminderTime: v.optional(v.string()), reminderOfferDismissed: v.optional(v.boolean()),
 });
