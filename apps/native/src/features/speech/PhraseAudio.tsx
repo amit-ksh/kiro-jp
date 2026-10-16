@@ -60,10 +60,11 @@ export function PhraseAudio({
         "phrase-audio",
         namespace,
       );
-      directory.create({ intermediates: true, idempotent: true });
       const db = await openAccountDatabase(accountId);
       const key = `phrase-audio:${phraseId}:kore-v1`;
       try {
+        if (!active) return;
+        directory.create({ intermediates: true, idempotent: true });
         const saved = await db.getFirstAsync<{ value: string }>(
           "SELECT value FROM study_metadata WHERE key=?",
           key,

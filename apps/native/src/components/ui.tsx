@@ -7,16 +7,16 @@ export const TextScaleProvider = Scale.Provider;
 export function useColors(): AppColors { return useColorScheme() === "dark" ? darkColors : lightColors; }
 export function Body({ children, muted = false, style }: { children: ReactNode; muted?: boolean; style?: object }) { const colors = useColors(); const scale = useContext(Scale); return <Text style={[styles.body, { color: muted ? colors.muted : colors.onSurface, fontSize: 16 * scale, lineHeight: 25 * scale }, style]}>{children}</Text>; }
 export function Title({ children, light = false }: { children: ReactNode; light?: boolean }) { const colors = useColors(); return <Text accessibilityRole="header" style={[styles.title, { color: light ? colors.onPrimary : colors.onSurface }]}>{children}</Text>; }
-export function Screen({ children, title, subtitle, footer, scrollRef }: { children: ReactNode; title: string; subtitle?: string; footer?: ReactNode; scrollRef?: RefObject<ScrollView | null> }) {
+export function Screen({ children, title, subtitle, footer, scrollRef, keyboardAware = false }: { children: ReactNode; title: string; subtitle?: string; footer?: ReactNode; scrollRef?: RefObject<ScrollView | null>; keyboardAware?: boolean }) {
   const colors = useColors();
-  const root = useRef<View>(null), hasFooter = Boolean(footer);
+  const root = useRef<View>(null), hasFooter = Boolean(footer), avoidKeyboard = hasFooter || keyboardAware;
   const [frame,setFrame] = useState({y:0,height:0}), [keyboardTop,setKeyboardTop] = useState<number|null>(null);
-  useEffect(()=>{ if(!hasFooter || Platform.OS!=="android")return; const show=Keyboard.addListener("keyboardDidShow",event=>setKeyboardTop(event.endCoordinates.screenY)), hide=Keyboard.addListener("keyboardDidHide",()=>setKeyboardTop(null)); return()=>{show.remove();hide.remove();}; },[hasFooter]);
+  useEffect(()=>{ if(!avoidKeyboard || Platform.OS!=="android")return; const show=Keyboard.addListener("keyboardDidShow",event=>setKeyboardTop(event.endCoordinates.screenY)), hide=Keyboard.addListener("keyboardDidHide",()=>setKeyboardTop(null)); return()=>{show.remove();hide.remove();}; },[avoidKeyboard]);
   // Measure the actual visible frame so adjustResize and edge-to-edge windows
   // both work, without applying keyboard height twice or retaining it on hide.
   // Some Android IMEs place their suggestion strip above the reported frame.
   // Keep one control-height of room while it is open; remove it on hide.
-  const inset = Platform.OS==="android" && hasFooter && keyboardTop!==null ? Math.max(0,frame.y+frame.height-keyboardTop) + 48 : 0;
+  const inset = Platform.OS==="android" && avoidKeyboard && keyboardTop!==null ? Math.max(0,frame.y+frame.height-keyboardTop) + 48 : 0;
   return <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={footer ? ["top", "left", "right", "bottom"] : ["top", "left", "right"]}><View ref={root} style={{flex:1}} onLayout={()=>root.current?.measureInWindow((_x,y,_width,height)=>setFrame(previous=>previous.y===y && previous.height===height ? previous : {y,height}))}><KeyboardAvoidingView style={{flex:1,paddingBottom:inset}} behavior={footer && Platform.OS !== "android" ? "padding" : undefined}><ScrollView ref={scrollRef} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.screen}><View style={styles.header}><Title light>{title}</Title>{subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}</View>{children}</ScrollView>{footer && <View style={{backgroundColor:colors.surface,paddingHorizontal:24,paddingTop:12,paddingBottom:12}}>{footer}</View>}</KeyboardAvoidingView></View></SafeAreaView>;
 }
 export function Panel({ children, style }: { children: ReactNode; style?: ViewStyle }) { const colors = useColors(); return <View style={[styles.panel, { backgroundColor: colors.surface }, style]}>{children}</View>; }

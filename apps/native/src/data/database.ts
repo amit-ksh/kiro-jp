@@ -1,5 +1,6 @@
 import * as SQLite from "expo-sqlite";
 import * as Crypto from "expo-crypto";
+import * as SecureStore from "expo-secure-store";
 import type { LearningProfile } from "@packages/learning-core";
 import { initializeAccountSchema } from "./accountSchema";
 
@@ -10,13 +11,87 @@ export interface LocalProfile {
   acknowledgedRevision: number;
 }
 let opening = Promise.resolve();
-export async function openAccountDatabase(accountId: string) {
+const retired = new Set<string>(),
+  checked = new Set<string>();
+const handles = new Map<SQLite.SQLiteDatabase, string>();
+const pendingOpens = new Map<Promise<SQLite.SQLiteDatabase>, string>();
+export async function accountStorageNamespace(accountId: string) {
   if (!accountId) throw new Error("An authenticated account is required.");
   const deployment = process.env.EXPO_PUBLIC_CONVEX_URL ?? "unconfigured";
-  const namespace = await Crypto.digestStringAsync(
+  return Crypto.digestStringAsync(
     Crypto.CryptoDigestAlgorithm.SHA256,
     `${deployment}:${accountId}`,
   );
+}
+async function assertActive(namespace: string) {
+  if (
+    !checked.has(namespace) &&
+    (await SecureStore.getItemAsync(`retired-learning-${namespace}`))
+  )
+    retired.add(namespace);
+  checked.add(namespace);
+  if (retired.has(namespace))
+    throw new Error("This account's local storage is retired.");
+}
+async function trackedOpen(
+  namespace: string,
+  name: string,
+  options: SQLite.SQLiteOpenOptions,
+  directory?: string,
+) {
+  const task = (async () => {
+    await assertActive(namespace);
+    const db = await SQLite.openDatabaseAsync(name, options, directory);
+    const close = db.closeAsync.bind(db);
+    let closing: Promise<void> | undefined;
+    handles.set(db, namespace);
+    db.closeAsync = () =>
+      (closing ??= close().then(
+        () => {
+          handles.delete(db);
+        },
+        (error) => {
+          closing = undefined;
+          throw error;
+        },
+      ));
+    try {
+      await assertActive(namespace);
+      return db;
+    } catch (error) {
+      await db.closeAsync();
+      throw error;
+    }
+  })();
+  pendingOpens.set(task, namespace);
+  try {
+    return await task;
+  } finally {
+    pendingOpens.delete(task);
+  }
+}
+export async function quarantineAccountDatabase(accountId: string) {
+  const namespace = await accountStorageNamespace(accountId);
+  retired.add(namespace);
+  await SecureStore.setItemAsync(`retired-learning-${namespace}`, "1");
+  return namespace;
+}
+export async function retireAccountDatabase(accountId: string) {
+  const namespace = await quarantineAccountDatabase(accountId);
+  // Providers unmount before cleanup. Let their queues/aborted downloads finish
+  // and close naturally; closing underneath a transaction can lose its rollback.
+  for (let n = 0; n < 80; n++) {
+    if (![...handles.values(), ...pendingOpens.values()].includes(namespace))
+      return namespace;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error(
+    "Local study is quarantined while its last operation stops. Retry cleanup.",
+  );
+}
+export async function openAccountDatabase(accountId: string) {
+  const namespace = await accountStorageNamespace(accountId);
+  await assertActive(namespace);
   // Profile and study own separate handles. Serialize initial schema/WAL setup
   // so the first mount cannot race two journal-mode changes on a fresh file.
   const previous = opening;
@@ -26,11 +101,12 @@ export async function openAccountDatabase(accountId: string) {
   });
   await previous;
   try {
-    const db = await SQLite.openDatabaseAsync(`learning-${namespace}.db`, {
+    const db = await trackedOpen(namespace, `learning-${namespace}.db`, {
       useNewConnection: true,
     });
     try {
       const migration = await initializeAccountSchema(db);
+      await assertActive(namespace);
       if (__DEV__ && migration.from < migration.to)
         console.info("Account storage upgraded safely", migration);
       return db;
@@ -78,7 +154,12 @@ export async function accountTransaction(
   // transaction. Preserve the account/deployment path and connection options.
   const path = db.databasePath.replace(/\\/g, "/");
   const separator = path.lastIndexOf("/");
-  const tx = await SQLite.openDatabaseAsync(
+  const namespace = /(?:^|\/)learning-([a-f0-9]{64})\.db$/.exec(path)?.[1];
+  const open = namespace
+    ? (name: string, options: SQLite.SQLiteOpenOptions, directory?: string) =>
+        trackedOpen(namespace, name, options, directory)
+    : SQLite.openDatabaseAsync;
+  const tx = await open(
     path.slice(separator + 1),
     { ...db.options, useNewConnection: true },
     separator < 0 ? undefined : path.slice(0, separator) || "/",

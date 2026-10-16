@@ -25,6 +25,8 @@ const hooks = registerHooks({
       return { url: sqliteStub, shortCircuit: true };
     if (specifier === "expo-crypto")
       return { url: "data:text/javascript,export{}", shortCircuit: true };
+    if (specifier === "expo-secure-store")
+      return { url: "data:text/javascript,export const getItemAsync=async()=>null;", shortCircuit: true };
     if (
       specifier === "./accountSchema" &&
       context.parentURL?.endsWith("/database.ts")

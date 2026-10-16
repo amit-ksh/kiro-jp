@@ -11,9 +11,10 @@ import { ReviewProvider } from "../../data/ReviewProvider";
 import { Loading, Panel, Body, Screen, Button } from "../../components/ui";
 import { authNamespace, clearUsableTokens, flushRevocations, queueRevocation } from "./revocations";
 import { studyReminders } from "../reminders/nativeReminders";
+import { quarantineAccountDatabase } from "../../data/database";
 
 const url = process.env.EXPO_PUBLIC_CONVEX_URL;
-const Control = createContext<((token: string | null) => Promise<void>) | null>(null);
+const Control = createContext<((token: string | null, deleted?: boolean) => Promise<void>) | null>(null);
 function SessionRuntime({ changed }: { changed: (session: string | null) => void }) {
   const token = useAuthToken();
   const { isLoading } = useConvexAuth();
@@ -56,12 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [runtime, storage]);
   if (!convex) return <Screen title="Japanese Learning App"><Panel><Body>The Android configuration is not ready. Run pnpm config:local using your private environment file, then restart the development build.</Body></Panel></Screen>;
-  const immediateSignOut = async (token: string | null) => {
+  const immediateSignOut = async (token: string | null, deleted = false) => {
     // Invalidate in-flight schedules before clearing identity or unmounting.
     await studyReminders.retire();
     previousSession.current = null;
     retired.current = true; storage.guard.active = false; setSigningOut(true);
-    try { await storageWrites.current; await queueRevocation(token); }
+    try { await storageWrites.current; if (!deleted) await queueRevocation(token); }
     finally { await clearUsableTokens(); setGeneration(value => value + 1); setSigningOut(false); void flushRevocations(); }
   };
   return <Control.Provider value={immediateSignOut}>{signingOut ? <Loading label="Signing out on this phone…"/> : <ConvexAuthProvider key={generation} client={convex} storage={storage} shouldHandleCode={false}><SessionRuntime changed={sessionChanged}/>{children}</ConvexAuthProvider>}</Control.Provider>;
@@ -77,6 +78,14 @@ export function LearningAccount({ children }: { children: ReactNode }) {
   const key = `learning-identity-${authNamespace}-${subject ?? "none"}`;
   useEffect(() => { let active = true; setRemembered(undefined); void SecureStore.getItemAsync(key).then(value => { if (active) setRemembered(value ? JSON.parse(value) : null); }).catch(() => { if (active) setRemembered(null); }); return () => { active = false; }; }, [key]);
   useEffect(() => { if (subject && current?.id === subject) { const identity = { accountId: subject }; setRemembered(identity); void SecureStore.setItemAsync(key, JSON.stringify(identity)); } }, [subject, current?.id, key]);
+  useEffect(() => {
+    if (subject && current === null && connection.isWebSocketConnected && server.isAuthenticated) {
+      // Persist the quarantine when a different phone learns the user is gone;
+      // restarting offline must not reopen its remembered learning partition.
+      void quarantineAccountDatabase(subject).then(() => SecureStore.deleteItemAsync(key)).catch(() => {});
+      void studyReminders.retire().catch(() => {});
+    }
+  }, [subject, current, connection.isWebSocketConnected, server.isAuthenticated, key]);
   if (isLoading || remembered === undefined) return <Loading />;
   if (!isAuthenticated) return <Loading label="Sign in to continue." />;
   const access = accountCacheAccess({ subject, currentId: current?.id ?? (current === null ? null : undefined), rememberedId: remembered?.accountId, connected: connection.isWebSocketConnected, serverLoading: server.isLoading, serverAuthenticated: server.isAuthenticated });
@@ -88,4 +97,8 @@ export function LearningAccount({ children }: { children: ReactNode }) {
 export function useSignOut() {
   const control = useContext(Control); const token = useAuthToken();
   return async () => { if (!control) throw new Error("Authentication control is unavailable."); await control(token); };
+}
+export function useDeletedAccountSignOut() {
+  const control = useContext(Control), token = useAuthToken();
+  return async () => { if (!control) throw new Error("Authentication control is unavailable."); await control(token, true); };
 }

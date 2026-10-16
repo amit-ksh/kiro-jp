@@ -3,9 +3,26 @@ import { requireOptionalNativeModule } from "expo";
 
 export const studyReminderId = "japanese-study-daily-v1";
 const channelId = "study-reminders";
-let modulePromise: Promise<typeof import("expo-notifications")> | undefined;
+let modulePromise:
+  | Promise<(typeof import("./localNotifications"))["localNotifications"]>
+  | undefined;
 export function notificationModule() {
-  return (modulePromise ??= import("expo-notifications"));
+  return (modulePromise ??= import("./localNotifications")
+    .then((loaded) => {
+      const notifications = loaded.localNotifications;
+      if (
+        !notifications ||
+        typeof notifications.cancelScheduledNotificationAsync !== "function" ||
+        typeof notifications.dismissNotificationAsync !== "function"
+      ) {
+        throw new Error("Native notification controls are unavailable.");
+      }
+      return notifications;
+    })
+    .catch((error) => {
+      modulePromise = undefined;
+      throw error;
+    }));
 }
 export async function prepareReminderPermission(request = false) {
   const notifications = await notificationModule();
@@ -27,9 +44,22 @@ async function cancel() {
     // scheduled this feature. Other import/OS errors must remain failures.
     return;
   }
-  const notifications = await notificationModule();
-  await notifications.cancelScheduledNotificationAsync(studyReminderId);
-  await notifications.dismissNotificationAsync(studyReminderId);
+  let stage = "load";
+  try {
+    const notifications = await notificationModule();
+    stage = "cancel";
+    await notifications.cancelScheduledNotificationAsync(studyReminderId);
+    stage = "dismiss";
+    await notifications.dismissNotificationAsync(studyReminderId);
+  } catch (error) {
+    if (__DEV__)
+      console.warn(
+        "Reminder retirement failed",
+        stage,
+        error instanceof Error ? error.message : "Native notification error",
+      );
+    throw error;
+  }
 }
 export const studyReminders = createReminderCoordinator({
   cancel,

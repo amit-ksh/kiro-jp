@@ -21,7 +21,7 @@ export default function Profile() {
     <Panel><Title>Your progress</Title><Body>See your week, separate skill practice and useful follow-up reviews.</Body><Button label="View my progress" secondary onPress={() => router.push("/(learning)/progress")}/></Panel>
     <LearningPreferences/>
     <ReminderSettings/>
-    <Panel><Title>Your learning data</Title><Body>Keep a copy of saved practice, conversations and device drafts.</Body><Button label="Export my learning data" secondary onPress={() => router.push("/(learning)/account-data")}/></Panel>
+    <Panel><Title>Your learning data</Title><Body>Export saved practice, conversations and device drafts, or delete your account.</Body><Button label="Manage my learning data" secondary onPress={() => router.push("/(learning)/account-data")}/></Panel>
     <Panel><Title>Your interests</Title>{interests.map(interest => <Choice key={interest} label={interest} selected={profile.interests.includes(interest)} onPress={() => save(current => ({ interests: current.interests.includes(interest) ? current.interests.filter(item => item !== interest) : [...current.interests, interest] }))}/>)}</Panel>
     <CulturalPreferences/>
     <Panel><WaniKaniImport/></Panel>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { ScrollView } from "react-native";
 import {
   useConvex,
   useConvexAuth,
@@ -16,11 +17,13 @@ import { readLocalLearningExport } from "../../data/exportLearning";
 import {
   Body,
   Button,
+  Field,
   Message,
   Panel,
   Screen,
   Title,
 } from "../../components/ui";
+import { useAccountDeletion } from "../../features/auth/DeletionProvider";
 
 type Work = { cancelled: boolean; includeCloud: boolean };
 export default function AccountData() {
@@ -29,8 +32,13 @@ export default function AccountData() {
     connection = useConvexConnectionState();
   const { accountId } = useStudy();
   const speech = useSpeech();
+  const deleteAccount = useAccountDeletion();
+  const [confirmDelete, setConfirmDelete] = useState(false),
+    [confirmation, setConfirmation] = useState(""),
+    [deleting, setDeleting] = useState(false);
   const online = auth.isAuthenticated && connection.isWebSocketConnected;
   const work = useRef<Work | null>(null);
+  const scroll = useRef<ScrollView>(null);
   const [busy, setBusy] = useState(false),
     [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -181,8 +189,10 @@ export default function AccountData() {
   }
   return (
     <Screen
+      keyboardAware
+      scrollRef={scroll}
       title="Your learning data"
-      subtitle="Keep a copy of your Japanese practice"
+      subtitle="Export or remove your Japanese practice"
     >
       <Panel>
         <Title>Export your learning</Title>
@@ -227,6 +237,69 @@ export default function AccountData() {
           after new practice synchronizes. Exporting does not change your
           learning progress.
         </Body>
+      </Panel>
+      <Panel>
+        <Title>Delete your account</Title>
+        <Body>
+          Remove your sign-in, goals, answers, conversations, review history and
+          private audio. Unsynchronized study and recordings on this phone will
+          also be removed. You can export a copy above first.
+        </Body>
+        <Body muted>
+          Deletion is permanent once confirmed and needs an internet connection.
+          Other offline phones quarantine this account when they reconnect.
+          Files you exported yourself remain in your chosen folder.
+        </Body>
+        {!confirmDelete ? (
+          <Button
+            label="Delete account"
+            secondary
+            disabled={busy || speech.recording}
+            onPress={() => setConfirmDelete(true)}
+          />
+        ) : (
+          <>
+            <Field
+              label="Type DELETE to confirm"
+              value={confirmation}
+              onChangeText={setConfirmation}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              onFocus={() =>
+                setTimeout(
+                  () => scroll.current?.scrollToEnd({ animated: true }),
+                  300,
+                )
+              }
+            />
+            <Button
+              label="Delete my account permanently"
+              disabled={
+                !online || confirmation !== "DELETE" || busy || speech.recording
+              }
+              busy={deleting}
+              onPress={() => {
+                setDeleting(true);
+                void deleteAccount(accountId).catch(() => {
+                  setError(
+                    "Deletion couldn't be saved on this phone. Your account has not been submitted for deletion. Try again.",
+                  );
+                  setDeleting(false);
+                });
+              }}
+            />
+            <Button
+              label="Keep my account"
+              secondary
+              disabled={deleting}
+              onPress={() => {
+                setConfirmDelete(false);
+                setConfirmation("");
+              }}
+            />
+          </>
+        )}
+        {!online && <Body muted>Reconnect to confirm account deletion.</Body>}
       </Panel>
       <Button label="Back to Profile" secondary onPress={() => router.back()} />
     </Screen>

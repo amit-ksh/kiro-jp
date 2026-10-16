@@ -182,12 +182,12 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
         `${process.env.EXPO_PUBLIC_CONVEX_URL}:${accountId}`,
       );
       const directory = new Directory(Paths.document, "recordings", namespace);
-      directory.create({ intermediates: true, idempotent: true });
       if (!mounted.current || epoch.current !== turn) {
         await db.closeAsync();
         ownedDb = null;
         return;
       }
+      directory.create({ intermediates: true, idempotent: true });
       dbRef.current = db;
       directoryRef.current = directory;
       await refresh(db);

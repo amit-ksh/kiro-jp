@@ -571,7 +571,7 @@ These choices preserve the entire approved loop and real integration proof. Scop
 
 ## Decisions and Open Issues
 
-- October 16 implementation correction: Convex Auth 0.0.96 has no exported delete-user helper. Confirmed deletion atomically removes the user and creates a resumable owner-cleanup job. Existing-user checks serialize learning writes/inference reservations with that fence. Auth sessions are expired, then children and credentials removed in bounded batches; queued work becomes inert and in-flight results are discarded. Shared content and immutable deployment spending/quota records remain. Native confirmation/local retirement is a separate required increment; server checks do not establish its completion.
+- October 16 implementation correction: Convex Auth 0.0.96 has no exported delete-user helper. Confirmed deletion atomically removes the user and creates a resumable owner-cleanup job. Existing-user checks serialize learning writes/inference reservations with that fence. Auth sessions are expired, then children and credentials removed in bounded batches; queued work becomes inert and in-flight results are discarded. Shared content and immutable deployment spending/quota records remain. The Android boundary durably stores a receipt before submitting, closes learning while pending, permanently retires the local account hash and waits for tracked SQLite handles before deleting owned partitions. Anonymous receipt status recovers a lost acknowledgement without reusing revoked credentials. Native offline/restart/export/deletion checks passed on synthetic data; standalone reminder delivery and learner/release gates remain.
 
 ### Learner Decisions Already Agreed
 

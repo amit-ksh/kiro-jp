@@ -117,10 +117,10 @@ function PackageContent({
           `${process.env.EXPO_PUBLIC_CONVEX_URL}:${accountId}${expected.lessonId === "requests" && expected.version === 1 ? "" : `:${expected.lessonId}:${expected.version}`}`,
         ),
         root = new Directory(Paths.document, "content-packages", namespace);
-      root.create({ intermediates: true, idempotent: true });
       const db = await openAccountDatabase(accountId);
       owned = db;
       if (!current()) return;
+      root.create({ intermediates: true, idempotent: true });
       dbRef.current = db;
       rootRef.current = root;
       const row = await db.getFirstAsync<{ value: string }>(

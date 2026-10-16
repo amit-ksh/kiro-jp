@@ -2,6 +2,7 @@ import * as SecureStore from "expo-secure-store";
 import * as Crypto from "expo-crypto";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@packages/backend/convex/_generated/api";
+import { localAccountFromToken } from "@packages/learning-core";
 
 export const authNamespace = (process.env.EXPO_PUBLIC_CONVEX_URL ?? "unconfigured").replace(/[^a-zA-Z0-9]/g, "");
 export const authKeys = ["__convexAuthJWT", "__convexAuthRefreshToken", "__convexAuthOAuthVerifier"].map(key => `${key}_${authNamespace}`);
@@ -24,6 +25,20 @@ export async function queueRevocation(token: string | null) {
   });
 }
 export async function clearUsableTokens() { await Promise.all(authKeys.map(key => SecureStore.deleteItemAsync(key))); }
+export async function forgetDeletedAccountRevocations(accountId: string) {
+  await serializeQueue(async () => {
+    const ids: string[] = JSON.parse(await SecureStore.getItemAsync(queueKey) ?? "[]");
+    const retained: string[] = [];
+    for (const id of ids) {
+      const stored = await SecureStore.getItemAsync(id);
+      if (!stored) continue;
+      const pending = JSON.parse(stored) as { token: string | null };
+      if (localAccountFromToken(pending.token, process.env.EXPO_PUBLIC_CONVEX_SITE_URL ?? "") === accountId) await SecureStore.deleteItemAsync(id);
+      else retained.push(id);
+    }
+    await SecureStore.setItemAsync(queueKey, JSON.stringify(retained));
+  });
+}
 export async function flushRevocations() {
   const url = process.env.EXPO_PUBLIC_CONVEX_URL;
   if (!url || revoking) return;
