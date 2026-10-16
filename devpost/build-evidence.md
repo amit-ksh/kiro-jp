@@ -2,9 +2,11 @@
 
 ## Kiro JP naming revision — October 16
 
+Source checkpoint `080db17` is submitted as one Android preview job **`d4112162-552b-4eb5-9e21-5ca8736f04f7`**, 0.2.2/code 4, initially `NEW`. [EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/d4112162-552b-4eb5-9e21-5ca8736f04f7). The durable local intent records that job; reconcile it before another dispatch. The 7.1 MB compressed upload reused the existing signing setup. No paid EAS upgrade or additional model inference was used.
+
 The learner chose **Kiro JP**. Android display branding, the microphone permission explanation, welcome/loading/configuration screens and the landing navigation/footer/metadata now use that name. The welcome copy is shorter. Version 0.2.2/code 4 retains the existing package, EAS project, signing identity, scheme and backend so it can upgrade the installed app. Internal project slugs remain stable. The static landing lists broad interests and custom favorites, matching the app.
 
-Native/web typechecks and lint passed, followed by a fresh Android Hermes export. The actual 473-file / 11,173,497-byte EAS inspection archive passed private-file and configured-secret checks, contains the selected name/version and preserves package/project identity. Free-plan capacity reports four of thirty builds used with no overage cost. The static landing build is still running; no named APK or final native acceptance is claimed yet.
+Native/web typechecks and lint passed, followed by a fresh Android Hermes export and successful Next.js static build. The actual exported landing HTML contains Kiro JP and no old display title; the static reset page remains exported, with recovery still disabled in the app. The actual 473-file / 11,173,497-byte EAS inspection archive passed private-file and configured-secret checks, contains the selected name/version and preserves package/project identity. Free-plan capacity reported four of thirty builds used with no overage cost before the new dispatch. The named APK's signature/manifest and final native acceptance remain pending.
 
 Revalidated the existing compact-UI job `5475efee-a80b-468c-97fd-857ae5315d8f`: it finished October 16 at 13:26:40 UTC as 0.2.1/code 3. It predates the name revision and must not be presented as the Kiro JP build. The earlier verification command was blocked when automatic approval review could not run due to a usage limit; the learner subsequently requested continuation and reviewed execution is now available again. No approval bypass or duplicate 0.2.1 job was used.
 
