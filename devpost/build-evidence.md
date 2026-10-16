@@ -1,5 +1,11 @@
 # Build evidence — 2026-10-13
 
+## Updated standalone candidate preparation — October 16
+
+Revalidated EAS job `d846bd95-eb79-4b0c-94ff-47104f106d60` and the recent-build inventory: only two finished 0.1.0/version-code-1 foundation jobs exist, with no queued/running duplicate. An authenticated read-only capacity query reports the Free plan, two of thirty builds used and no overage cost. The next internal candidate is 0.2.0/version code 2, retaining `com.kiro.japanesestudy`, the existing EAS project/signing identity, scheme and preview backend. Expo introspection passed with the notification plugin and no exact-alarm permission.
+
+EAS's local Git clone hit the sandbox checkout's Windows ownership boundary. No ownership or global Git trust was changed. The CLI's supported file-copy mode, with an explicit monorepo root and the existing `.easignore`, produced a local inspection archive. Its 468 files / 11,151,597 bytes contain no private environment, planning/learner context, references, local SDK/runtime files or configured secret bytes. Version/package/project checks passed against that actual archive. This prepares an updated development-backend candidate, not a verified final APK or production release.
+
 ## Android export, confirmed deletion and durable local retirement — October 16
 
 Profile now opens Manage my learning data, with separate export and permanent account-deletion controls. The learner must type `DELETE` and be connected before confirming. Before submission the phone durably saves a random receipt in SecureStore and closes the learning providers. That recovery boundary survives auth revocation, force-stop/restart, a lost acknowledgement and offline operation. It checks anonymous receipt status before resubmitting, permits only the original owner to submit a missing request, and keeps learning closed until cloud completion and local cleanup both succeed. Retired account hashes remain blocked persistently; late database opens close themselves, new transactions are denied, and existing queues/handles must finish before files can be removed. Another connected phone that observes a missing user persists its own cache quarantine. An offline phone cannot be erased remotely.
