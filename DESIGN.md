@@ -14,7 +14,11 @@ The reference anchors are `#37469E`, `#313790`, `#FF5C00`, `#F05722` and white. 
 
 Home has one main Start today's session action. Session title, target kanji, one pattern and a useful outcome lead; review counts, continuation and progress are secondary. Onboarding advances through saved steps with Back/Continue. Full sentences, adjustable readings and English meanings are distinct elements. Fixed-answer practice must hide the answer being tested; revealing it records assistance.
 
+The learner's October 16 hands-on feedback calls for less explanatory text after login. Home uses compact daily-goal, distinct kanji/word/pattern totals and a short session checklist; detailed progress and settings open from clear rows. Profile leads with actual learning totals. Interests are broad selectable chips (Food, Culture, Places, Anime, Manga, Music, Travel, Daily life), with typed custom interests and preserved existing selections. Keep the reference palette and real study evidence.
+
 ## Layout and interaction
+
+Everyday screens show live values, concise labels and actions. Remove always-visible helper paragraphs; keep teaching explanations inside learning activities and relevant feedback/errors. Download controls belong beside their lesson, without a second list of duplicate lesson panels.
 
 Use a top context/title region and a comfortable scrollable content area. Controls remain reachable above the keyboard. Five phone destinations: Home, Lessons, Review, Conversation, Profile. No web learning/account UI. The reset landing is only a secure app-opening handoff; it does not change a password.
 

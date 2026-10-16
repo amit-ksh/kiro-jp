@@ -1,11 +1,14 @@
 import { Body, Button, Panel, Title } from "../../components/ui";
+import { View } from "react-native";
 import { useContent } from "../../data/ContentProvider";
 export function OfflineLesson({
   lessonId = "requests",
   version = 1,
+  inline = false,
 }: {
   lessonId?: string;
   version?: number;
+  inline?: boolean;
 }) {
   const content = useContent(lessonId, version);
   const audioCount = content.manifest.assets.filter(
@@ -15,48 +18,40 @@ export function OfflineLesson({
     content.manifest.assets.reduce((total, asset) => total + asset.bytes, 0) /
     1_000_000
   ).toFixed(1);
-  return (
-    <Panel>
-      <Title>Study without a connection</Title>
+  const controls = (
+    <>
       <Body>
         {content.loading
-          ? "Checking saved content on this phone…"
+          ? "Checking download…"
           : content.ready
-            ? `Downloaded · ${content.manifest.title}, its exercises and references, and all ${audioCount} model-audio clips.`
-            : `${content.manifest.title}: checked text, exercises and saved answers work on this phone. Prepare all ${audioCount} audio clips for reliable offline listening too (about ${megabytes} MB).`}
+            ? "Downloaded"
+            : `${audioCount} audio · ${megabytes} MB`}
       </Body>
       {content.busy ? (
         <>
           <Body>
-            Preparing {content.progress} of {content.total} checked files. The
-            previous ready package stays available.
+            {content.progress} / {content.total}
           </Body>
-          <Button
-            label="Cancel preparation"
-            secondary
-            onPress={content.cancel}
-          />
+          <Button label="Cancel download" secondary onPress={content.cancel} />
         </>
       ) : (
         <Button
-          label={
-            content.ready
-              ? "Check and prepare again"
-              : "Prepare lesson for offline study"
-          }
+          label={content.ready ? "Refresh download" : "Download"}
           secondary
           disabled={content.loading || !content.online}
           onPress={() => void content.prepare()}
         />
       )}
-      {!content.online && (
-        <Body muted>
-          You are offline. Continue with prepared text, downloaded audio and
-          saved reviews. New AI replies and automatic transcripts need a
-          connection.
-        </Body>
-      )}
+      {!content.online && <Body muted>Offline</Body>}
       {content.error && <Body>{content.error}</Body>}
+    </>
+  );
+  return inline ? (
+    <View style={{ gap: 8 }}>{controls}</View>
+  ) : (
+    <Panel>
+      <Title>Offline study</Title>
+      {controls}
     </Panel>
   );
 }

@@ -1,11 +1,15 @@
 import { router } from "expo-router";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import {
   bandLabel,
   sessionProjection,
   reviewQueue,
 } from "@packages/learning-core";
-import { recommendFirstLesson, curriculum } from "@packages/content";
+import {
+  recommendFirstLesson,
+  curriculum,
+  lessonCatalog,
+} from "@packages/content";
 import { useStudy } from "../../../data/StudyProvider";
 import { useReviews } from "../../../data/ReviewProvider";
 import { useProfile } from "../../../data/ProfileProvider";
@@ -17,29 +21,48 @@ import {
   Button,
   Panel,
   Screen,
-  Title,
   Loading,
-  styles,
   useColors,
 } from "../../../components/ui";
+import {
+  ActionRow,
+  GoalMeter,
+  LearningTotals,
+  PlanStep,
+  SectionTitle,
+} from "../../../components/dashboard";
+
 export default function Home() {
   const { profile, syncState, error, retry, adoptCloud } = useProfile();
-  const colors = useColors();
-  const study = useStudy();
-  const reviews = useReviews();
-  const content = useContent();
+  const colors = useColors(),
+    study = useStudy(),
+    reviews = useReviews(),
+    content = useContent();
   const progress = useLearningProgress();
-  const lesson = recommendFirstLesson(profile.interests, profile.acceptedBand);
   const sessions = study.events
     .filter((event) => event.kind === "started" && curriculum.forEvent(event))
     .sort((a, b) => b.occurredAt - a.occurredAt);
+  const projectionFor = (session: (typeof sessions)[number]) =>
+    sessionProjection(
+      curriculum.forEvent(session)!,
+      study.events.filter((event) => event.sessionId === session.sessionId),
+      study.checked,
+    );
   const unfinished = sessions.find(
-    (session) =>
-      !sessionProjection(
-        curriculum.forEvent(session)!,
-        study.events.filter((event) => event.sessionId === session.sessionId),
-      ).finishedText,
+    (session) => !projectionFor(session).finishedText,
   );
+  const recommended = recommendFirstLesson(
+    profile.interests,
+    profile.acceptedBand,
+  );
+  const todaySession = sessions.find(
+    (session) => session.localDay === progress.today.day,
+  );
+  const plannedSession = todaySession ?? unfinished;
+  const lesson =
+    lessonCatalog.find((item) => item.id === plannedSession?.lessonId) ??
+    recommended;
+  const projection = plannedSession ? projectionFor(plannedSession) : undefined;
   const unfinishedChat = Object.values(study.chats)
     .sort((a, b) => b.conversation.updatedAt - a.conversation.updatedAt)
     .find((chat) =>
@@ -49,42 +72,77 @@ export default function Home() {
           segment.state === "active",
       ),
     );
-  const milliseconds = progress.today.milliseconds;
-  const meaningful = progress.today.meaningful;
   const queue = reviewQueue(reviews, Date.now()),
     due = queue.ready.length;
+  const hasSpoken = study.events.some(
+    (event) =>
+      event.localDay === progress.today.day &&
+      event.sessionId === plannedSession?.sessionId &&
+      event.kind === "audioActivity" &&
+      event.input === "speaking" &&
+      event.spans.length > 0,
+  );
+  const hasConversed = study.events.some(
+    (event) =>
+      event.localDay === progress.today.day &&
+      event.kind === "conversationTurn" &&
+      event.input === "meaningful",
+  );
+  const hasListened = study.events.some(
+    (event) =>
+      event.localDay === progress.today.day &&
+      event.sessionId === plannedSession?.sessionId &&
+      event.kind === "audioActivity" &&
+      event.input === "listening" &&
+      event.spans.length > 0,
+  );
+  const start = () =>
+    router.push({
+      pathname: "/(learning)/session-preview",
+      params: { lessonId: lesson.id },
+    });
   if (study.loading || reviews.loading)
-    return <Loading label="Opening your saved daily plan…" />;
+    return <Loading label="Opening your daily plan…" />;
   return (
     <Screen
-      title="A little Japanese, today."
-      subtitle={`${bandLabel(profile.acceptedBand)} · ${profile.dailyMinutes}-minute daily goal`}
+      title="Today"
+      subtitle={`${bandLabel(profile.acceptedBand)} · ${profile.targetJlpt}`}
     >
-      <Panel>
-        <Body muted>Today&apos;s study</Body>
-        <Title>
-          {(milliseconds / 60_000).toFixed(1)} / {profile.dailyMinutes} minutes
-        </Title>
-        <Body>
-          {meaningful
-            ? "Today's streak day earned through meaningful practice."
-            : "Complete a review, lesson exercise or Japanese conversation turn to earn today's streak day."}
-        </Body>
-        {progress.streak > 0 && <Body>{progress.streak}-day current streak</Body>}
-        {progress.today.goalMet && <Body>Today&apos;s time goal reached.</Body>}
-        <Body muted>
-          Active time after study interactions; idle and network waiting are
-          excluded.
-        </Body>
-      </Panel>
-      {!content.online && (
-        <Panel>
-          <Title>Continue offline study</Title>
-          <Body>
-            {content.ready
-              ? "Your downloaded lesson, references and model audio are available. Reviews and progress save on this phone."
-              : "Prepared text exercises, references and saved reviews are available. Audio plays where already saved; prepare the complete lesson from Lessons when connected."}
+      <Panel style={{ padding: 20, gap: 14 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 8,
+          }}
+        >
+          <Body style={{ fontWeight: "700" }}>Daily goal</Body>
+          <Body muted>
+            {progress.streak} day{progress.streak === 1 ? "" : "s"} streak
           </Body>
+        </View>
+        <Body>
+          <Body style={{ fontWeight: "800" }}>
+            {(progress.today.milliseconds / 60_000).toFixed(1)}
+          </Body>{" "}
+          / {profile.dailyMinutes} min
+          {progress.today.goalMet ? " · goal reached" : ""}
+          {progress.today.meaningful ? " · streak earned" : ""}
+        </Body>
+        <GoalMeter
+          milliseconds={progress.today.milliseconds}
+          minutes={profile.dailyMinutes}
+        />
+        <LearningTotals
+          inventory={progress.inventory}
+          onPress={() => router.push("/(learning)/progress")}
+        />
+      </Panel>
+
+      {!content.online && (
+        <Panel style={{ padding: 20, gap: 10 }}>
+          <SectionTitle>You’re offline</SectionTitle>
           <Button
             label="Continue offline study"
             secondary
@@ -96,111 +154,93 @@ export default function Home() {
                   })
                 : due
                   ? router.push("/(learning)/(tabs)/review")
-                  : router.push({pathname:"/(learning)/session-preview",params:{lessonId:lesson.id}})
+                  : start()
             }
           />
-          <Body muted>
-            New AI replies and automatic transcripts need internet. Your
-            completed practice stays saved.
-          </Body>
         </Panel>
       )}
-      <Panel>
-        <Title>{lesson.title}</Title>
-        <Body>
-          {profile.interests.length
-            ? profile.interests.join(" · ")
-            : "Everyday Japanese"}
-        </Body>
-        <Text style={[styles.kanji, { color: colors.onSurface, fontSize: 46 }]}>
-          {lesson.kanji.join(" ")}
-        </Text>
-        <Body>{lesson.pattern}</Body>
-        <Body>
-          By the end, you&apos;ll be able to {lesson.outcome.toLowerCase()}.
-        </Body>
-        <Body muted>
-          {due
-            ? "Begin with your saved or due review set, then continue the lesson, pronunciation and conversation."
-            : "Continue your lesson, pronunciation and conversation. Reviews return as you learn."}
-        </Body>
-        <Button
-          label="Start today's session"
-          onPress={() => router.push({pathname:"/(learning)/session-preview",params:{lessonId:lesson.id}})}
+
+      <Panel style={{ padding: 20, gap: 12 }}>
+        <ActionRow
+          label={reviews.run ? "Continue reviews" : "Due reviews"}
+          detail={due ? `${due} reviews ready` : "0 due"}
+          onPress={() => router.push("/(learning)/(tabs)/review")}
         />
-        <Button
+        {queue.awaitingFeedback.length > 0 && (
+          <Body muted>{queue.awaitingFeedback.length} awaiting feedback</Body>
+        )}
+        <View style={{ height: 1, backgroundColor: colors.outline }} />
+        <SectionTitle>{lesson.title}</SectionTitle>
+        <Button label="Start today's session" onPress={start} />
+        <Text
+          style={{
+            color: colors.onSurface,
+            fontSize: 36,
+            lineHeight: 48,
+            fontWeight: "700",
+          }}
+        >
+          {lesson.kanji.join("  ")}
+        </Text>
+        <PlanStep
+          label={`${lesson.kanji.length} kanji`}
+          done={Boolean(
+            projection &&
+            projection.initiallyLearned.length >=
+              curriculum.get(lesson.id)!.words.length,
+          )}
+        />
+        <PlanStep
+          label={lesson.pattern}
+          done={Boolean(
+            projection &&
+            ["independent", "assisted"].includes(projection.grammarState),
+          )}
+        />
+        <PlanStep
+          label="Speaking & chat"
+          done={hasListened && hasSpoken && hasConversed}
+        />
+        <ActionRow
           label="Choose another session"
-          secondary
           onPress={() => router.push("/(learning)/(tabs)/lessons")}
         />
       </Panel>
-      {unfinished && (
-        <Panel>
-          <Title>Continue learning</Title>
-          <Body>{curriculum.forEvent(unfinished)!.title} · saved where you stopped</Body>
-          <Button
-            label="Resume my lesson"
-            secondary
-            onPress={() =>
-              router.push({
-                pathname: "/(learning)/lesson",
-                params: { sessionId: unfinished.sessionId },
-              })
-            }
-          />
+
+      {(unfinished || unfinishedChat) && (
+        <Panel style={{ padding: 20, gap: 4 }}>
+          <SectionTitle>Continue</SectionTitle>
+          {unfinished && (
+            <ActionRow
+              label="Resume lesson"
+              detail={curriculum.forEvent(unfinished)!.title}
+              onPress={() =>
+                router.push({
+                  pathname: "/(learning)/lesson",
+                  params: { sessionId: unfinished.sessionId },
+                })
+              }
+            />
+          )}
+          {unfinishedChat && (
+            <ActionRow
+              label="Resume conversation"
+              detail={unfinishedChat.conversation.title}
+              onPress={() =>
+                router.push({
+                  pathname: "/(learning)/chat",
+                  params: { conversationId: unfinishedChat.conversation._id },
+                })
+              }
+            />
+          )}
         </Panel>
       )}
-      {unfinishedChat && (
-        <Panel>
-          <Title>Continue your conversation</Title>
-          <Body>{unfinishedChat.conversation.title}</Body>
-          <Button
-            label="Resume my conversation"
-            secondary
-            onPress={() =>
-              router.push({
-                pathname: "/(learning)/chat",
-                params: { conversationId: unfinishedChat.conversation._id },
-              })
-            }
-          />
-        </Panel>
-      )}
-      <Panel>
-        <Title>Your review queue</Title>
-        <Body>
-          {reviews.tracks.length
-            ? `${reviews.tracks.length} separate tracks introduced · ${due} ready. Word and kana reviews return after four hours; grammar follows after a day.`
-            : "Reviews will appear after you begin learning. Meanings and word readings return separately."}
-        </Body>
-        {queue.awaitingFeedback.length > 0 && (
-          <Body>
-            {queue.awaitingFeedback.length} due sentence{" "}
-            {queue.awaitingFeedback.length === 1 ? "answer is" : "answers are"}{" "}
-            awaiting feedback, with the previous schedule retained.
-          </Body>
-        )}
-        {(due > 0 || reviews.run) && (
-          <Button
-            label={reviews.run ? "Continue my reviews" : "Start review"}
-            secondary
-            onPress={() => router.push("/(learning)/(tabs)/review")}
-          />
-        )}
-        <Body muted>
-          Repeating a lesson does not reset an existing schedule.{" "}
-          {reviews.provisional.size > 0
-            ? "Offline advances are provisional until synchronized."
-            : ""}
-        </Body>
-      </Panel>
-      {sessions.length > 0 && (
-        <Panel>
-          <Title>Saved reference</Title>
-          <Body>Your words, grammar pattern and example sentences.</Body>
-          <Button
-            label="Open session reference"
-            secondary
+
+      <Panel style={{ padding: 20, gap: 4 }}>
+        {sessions.length > 0 && (
+          <ActionRow
+            label="Last session reference"
             onPress={() =>
               router.push({
                 pathname: "/(learning)/reference",
@@ -208,39 +248,22 @@ export default function Home() {
               })
             }
           />
-        </Panel>
-      )}
-      <Panel>
-        <Title>Grammar reference</Title>
-        <Body>Search checked patterns, examples and common mistakes.</Body>
-        <Button
-          label="Find a grammar pattern"
-          secondary
-          onPress={() => router.push("/(learning)/grammar")}
+        )}
+        <ActionRow
+          label="Your progress"
+          detail={progress.suggestions[0]?.label}
+          onPress={() => router.push("/(learning)/progress")}
         />
-      </Panel>
-      <Panel>
-        <Title>Your starting point</Title>
-        <Body>
-          {bandLabel(profile.acceptedBand)} · Target {profile.targetJlpt}
-        </Body>
-        {profile.examDate && <Body>Exam date: {profile.examDate}</Body>}
-        <Body muted>
-          Independent answers this week: {progress.skills.meaning.independent} meaning, {progress.skills.reading.independent} reading, {progress.skills.grammar.independent} grammar.
-        </Body>
-        {progress.suggestions[0] && <Body>Useful next focus: {progress.suggestions[0].label}</Body>}
-        <Button label="See skill progress" secondary onPress={() => router.push("/(learning)/progress")}/>
-        <Button
-          label="Goals and interests"
-          secondary
-          onPress={() => router.push("/(learning)/(tabs)/profile")}
+        <ActionRow
+          label="Grammar reference"
+          onPress={() => router.push("/(learning)/grammar")}
         />
       </Panel>
       <ReminderOffer />
       {syncState === "conflict" ? (
         <Panel>
           <Body>
-            Your profile changed on another device; local answers remain saved.
+            Your profile changed on another device. Local answers are saved.
           </Body>
           <Button
             label="Use cloud profile and keep local draft"
@@ -251,10 +274,7 @@ export default function Home() {
       ) : (
         (syncState === "pending" || error) && (
           <Panel>
-            <Body>
-              {error ||
-                "Saved on this phone. Cloud synchronization is pending."}
-            </Body>
+            <Body>{error || "Saved on this phone. Sync pending."}</Body>
             <Button label="Retry synchronization" secondary onPress={retry} />
           </Panel>
         )

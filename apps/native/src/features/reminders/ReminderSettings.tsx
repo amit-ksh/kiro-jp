@@ -24,11 +24,7 @@ export function ReminderOffer() {
     return null;
   return (
     <Panel>
-      <Title>Make a little time for Japanese</Title>
-      <Body>
-        You have finished your first learning session. Would a daily reminder
-        help you return?
-      </Body>
+      <Title>Study reminders</Title>
       <Button
         label="Choose a reminder time"
         secondary

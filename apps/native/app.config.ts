@@ -5,10 +5,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   return {
     ...config,
     name: "Japanese Learning App", slug: "japanese-learning-app", owner: "amit-ksh", scheme: "japanesestudy",
-    version: "0.2.0", orientation: "portrait", userInterfaceStyle: "automatic",
+    version: "0.2.1", orientation: "portrait", userInterfaceStyle: "automatic",
     android: {
       package: process.env.ANDROID_PACKAGE_ID ?? "com.kiro.japanesestudy",
-      versionCode: 2,
+      versionCode: 3,
       predictiveBackGestureEnabled: true,
       ...(host ? { intentFilters: [{ action: "VIEW", autoVerify: true, category: ["BROWSABLE", "DEFAULT"], data: [{ scheme: "https", host, pathPrefix: "/auth/reset" }] }] } : {}),
     },

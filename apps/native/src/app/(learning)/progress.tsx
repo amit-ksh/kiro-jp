@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { View } from "react-native";
 import type { PracticeCounts, ProgressFacet } from "@packages/learning-core";
 import { useLearningProgress } from "../../features/profile/useLearningProgress";
+import { LearningTotals, SectionTitle } from "../../components/dashboard";
 import {
   Body,
   Button,
@@ -34,10 +35,18 @@ export default function Progress() {
   const progress = useLearningProgress();
   if (progress.loading) return <Loading label="Opening your saved practice…" />;
   return (
-    <Screen
-      title="Your practice, over time."
-      subtitle="The last seven local calendar days"
-    >
+    <Screen title="Your progress">
+      <Panel>
+        <SectionTitle>Introduced</SectionTitle>
+        <LearningTotals inventory={progress.inventory} />
+        {progress.inventory.kanji.length > 0 && (
+          <Body>{progress.inventory.kanji.join("  ")}</Body>
+        )}
+        <Body>
+          {progress.inventory.kana.length} kana introduced ·{" "}
+          {progress.inventory.savedPhrases} phrases saved for review
+        </Body>
+      </Panel>
       <Panel>
         <Title>{minutes(progress.weeklyMilliseconds)} minutes this week</Title>
         <Body>
@@ -49,11 +58,6 @@ export default function Progress() {
           {progress.dailyMinutes} minutes
           {progress.today.goalMet ? " · daily goal reached" : ""}
           {progress.today.meaningful ? " · streak day earned" : ""}
-        </Body>
-        <Body muted>
-          Partial sessions and supported answers count as study. Active time
-          uses recorded interactions. Daily rows keep recorded dates; weekly
-          totals count simultaneous activity once.
         </Body>
         {progress.days.map((day) => (
           <View key={day.day} style={{ gap: 4 }}>
@@ -67,9 +71,7 @@ export default function Progress() {
               · {minutes(day.milliseconds)} min
             </Body>
             <Body muted>
-              {day.meaningful
-                ? "Meaningful practice recorded"
-                : "No completed study step"}
+              {day.meaningful ? "Study day earned" : "No study step yet"}
               {day.goalMet ? " · time goal reached" : ""}
             </Body>
           </View>
@@ -91,10 +93,6 @@ export default function Progress() {
             romaji. Kana recognition is tracked separately.
           </Body>
         )}
-        <Body muted>
-          These are practice results. Review cards track consistent recall
-          across later days.
-        </Body>
       </Panel>
       <Panel>
         <Title>Listening and speaking</Title>
@@ -105,11 +103,6 @@ export default function Progress() {
         <Body>
           {progress.conversationTurns} Japanese conversation turns ·{" "}
           {progress.assistedConversationTurns} with support
-        </Body>
-        <Body muted>
-          Playback and recording measure practice time. Comprehension and
-          pronunciation require separate evidence. Audio overlaps are already
-          included once in total study time.
         </Body>
       </Panel>
       <Panel>
@@ -144,10 +137,6 @@ export default function Progress() {
           ))
         ) : (
           <>
-            <Body>
-              No recurring assessed mistakes this week. Continue your due
-              reviews or choose a lesson.
-            </Body>
             <Button
               label="Open my reviews"
               secondary

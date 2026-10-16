@@ -28,13 +28,10 @@ export function CulturalPreferences() {
       ),
     ),
   );
+  if (!favorites?.length && !profile.dislikes.length && !error) return null;
   return (
     <Panel>
-      <Title>Cultural preferences</Title>
-      <Body>
-        Your confirmed favorites help distinguish names. A new chat topic still
-        takes priority.
-      </Body>
+      <Title>Saved favorites</Title>
       {!connection.isWebSocketConnected && (
         <Body>Connect to view or change confirmed favorites.</Body>
       )}
@@ -58,11 +55,6 @@ export function CulturalPreferences() {
           }}
         />
       ))}
-      {favorites?.length === 0 && (
-        <Body muted>
-          Specific favorites you confirm in chat will appear here.
-        </Body>
-      )}
       {profile.dislikes.map((id) => (
         <Button
           key={id}

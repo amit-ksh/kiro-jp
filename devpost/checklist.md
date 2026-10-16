@@ -94,6 +94,8 @@ In learn mode, perform each slice's learner check before its commit. In fast mod
 
 ## Final Review
 
+- [ ] October 16 UI revision retried by learner — remove post-login filler, show real learning totals/daily actions, use broad/custom interests and retain a usable Android keyboard flow. Mechanical/native evidence and commit are recorded separately; learner retry remains pending.
+
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 Agreed revision tasks will be added here after the learner tries the complete app. Each stays unchecked until mechanically verified, committed and retried by the learner. No changes needed is a valid recorded outcome.
@@ -111,6 +113,8 @@ Reflection: Not yet offered; any personal answer belongs only in the ignored lea
 Activity mode: Pending; prefer a focused alternative for this experienced developer, unless they choose a guided route.
 
 ## Revisions
+
+- October 16 learner feedback from the signed app: post-login screens contain too much text; make kanji/vocabulary totals, daily goals and due reviews visible, with broad interests instead of specific default choices. Implement a compact Home/Profile, a separate detailed settings route, a shared broad/custom-interest picker and deduplicated item totals. Preserve all learning, recovery and synchronization behavior. This feedback does not establish completion of the full spoken/offline or final hands-on checks.
 
 - October 16: all seven template conversation loops now have real saved evidence on both configured providers. The final three OpenRouter loops used twelve free Gateway calls and left Gemini's ledger unchanged. A provisional uncertain try-pattern assessment was resolved by the existing recap path; native coverage and learner acceptance are still separate gates.
 

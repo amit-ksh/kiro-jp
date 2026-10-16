@@ -40,6 +40,110 @@ function event(patch: Partial<StudyEvent> = {}): StudyEvent {
   };
 }
 const emptyReviews = () => ({ tracks: [], attempts: [], receipts: new Map() });
+
+function introducedWord(
+  lesson: typeof requestsLesson,
+  wordId: string,
+  sessionId: string,
+) {
+  return ["meaning", "reading"].map((facet) =>
+    event({
+      kind: "advanced",
+      input: undefined,
+      lessonId: lesson.id,
+      lessonVersion: lesson.version,
+      sessionId,
+      stepId: `${facet}-${wordId}`,
+    }),
+  );
+}
+
+test("learning totals count distinct kanji and vocabulary across sessions and recall facets", () => {
+  const first = introducedWord(requestsLesson, "book", "first-book-session");
+  const repeated = introducedWord(
+    requestsLesson,
+    "book",
+    "repeat-book-session",
+  );
+  const result = progress([...first, ...first, ...repeated]);
+  assert.deepEqual(result.inventory.kanji, ["本"]);
+  assert.deepEqual(result.inventory.vocabulary, ["本（ほん）"]);
+  assert.equal(result.inventory.grammar.length, 0);
+});
+
+test("a shown word or meaning-only exercise does not inflate introduced kanji and vocabulary", () => {
+  const result = progress([
+    event({ kind: "studied", stepId: "teach-water" }),
+    event({ kind: "advanced", stepId: "meaning-water" }),
+    event({ stepId: "reading-water", input: "mizu" }),
+  ]);
+  assert.deepEqual(result.inventory.kanji, []);
+  assert.deepEqual(result.inventory.vocabulary, []);
+});
+
+test("review history restores item totals without treating one recall facet or an unknown source as learned", async () => {
+  const exercise = (id: string) =>
+    requestsLesson.exercises.find((item) => item.id === id)!;
+  const card = (facet: "meaning" | "reading"): ReviewCard => ({
+    id: `requests:1:water:${facet}`,
+    source: "lesson",
+    sourceId: "requests",
+    sourceVersion: 1,
+    facet,
+    label: "水",
+    exercise: exercise(`${facet}-water`),
+  });
+  const meaning = await introduceReview(
+    card("meaning"),
+    Date.parse(`${today}T09:00:00Z`),
+    digest,
+  );
+  const reading = await introduceReview(
+    card("reading"),
+    Date.parse(`${today}T09:00:00Z`),
+    digest,
+  );
+  assert.equal(
+    progress([], { reviews: { ...emptyReviews(), tracks: [meaning.track] } })
+      .inventory.kanji.length,
+    0,
+  );
+  const result = progress([], {
+    reviews: {
+      ...emptyReviews(),
+      tracks: [
+        meaning.track,
+        reading.track,
+        reading.track,
+        {
+          ...meaning.track,
+          card: { ...meaning.track.card, sourceId: "not-real" },
+        },
+      ],
+    },
+  });
+  assert.deepEqual(result.inventory.kanji, ["水"]);
+  assert.deepEqual(result.inventory.vocabulary, ["水（みず）"]);
+});
+
+test("grammar totals require an assessed target sentence and completed exercise; pending work stays pending", () => {
+  const own = requestsLesson.exercises.find(
+    (item) => item.kind === "sentence",
+  )!;
+  const pending = [
+    event({ stepId: own.id, input: "新しい文です" }),
+    event({ kind: "advanced", stepId: own.id }),
+  ];
+  assert.equal(progress(pending).inventory.grammar.length, 0);
+  const successful = [
+    event({ stepId: own.id, input: own.accepted[0] }),
+    event({ kind: "advanced", stepId: own.id }),
+  ];
+  assert.deepEqual(progress(successful).inventory.grammar, [
+    requestsLesson.grammar.pattern,
+  ]);
+  assert.equal(progress([successful[0]!]).inventory.grammar.length, 0);
+});
 function progress(
   events: StudyEvent[],
   extra: Partial<Parameters<typeof learningProgress>[0]> = {},

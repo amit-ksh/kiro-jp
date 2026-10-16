@@ -81,6 +81,8 @@ export default function TabsLayout() {
           name="conversation"
           options={{
             title: "Conversation",
+            tabBarLabel: "Chat",
+            tabBarAccessibilityLabel: "Conversation",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="chatbubbles-outline" color={color} size={size} />
             ),

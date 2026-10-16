@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { router } from "expo-router";
 import * as Crypto from "expo-crypto";
+import { View } from "react-native";
 import {
   useMutation,
   useQuery,
@@ -13,6 +14,7 @@ import { useStudy } from "../../../data/StudyProvider";
 import {
   Body,
   Button,
+  Choice,
   Field,
   Message,
   Panel,
@@ -89,18 +91,11 @@ export default function Conversation() {
       .map((chat) => chat.conversation)
       .sort((a, b) => b.updatedAt - a.updatedAt);
   return (
-    <Screen
-      title="Talk about what you love."
-      subtitle="One conversation. Your topic."
-    >
+    <Screen title="Conversation" keyboardAware>
       <Panel>
-        <Title>What would you like to discuss?</Title>
-        <Body>
-          Type a topic, such as shrines or your favorite anime. Your topic takes
-          priority over saved interests.
-        </Body>
         <Field
-          label="Conversation topic"
+          label="Topic"
+          placeholder="Your topic"
           value={topic}
           editable={!busy}
           maxLength={500}
@@ -109,33 +104,34 @@ export default function Conversation() {
             void study.saveDraft("conversation-create", "topic", value);
           }}
         />
-        {profile.interests.map((interest) => (
-          <Button
-            key={interest}
-            label={`Talk about ${interest}`}
-            secondary
-            onPress={() => {
-              setTopic(`Let's talk about ${interest.toLowerCase()}.`);
-              void study.saveDraft(
-                "conversation-create",
-                "topic",
-                `Let's talk about ${interest.toLowerCase()}.`,
-              );
-            }}
-          />
-        ))}
+        <View style={{ gap: 10, flexDirection: "row", flexWrap: "wrap" }}>
+          {[...new Set([...profile.interests, ...profile.favorites])]
+            .slice(0, 8)
+            .map((interest) => (
+              <Choice
+                key={interest}
+                label={interest}
+                selected={
+                  topic === `Let's talk about ${interest.toLowerCase()}.`
+                }
+                onPress={() => {
+                  setTopic(`Let's talk about ${interest.toLowerCase()}.`);
+                  void study.saveDraft(
+                    "conversation-create",
+                    "topic",
+                    `Let's talk about ${interest.toLowerCase()}.`,
+                  );
+                }}
+              />
+            ))}
+        </View>
         <Button
           label="Start conversation"
           busy={busy}
           disabled={!topic.trim() || !connection.isWebSocketConnected}
           onPress={() => void begin()}
         />
-        {!connection.isWebSocketConnected && (
-          <Body>
-            Your draft is saved. New tutor replies need internet; available
-            lessons and reviews can continue offline.
-          </Body>
-        )}
+        {!connection.isWebSocketConnected && <Body>Offline · draft saved</Body>}
         {error && <Message>{error}</Message>}
       </Panel>
       <Button

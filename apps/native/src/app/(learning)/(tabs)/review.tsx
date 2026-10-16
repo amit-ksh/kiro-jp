@@ -25,7 +25,9 @@ import {
   useColors,
 } from "../../../components/ui";
 export default function Review() {
-  const { practiceTrackId } = useLocalSearchParams<{practiceTrackId?:string}>();
+  const { practiceTrackId } = useLocalSearchParams<{
+    practiceTrackId?: string;
+  }>();
   const study = useStudy();
   const reviews = useReviews(),
     colors = useColors(),
@@ -67,7 +69,10 @@ export default function Review() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question?.eventId]);
   const { ready: due, awaitingFeedback } = reviewQueue(reviews, Date.now());
-  const focusedTrack = typeof practiceTrackId === "string" ? reviews.tracks.find(item => item.id === practiceTrackId) : undefined;
+  const focusedTrack =
+    typeof practiceTrackId === "string"
+      ? reviews.tracks.find((item) => item.id === practiceTrackId)
+      : undefined;
   const nextLesson =
     run?.nextSessionId &&
     study.events.some(
@@ -178,13 +183,45 @@ export default function Review() {
     (e) => reviews.receipts.get(e.eventId)?.status === "stale-practice",
   ).length;
   return (
-    <Screen
-      title="Bring it back."
-      subtitle="Recall now. Remember for longer."
-      scrollRef={scroll}
-    >
-      {!reviews.loading && !run && focusedTrack && <Panel><Title>Focused extra practice</Title><Body>{focusedTrack.card.label} · {focusedTrack.card.facet}</Body><Body muted>Practise this item from your progress recap. Extra practice keeps the scheduled review interval unchanged.</Body><Button label={`Practise ${focusedTrack.card.label}`} busy={busy} onPress={() => act(async () => { const question = makeQuestion(focusedTrack, true); if (!question) throw new Error("This review is not ready yet."); await reviews.saveRun({id:Crypto.randomUUID(),questions:[question],index:0,input:"",support:[]}); router.setParams({practiceTrackId:undefined}); })}/></Panel>}
-      {!reviews.loading && !run && practiceTrackId && !focusedTrack && <Panel><Body>This saved card is unavailable. Choose from your current reviews below.</Body></Panel>}
+    <Screen title="Reviews" scrollRef={scroll}>
+      {!reviews.loading && !run && focusedTrack && (
+        <Panel>
+          <Title>Focused extra practice</Title>
+          <Body>
+            {focusedTrack.card.label} · {focusedTrack.card.facet}
+          </Body>
+          <Body muted>
+            Practise this item from your progress recap. Extra practice keeps
+            the scheduled review interval unchanged.
+          </Body>
+          <Button
+            label={`Practise ${focusedTrack.card.label}`}
+            busy={busy}
+            onPress={() =>
+              act(async () => {
+                const question = makeQuestion(focusedTrack, true);
+                if (!question) throw new Error("This review is not ready yet.");
+                await reviews.saveRun({
+                  id: Crypto.randomUUID(),
+                  questions: [question],
+                  index: 0,
+                  input: "",
+                  support: [],
+                });
+                router.setParams({ practiceTrackId: undefined });
+              })
+            }
+          />
+        </Panel>
+      )}
+      {!reviews.loading && !run && practiceTrackId && !focusedTrack && (
+        <Panel>
+          <Body>
+            This saved card is unavailable. Choose from your current reviews
+            below.
+          </Body>
+        </Panel>
+      )}
       {reviews.loading ? (
         <Panel>
           <Body>Opening reviews saved on this phone…</Body>
@@ -194,8 +231,8 @@ export default function Review() {
           <Panel>
             {nextLesson && (
               <Body muted>
-                Today&apos;s reviews first, then your saved lesson. You can pause and
-                return at any point.
+                Today&apos;s reviews first, then your saved lesson. You can
+                pause and return at any point.
               </Body>
             )}
             <Body muted>
@@ -343,7 +380,11 @@ export default function Review() {
                   </Body>
                 )}
                 <Button label="Next review" busy={busy} onPress={next} />
-                <ReviewAudio key={question.eventId} track={track} sessionId={run.id} />
+                <ReviewAudio
+                  key={question.eventId}
+                  track={track}
+                  sessionId={run.id}
+                />
               </>
             )}
           </Panel>
@@ -401,13 +442,13 @@ export default function Review() {
               {due.length
                 ? `${due.length} ${due.length === 1 ? "review" : "reviews"} ready`
                 : reviews.tracks.length
-                  ? "You're ready for the next return."
+                  ? "All caught up"
                   : "Begin learning to build your queue"}
             </Title>
             <Body>
               {reviews.tracks.length
-                ? `${reviews.tracks.length} review ${reviews.tracks.length === 1 ? "card" : "cards"}. Meanings, word readings, kana and grammar are practised separately. ${reviews.tracks.filter((t) => hasStrongRecall(t, Date.now())).length} with strong recall through spaced practice.`
-                : "Finish a few lesson exercises or save a checked phrase. Word and kana reviews begin after four hours; grammar follows after a day."}
+                ? `${reviews.tracks.length} recall cards · ${reviews.tracks.filter((t) => !reviews.provisional.has(t.id) && hasStrongRecall(t, Date.now())).length} with strong recall`
+                : "Learn a few words or save a phrase to start your review queue."}
             </Body>
             {awaitingFeedback.length > 0 && (
               <Body muted>
@@ -429,11 +470,12 @@ export default function Review() {
                 onPress={() => start(true)}
               />
             )}
-            {reviews.tracks.length > 0 && (
-              <Body muted>
-                Prepared text cards work offline. Up to eight due questions per
-                session; remaining reviews stay due.
-              </Body>
+            {!reviews.tracks.length && (
+              <Button
+                label="Choose a lesson"
+                secondary
+                onPress={() => router.push("/(learning)/(tabs)/lessons")}
+              />
             )}
             {reviews.provisional.size > 0 && (
               <Body muted>

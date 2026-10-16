@@ -98,6 +98,7 @@ Source: `scope.md > Who It's For` and `The Core Loop`.
 - Explain the recommendation; permit accepting or adjusting it. Skipping uses the selected level. Completely new requires supported beginner content, not kana fluency.
 - Imported WaniKani familiarity helps choose appropriate kanji/vocabulary. It does not assign matching grammar, listening, or speaking proficiency.
 - Collect interests, permit supported specific favorites or skipping, and let the learner change level, goals, study time, and interests later without losing completed work.
+- Offer broad interest choices: Food, Culture, Places, Anime, Manga, Music, Travel and Daily life. Specific topics such as shrines are typed as custom interests, not default categories. Existing saved choices remain editable.
 - The first preview states an outcome tied to its language and suggested context, such as asking where something is at a shrine. It leads to Start my session.
 
 Acceptance criteria:
@@ -112,6 +113,7 @@ Acceptance criteria:
 Source: `scope.md > The Core Loop` and `What "Working" Looks Like`.
 
 - Make Start today's session the main action. The recommended journey connects reviews, new language, grammar, pronunciation, and conversation.
+- Keep the post-login daily plan compact: time goal/streak, distinct kanji and vocabulary introduced, grammar patterns practised, due reviews and a short session checklist. Detailed rules and settings belong behind clear links. Initial introduction is distinct from lasting recall; meaning/reading tracks, repeated lessons and WaniKani familiarity must not inflate learned-item totals.
 - Show the specified Home sections and alternative-session/theme choice. Due counts must correspond to the displayed review queue, with check types clearly identified during review.
 - Offer Continue learning for an unfinished lesson or conversation, and quick access to saved references.
 - A first-time learner sees the first suitable session and an explanation that reviews appear after learning.

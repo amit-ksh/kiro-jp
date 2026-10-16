@@ -10,10 +10,10 @@ import { lessonEntry, type LearningBand } from "@packages/learning-core";
 export { checkedContentManifests } from "./content-manifests.ts";
 export { grammarReferences } from "./grammar-reference.ts";
 export { curriculum, preparedLessons } from "./curriculum.ts";
-export const interests = ["Shrines", "Manga", "Anime", "Food", "Travel", "Music", "Japanese places"] as const;
+export const interests = ["Food", "Culture", "Places", "Anime", "Manga", "Music", "Travel", "Daily life"] as const;
 export const lessonCatalog = [
   { id: "requests", title: "A polite request", band: "early-n5", kanji: ["水", "茶", "本", "円"], pattern: "[item] + をください", outcome: "Request something politely", themes: ["Food", "Manga", "Travel"], prerequisite: undefined },
-  { id: "directions", title: "Find your way", band: "early-n5", kanji: ["入", "出", "右", "左"], pattern: "〜はどこですか", outcome: "Ask where something is and understand a simple direction", themes: ["Shrines", "Travel", "Japanese places"], prerequisite: undefined },
+  { id: "directions", title: "Find your way", band: "early-n5", kanji: ["入", "出", "右", "左"], pattern: "〜はどこですか", outcome: "Ask where something is and understand a simple direction", themes: ["Culture", "Places", "Shrines", "Travel", "Japanese places"], prerequisite: undefined },
   { id: "favorites", title: "Talk about what you like", band: "early-n5", kanji: ["日", "本", "音", "楽"], pattern: "〜が好きです", outcome: "Say what you like, ask about a favorite and respond", themes: ["Anime", "Manga", "Music"], prerequisite: undefined },
   { id: "availability", title: "Ask what is available", band: "early-n5", kanji: ["店", "本", "新", "古"], pattern: "〜はありますか", outcome: "Ask whether a shop has something", themes: ["Manga", "Food", "Travel"], prerequisite: "requests" },
   { id: "desire", title: "Say what you want to do", band: "early-n5", kanji: ["行", "見", "食", "飲"], pattern: "〜たいです", outcome: "Say what you would like to do", themes: ["Travel", "Anime", "Food"], prerequisite: "favorites" },

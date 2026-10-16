@@ -118,6 +118,17 @@ export function learningProgress(source: ProgressSource) {
   );
   const inWeek = new Set(week);
   const meaningful = new Set<string>();
+  // Count learning items, never meaning/reading tracks or repeated sessions.
+  const kanji = new Set<string>(),
+    vocabulary = new Set<string>(),
+    grammar = new Set<string>(),
+    kana = new Set<string>(),
+    phrases = new Set<string>();
+  const rememberWord = (word: PreparedLesson["words"][number]) => {
+    for (const character of word.kanji)
+      if (/\p{Script=Han}/u.test(character)) kanji.add(character);
+    vocabulary.add(`${word.word}（${word.reading}）`);
+  };
   const observations: Observation[] = [];
   const trackSuggestions = new Map<string, string>();
   const trackById = new Map(
@@ -150,8 +161,28 @@ export function learningProgress(source: ProgressSource) {
   for (const rows of sessions.values()) {
     const lesson = source.curriculum.forEvent(rows[0]!);
     if (!lesson) continue;
-    for (const attempt of sessionProjection(lesson, rows, source.checked)
-      .attempts) {
+    const projection = sessionProjection(lesson, rows, source.checked);
+    for (const word of lesson.words)
+      if (projection.initiallyLearned.includes(word.id)) rememberWord(word);
+    for (const item of lesson.kana) {
+      const exercise = lesson.exercises.find(
+        (e) => e.facet === "kana" && e.targetId === item.character,
+      );
+      if (
+        exercise &&
+        projection.advanced.has(exercise.id) &&
+        projection.attempts.some((a) => a.event.stepId === exercise.id)
+      )
+        kana.add(item.character);
+    }
+    const ownSentence = lesson.exercises.find((e) => e.kind === "sentence");
+    if (
+      ownSentence &&
+      projection.advanced.has(ownSentence.id) &&
+      ["independent", "assisted"].includes(projection.grammarState)
+    )
+      grammar.add(lesson.grammar.pattern);
+    for (const attempt of projection.attempts) {
       const { event, assessment } = attempt;
       if (
         !["pending", "unassessed"].includes(assessment.outcome) &&
@@ -169,6 +200,43 @@ export function learningProgress(source: ProgressSource) {
       });
     }
   }
+  // A downloaded review history can outlive the local lesson journal. Only
+  // known curriculum targets with both recall tracks count as introductions.
+  const introducedWords = new Map<
+    string,
+    { word: PreparedLesson["words"][number]; facets: Set<string> }
+  >();
+  for (const track of source.reviews.tracks) {
+    if (track.card.source === "phrase") {
+      phrases.add(track.card.sourceId);
+      continue;
+    }
+    const lesson = source.curriculum.get(
+      track.card.sourceId,
+      track.card.sourceVersion,
+    );
+    if (!lesson) continue;
+    const exercise = lesson.exercises.find(
+      (e) => e.id === track.card.exercise.id,
+    );
+    if (!exercise || exercise.facet !== track.card.facet) continue;
+    if (track.card.facet === "grammar" && exercise.kind === "sentence")
+      grammar.add(lesson.grammar.pattern);
+    if (track.card.facet === "kana") kana.add(exercise.targetId);
+    const word = lesson.words.find((w) => w.id === exercise.targetId);
+    if (
+      !word ||
+      !["meaning", "reading"].includes(track.card.facet) ||
+      exercise.id !== `${track.card.facet}-${word.id}`
+    )
+      continue;
+    const key = `${lesson.id}:${lesson.version}:${word.id}`;
+    const row = introducedWords.get(key) ?? { word, facets: new Set<string>() };
+    row.facets.add(track.card.facet);
+    introducedWords.set(key, row);
+  }
+  for (const { word, facets } of introducedWords.values())
+    if (facets.has("meaning") && facets.has("reading")) rememberWord(word);
   for (const event of reviews) {
     const track = trackById.get(event.trackId),
       receipt = source.reviews.receipts.get(event.eventId);
@@ -295,6 +363,13 @@ export function learningProgress(source: ProgressSource) {
     )
     .slice(0, 3);
   return {
+    inventory: {
+      kanji: [...kanji].sort(),
+      vocabulary: [...vocabulary].sort(),
+      grammar: [...grammar].sort(),
+      kana: [...kana].sort(),
+      savedPhrases: phrases.size,
+    },
     days,
     today: days[days.length - 1]!,
     streak,
