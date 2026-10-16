@@ -112,6 +112,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- October 16: all seven template conversation loops now have real saved evidence on both configured providers. The final three OpenRouter loops used twelve free Gateway calls and left Gemini's ledger unchanged. A provisional uncertain try-pattern assessment was resolved by the existing recap path; native coverage and learner acceptance are still separate gates.
+
 - October 16: native account deletion and export were exercised on Android, including real SAF files, offline pending recovery, owned SQLite/audio/content cleanup, other-account isolation, dark/large text and keyboard repair. Confirmed deletion is implemented; standalone reminder delivery, remaining reliability checks and learner/release checkpoints still prevent accepting the entire slice/build.
 
 - October 16: server deletion is a separately verified account-controls increment. Existing-user reads fence public learning writes and delayed callbacks; bounded cleanup expires auth sessions before deleting children and preserves operational quota ledgers. Native confirmation/local cleanup remains open, so this does not accept slice 6.

@@ -1,6 +1,14 @@
 # Build evidence — 2026-10-13
 
+## Seven-template dual-provider conversation verification — October 16
+
+All seven templates now have saved successful conversation/goal/recap loops under both Gemini and OpenRouter (fourteen provider/template combinations). The remaining desire, ability and try checks reused existing clearly synthetic accounts, persisted new stable session/message IDs before dispatch, and used only the configured free OpenRouter model through Gateway. Each completed three jobs with four successful Gateway receipts; duplicate submissions retained one learner turn/assistant response. The try reply initially reported uncertain evidence. The existing recap reassessment resolved it to independent target use, without pretending the first assessment was certain or changing learning-feature code. The check was corrected to evaluate the completed journey rather than assume every provisional reply must be conclusive.
+
+These three checks used twelve free-provider reservations; the current daily ledger is 12/40. Gemini's estimated token-cost ledger remains 526,146 micro-USD spent plus 1,493,756 held against the 10,000,000 cap. No counters or uncertain holds were reset, no speaking/mastery claim was inferred, and the configured default was restored to Gemini after each check. Real Qloo context checks remain separately preserved; these new checks establish provider/lesson behavior rather than claiming a new Qloo lookup on every turn.
+
 ## Updated standalone candidate preparation — October 16
+
+The single candidate job finished at **00:55:51 UTC**. Its downloaded APK is 100,619,346 bytes with SHA-256 `db4053844d1f2a9dd9fe959403d5352b62dbe10896ad8990eef13e589e187333`. `apksigner` verification passed and the certificate matches the existing public Android association. The packaged manifest is release (not debuggable), `com.kiro.japanesestudy`, 0.2.0/code 2, with recording/notification permissions and no exact-alarm permission. Installation/standalone interaction gates are being checked separately; build completion/signature alone is not acceptance.
 
 One updated APK job has now been submitted: **`f7cf2ce5-3912-4d8c-8a29-a17b21e0b16d`**, initial status `NEW`, created October 16 at 00:47:41 UTC. It is preview Android 0.2.0 / version code 2 from checkpoint `b09f2b6`, reusing the existing remote keystore. The audited project uploaded as 7.1 MB compressed. Revalidate this job before any further dispatch; no candidate APK result or installation is claimed yet. [EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/f7cf2ce5-3912-4d8c-8a29-a17b21e0b16d).
 
