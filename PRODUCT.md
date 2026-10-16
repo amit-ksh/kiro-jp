@@ -32,7 +32,7 @@ The approved spec and checklist define one complete shared MVP for both events. 
 
 ## Brand Commitments
 
-The user requires the palette and overall layout character in references/j-image-main.webp, adapted to readable learning material. The descriptive title Japanese Learning App is not a final brand name. Preserve the approved product's simple English explanations and supported Japanese.
+The app's name is Kiro JP, chosen by the learner. Use it in Android display branding, welcome/loading screens and the static landing page. The user requires the palette and overall layout character in references/j-image-main.webp, adapted to readable learning material. Preserve the approved product's simple English explanations and supported Japanese.
 
 ## Evidence on Hand
 

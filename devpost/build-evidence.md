@@ -1,5 +1,13 @@
 # Build evidence — 2026-10-13
 
+## Kiro JP naming revision — October 16
+
+The learner chose **Kiro JP**. Android display branding, the microphone permission explanation, welcome/loading/configuration screens and the landing navigation/footer/metadata now use that name. The welcome copy is shorter. Version 0.2.2/code 4 retains the existing package, EAS project, signing identity, scheme and backend so it can upgrade the installed app. Internal project slugs remain stable. The static landing lists broad interests and custom favorites, matching the app.
+
+Native/web typechecks and lint passed, followed by a fresh Android Hermes export. The actual 473-file / 11,173,497-byte EAS inspection archive passed private-file and configured-secret checks, contains the selected name/version and preserves package/project identity. Free-plan capacity reports four of thirty builds used with no overage cost. The static landing build is still running; no named APK or final native acceptance is claimed yet.
+
+Revalidated the existing compact-UI job `5475efee-a80b-468c-97fd-857ae5315d8f`: it finished October 16 at 13:26:40 UTC as 0.2.1/code 3. It predates the name revision and must not be presented as the Kiro JP build. The earlier verification command was blocked when automatic approval review could not run due to a usage limit; the learner subsequently requested continuation and reviewed execution is now available again. No approval bypass or duplicate 0.2.1 job was used.
+
 ## Compact daily learning UI — October 16 learner feedback
 
 UI source checkpoint `2ecdfcb` is now submitted as one preview APK job: **`5475efee-a80b-468c-97fd-857ae5315d8f`**, Android 0.2.1 / version code 3, initially `NEW`. The upload was 7.1 MB compressed and reused the existing signing setup. [EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/5475efee-a80b-468c-97fd-857ae5315d8f). Revalidate this job instead of dispatching a duplicate. Its preview backend remains the configured development deployment; production release and learner acceptance are separate.

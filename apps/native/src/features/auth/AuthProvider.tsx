@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       runtime.closeTimer = setTimeout(() => { void runtime.client?.close(); }, 0);
     };
   }, [runtime, storage]);
-  if (!convex) return <Screen title="Japanese Learning App"><Panel><Body>The Android configuration is not ready. Run pnpm config:local using your private environment file, then restart the development build.</Body></Panel></Screen>;
+  if (!convex) return <Screen title="Kiro JP"><Panel><Body>The Android configuration is not ready. Run pnpm config:local using your private environment file, then restart the development build.</Body></Panel></Screen>;
   const immediateSignOut = async (token: string | null, deleted = false) => {
     // Invalidate in-flight schedules before clearing identity or unmounting.
     await studyReminders.retire();

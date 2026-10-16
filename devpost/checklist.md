@@ -4,7 +4,7 @@ status: approved
 checked: 2026-10-13
 ---
 
-# Japanese Learning App — Build Checklist
+# Kiro JP — Build Checklist
 
 Build mode: fast — chosen by the learner on 2026-10-13. Verify and commit every slice; pause for the planned early, spoken/offline and final hands-on checkpoints, with shorter explanations between them.
 
@@ -113,6 +113,8 @@ Reflection: Not yet offered; any personal answer belongs only in the ignored lea
 Activity mode: Pending; prefer a focused alternative for this experienced developer, unless they choose a guided route.
 
 ## Revisions
+
+- October 16: The learner chose **Kiro JP** as the app name. Apply it to Android display branding, welcome/loading screens and the static landing page while retaining the existing package, EAS project, signing identity and progress storage. Version 0.2.2/code 4 succeeds the already-submitted compact-UI 0.2.1 candidate. This naming revision does not close the remaining native or learner checkpoints.
 
 - October 16 learner feedback from the signed app: post-login screens contain too much text; make kanji/vocabulary totals, daily goals and due reviews visible, with broad interests instead of specific default choices. Implement a compact Home/Profile, a separate detailed settings route, a shared broad/custom-interest picker and deduplicated item totals. Preserve all learning, recovery and synchronization behavior. This feedback does not establish completion of the full spoken/offline or final hands-on checks.
 
