@@ -2,6 +2,8 @@
 
 ## Updated standalone candidate preparation — October 16
 
+One updated APK job has now been submitted: **`f7cf2ce5-3912-4d8c-8a29-a17b21e0b16d`**, initial status `NEW`, created October 16 at 00:47:41 UTC. It is preview Android 0.2.0 / version code 2 from checkpoint `b09f2b6`, reusing the existing remote keystore. The audited project uploaded as 7.1 MB compressed. Revalidate this job before any further dispatch; no candidate APK result or installation is claimed yet. [EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/f7cf2ce5-3912-4d8c-8a29-a17b21e0b16d).
+
 Revalidated EAS job `d846bd95-eb79-4b0c-94ff-47104f106d60` and the recent-build inventory: only two finished 0.1.0/version-code-1 foundation jobs exist, with no queued/running duplicate. An authenticated read-only capacity query reports the Free plan, two of thirty builds used and no overage cost. The next internal candidate is 0.2.0/version code 2, retaining `com.kiro.japanesestudy`, the existing EAS project/signing identity, scheme and preview backend. Expo introspection passed with the notification plugin and no exact-alarm permission.
 
 EAS's local Git clone hit the sandbox checkout's Windows ownership boundary. No ownership or global Git trust was changed. The CLI's supported file-copy mode, with an explicit monorepo root and the existing `.easignore`, produced a local inspection archive. Its 468 files / 11,151,597 bytes contain no private environment, planning/learner context, references, local SDK/runtime files or configured secret bytes. Version/package/project checks passed against that actual archive. This prepares an updated development-backend candidate, not a verified final APK or production release.
