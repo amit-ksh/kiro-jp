@@ -94,7 +94,7 @@ In learn mode, perform each slice's learner check before its commit. In fast mod
 
 ## Final Review
 
-- [ ] October 16 UI revision retried by learner — remove post-login filler, show real learning totals/daily actions, use broad/custom interests and retain a usable Android keyboard flow. Mechanical/native evidence and commit are recorded separately; learner retry remains pending.
+- [ ] October 16 UI revision retried by learner — install Kiro JP 0.2.2, confirm the new name, real learning totals/daily actions, broad/custom interests and the custom-interest field/Add action above the keyboard. Try larger text and restart with retained progress. Mechanical/native evidence and commit are recorded separately; the latest emulator run lacked host memory, so this phone retry remains pending.
 
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 

@@ -10,6 +10,8 @@ Native/web typechecks and lint passed, followed by a fresh Android Hermes export
 
 Revalidated the existing compact-UI job `5475efee-a80b-468c-97fd-857ae5315d8f`: it finished October 16 at 13:26:40 UTC as 0.2.1/code 3. It predates the name revision and must not be presented as the Kiro JP build. The earlier verification command was blocked when automatic approval review could not run due to a usage limit; the learner subsequently requested continuation and reviewed execution is now available again. No approval bypass or duplicate 0.2.1 job was used.
 
+The existing test AVD was booted once without Metro, using 1,536 MB guest memory and preserved userdata. It reached Android boot completion, but host free memory fell below 300 MB. The task-owned emulator was stopped and host memory recovered; no reliable new native UI result is claimed. The final custom-interest keyboard/large-text and learner retry remain open for the phone, rather than accepting an unreliable emulator run. Existing learner data was not wiped.
+
 ## Compact daily learning UI — October 16 learner feedback
 
 UI source checkpoint `2ecdfcb` is now submitted as one preview APK job: **`5475efee-a80b-468c-97fd-857ae5315d8f`**, Android 0.2.1 / version code 3, initially `NEW`. The upload was 7.1 MB compressed and reused the existing signing setup. [EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/5475efee-a80b-468c-97fd-857ae5315d8f). Revalidate this job instead of dispatching a duplicate. Its preview backend remains the configured development deployment; production release and learner acceptance are separate.
