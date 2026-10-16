@@ -2,6 +2,8 @@
 
 ## Compact daily learning UI — October 16 learner feedback
 
+UI source checkpoint `2ecdfcb` is now submitted as one preview APK job: **`5475efee-a80b-468c-97fd-857ae5315d8f`**, Android 0.2.1 / version code 3, initially `NEW`. The upload was 7.1 MB compressed and reused the existing signing setup. [EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/5475efee-a80b-468c-97fd-857ae5315d8f). Revalidate this job instead of dispatching a duplicate. Its preview backend remains the configured development deployment; production release and learner acceptance are separate.
+
 Replaced the text-heavy post-login overview with actual daily minutes, a goal meter, streak, unique introduced kanji/word totals, practised grammar-pattern totals, due reviews and the main session action. Progress totals deduplicate repeat sessions and separate meaning/reading tracks; merely viewing a card does not count as introducing it. Imported WaniKani familiarity remains separate from learning and mastery. Profile opens detailed progress and settings, and Home retains working continuation/reference actions.
 
 Interests now offer Food, Culture, Places, Anime, Manga, Music, Travel and Daily life, plus learner-entered favorites. Onboarding and later editing share the same control, preserving existing specific interests. Removed generic helper paragraphs from Home, Profile, Interests, Conversation and Reviews, and combined lesson/download controls into one card per lesson. Teaching explanations, answer feedback, real error states and the session's concrete learning outcome remain available within the learning journey. The five-tab navigation, reference palette and accessibility controls remain in place.
