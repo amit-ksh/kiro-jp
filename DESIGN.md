@@ -1,6 +1,6 @@
 # Japanese Learning App — Visual direction
 
-The user-approved authority is `references/j-image-main.webp`, as recorded in the approved scope, PRD and technical spec. This is an Android learning interface with a separate static landing; no new brand name has been established.
+The user-approved authority is `references/j-image-main.webp`, as recorded in the approved scope, PRD and technical spec. Kiro JP is an Android learning interface with a separate static landing.
 
 ## Android learning surfaces
 
@@ -9,6 +9,8 @@ Use indigo headers and background, rounded white learning panels, orange primary
 ## Palette and roles
 
 The reference anchors are `#37469E`, `#313790`, `#FF5C00`, `#F05722` and white. `packages/design-tokens/src/index.ts` maps them to primary/secondary/surface roles and supplies legible ink/secondary-text/error colors and a dark scheme. Orange actions use dark text. Normal Japanese and English appear on calm solid panels; do not substitute decoration for learning content or display invented progress.
+
+The launcher uses an original white 日 mark with an orange conversation tail on indigo. The editable vector and opaque/transparent/monochrome PNG exports live in `apps/native/assets/branding`. Android applies its own circular or rounded mask; the artwork remains within the adaptive-icon safe circle. The icon introduces no additional text or decoration inside learning screens.
 
 ## Main hierarchy
 

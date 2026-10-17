@@ -1,5 +1,11 @@
 # Build evidence — 2026-10-13
 
+## Launcher icon — October 17
+
+Added an original editable vector mark: a white 日 with an orange conversation tail, on the app's `#37469E` indigo. The installed Android icon now has an opaque 1024-square project/legacy export, transparent adaptive foreground and white-alpha monochrome layer for system themed icons. The configuration preserves Kiro JP, package/signing/project identity and uses version 0.2.3/code 5. No external image, font or image-model call is required for the original geometric artwork.
+
+Native typecheck and lint passed. The installed Expo SDK generator produced and verified twenty density-specific launcher/round/foreground/monochrome resources and both adaptive XML references. Source PNG dimensions, opaque background, transparent corners, matching monochrome alpha and the Android central safe-circle bound passed. Circular, rounded and system-tint previews were visually inspected. These are asset/resource checks, not an installed-device screenshot or a new learner acceptance. Free EAS capacity reports five of thirty builds used with no overage cost; the current inventory has only earlier finished jobs and no duplicate 0.2.3 job. The actual 478-file / 11,213,081-byte upload archive excludes private files/configured secret bytes and includes byte-identical verified artwork. The signed APK is being checked separately.
+
 ## Kiro JP naming revision — October 16
 
 The named build finished October 16 at **17:48:03 UTC**. [Download Kiro JP 0.2.2](https://expo.dev/artifacts/eas/vufLCnw7WfdOjobOkAGnN-inGam0K7kaeOIkUsq_xZg.apk). The APK is 102,776,794 bytes, SHA-256 `a652a47032934b5df186cb6db66cd4f2c6fa91757e23d4474fd43a2de76cf515`. `apksigner` verification passed; its certificate matches the existing app and Android association. Actual manifest inspection confirms **Kiro JP**, `com.kiro.japanesestudy`, 0.2.2/code 4 and a non-debuggable release. This is a verified installable development-backend candidate; the phone layout/keyboard/restart retry and broader release gates remain open.

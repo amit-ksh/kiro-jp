@@ -114,6 +114,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- October 17: The learner requested an installed app icon matching the interface. Add the original indigo/white/orange Kiro JP mark with adaptive and themed Android layers, verify its native resources/mask safety, and ship version 0.2.3/code 5 using the same package/signing identity. Confirm its appearance during the remaining phone retry; this asset change does not accept the full build.
+
 - October 16: The learner chose **Kiro JP** as the app name. Apply it to Android display branding, welcome/loading screens and the static landing page while retaining the existing package, EAS project, signing identity and progress storage. Version 0.2.2/code 4 succeeds the already-submitted compact-UI 0.2.1 candidate. This naming revision does not close the remaining native or learner checkpoints.
 
 - October 16 learner feedback from the signed app: post-login screens contain too much text; make kanji/vocabulary totals, daily goals and due reviews visible, with broad interests instead of specific default choices. Implement a compact Home/Profile, a separate detailed settings route, a shared broad/custom-interest picker and deduplicated item totals. Preserve all learning, recovery and synchronization behavior. This feedback does not establish completion of the full spoken/offline or final hands-on checks.
