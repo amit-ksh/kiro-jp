@@ -149,6 +149,8 @@ Recommend supported foundations if fewer than six starter items are assessable, 
 
 ### Prepared Curriculum and Content Checks
 
+October 18 browser revision: `content/src/levels.ts` derives seven starter levels from the checked curriculum, introducing each kanji and dictionary radical once. The 24-character KANJIDIC2 extract supplies on/kun readings and classical radical numbers; radical numbers also match Unicode 17 Unihan. A pinned KanjiVG component extract supplies visible shapes/positions without claiming complete historical derivations. Licence notices remain in `content/NOTICE.md` and accessible native Sources. These reference extracts do not change approved lesson answers, SRS tracks or learning evidence. Level/detail screens reuse current account progress and session entry rules.
+
 Implements `prd.md > Beginner Support and Kana Foundations`, `New Kanji and Active Recall`, and `Grammar Teaching and Sentence Practice` (BEG-1–BEG-3, KAN-1–KAN-4, GRA-1–GRA-4).
 
 The learner chose an AI-assisted, source-checked process initially. Author original explanations, mnemonics, dialogues, prompts, approved answers, and breakdowns. Cross-check meanings/readings with suitable dictionary records and grammar/usage against first-party learning references, such as Japan Foundation material. Record source URLs, retrieval date, reviewer/check method, findings, license/provenance for reused data, and version. Resolve flagged errors before publishing. A second model review helps find issues but is not described as native-speaker/expert review. No human Japanese reviewer is arranged.

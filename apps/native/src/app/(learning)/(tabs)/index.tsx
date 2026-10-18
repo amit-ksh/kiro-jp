@@ -16,6 +16,7 @@ import { useProfile } from "../../../data/ProfileProvider";
 import { useContent } from "../../../data/ContentProvider";
 import { useLearningProgress } from "../../../features/profile/useLearningProgress";
 import { ReminderOffer } from "../../../features/reminders/ReminderSettings";
+import { ActivityChart } from "../../../components/ActivityChart";
 import {
   Body,
   Button,
@@ -236,6 +237,8 @@ export default function Home() {
           )}
         </Panel>
       )}
+
+      <Panel style={{padding:20,gap:12}}><ActivityChart days={progress.days} compact/></Panel>
 
       <Panel style={{ padding: 20, gap: 4 }}>
         {sessions.length > 0 && (

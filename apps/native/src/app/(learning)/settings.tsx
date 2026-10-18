@@ -132,6 +132,11 @@ export default function Settings() {
           />
         ))}
       </Panel>
+      <Button
+        label="Sources & reading guide"
+        secondary
+        onPress={() => router.push("/(learning)/sources")}
+      />
       <Panel>
         <Title>Account</Title>
         {email && <Body>{email}</Body>}

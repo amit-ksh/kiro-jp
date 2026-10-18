@@ -94,6 +94,8 @@ In learn mode, perform each slice's learner check before its commit. In fast mod
 
 ## Final Review
 
+- [ ] October 18 navigation/chat/analytics revision retried by learner — use gesture Back from tabs, a level, a kanji, chat and speech; confirm return to the previous screen and no accidental exit. Check the compact chat and composer with the keyboard open, seven-day activity chart, themed launcher icon and seven starter level grids. Open kanji details for component/radical explanations and both reading types. Source and mechanical checks are recorded separately; retain this box until the new APK is installed and the learner has retried it.
+
 - [ ] October 16 UI revision retried by learner — install Kiro JP 0.2.2, confirm the new name, real learning totals/daily actions, broad/custom interests and the custom-interest field/Add action above the keyboard. Try larger text and restart with retained progress. Mechanical/native evidence and commit are recorded separately; the latest emulator run lacked host memory, so this phone retry remains pending.
 
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship

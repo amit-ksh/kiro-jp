@@ -1,4 +1,7 @@
 export { requestsLesson } from "./requests.ts";
+export { starterLevels, starterRadicals, kanjiRadical, radicalSource } from "./levels.ts";
+export { kanjiReadings, kanjidicDate } from "./kanji-readings.ts";
+export { kanjiParts, kanjivgRevision } from "./kanji-parts.ts";
 export { directionsLesson } from "./directions.ts";
 export { favoritesLesson } from "./favorites.ts";
 export { availabilityLesson } from "./availability.ts";

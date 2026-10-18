@@ -11,6 +11,7 @@ import {
 } from "../../../components/ui";
 import { useSignOut } from "../../../features/auth/AuthProvider";
 import { Onboarding } from "../../../features/onboarding/Onboarding";
+import { learningTabOptions } from "../../../navigation/policy";
 export default function TabsLayout() {
   const { profile, loading, error, retry } = useProfile();
   const colors = useColors();
@@ -36,6 +37,7 @@ export default function TabsLayout() {
   return (
     <TextScaleProvider value={profile.textScale}>
       <Tabs
+        {...learningTabOptions}
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: colors.navigationActive,

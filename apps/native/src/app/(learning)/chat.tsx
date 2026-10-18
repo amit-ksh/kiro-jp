@@ -20,14 +20,19 @@ import { useStudyTime } from "../../features/lessons/useStudyTime";
 import { SavedPhrases } from "../../features/conversation/SavedPhrases";
 import { CulturalContext } from "../../features/conversation/CulturalContext";
 import {
+  ChatBubble,
+  ChatComposer,
+  ChatIcon,
+} from "../../features/conversation/ChatControls";
+import {
   Body,
   Button,
-  Field,
   Loading,
   Message,
   Panel,
   Screen,
   Title,
+  useColors,
 } from "../../components/ui";
 import { ScrollView, View } from "react-native";
 export default function Chat() {
@@ -39,6 +44,9 @@ export default function Chat() {
     auth = useConvexAuth(),
     connection = useConvexConnectionState();
   const [viewSegment, setViewSegment] = useState("");
+  const [expandedMessages, setExpandedMessages] = useState<string[]>([]);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const colors = useColors();
   const validId = /^[a-z0-9]{20,40}$/u.test(conversationId);
   const remote = useQuery(
     api.conversation.get,
@@ -66,6 +74,14 @@ export default function Chat() {
     [now, setNow] = useState(Date.now());
   const active = useRef(true);
   const scroll = useRef<ScrollView>(null);
+  useEffect(() => {
+    if (!viewSegment) {
+      const frame = requestAnimationFrame(() =>
+        scroll.current?.scrollToEnd({ animated: true }),
+      );
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [remote?.messages.length, viewSegment]);
   useEffect(() => {
     active.current = true;
     const timer = setInterval(() => setNow(Date.now()), 5000);
@@ -99,7 +115,8 @@ export default function Chat() {
             (flag) =>
               flag === "suggestedReply" ||
               flag === "wordBank" ||
-              flag === "patternHint" || flag === "transcriptEdited",
+              flag === "patternHint" ||
+              flag === "transcriptEdited",
           )
         : [];
     } catch {
@@ -127,6 +144,12 @@ export default function Chat() {
     )?.state ?? strongestGoal(goals);
   const job = data?.jobs.find((item) => item.id === segment?.lastReplyJobId);
   const recap = data?.jobs.find((item) => item.id === segment?.recapJobId);
+  const replyFailed = Boolean(
+    job &&
+    (job.status === "failed" ||
+      (job.status === "queued" && now - job.updatedAt >= 90_000) ||
+      (job.status === "running" && (job.leaseUntil ?? Infinity) <= now)),
+  );
   const operation = async (work: () => Promise<void>) => {
     setBusy(true);
     setError("");
@@ -207,40 +230,34 @@ export default function Chat() {
     });
   const composer =
     segment?.state === "active" ? (
-      <View style={{ gap: 8 }}>
-        <Button label="Speak a reply" secondary disabled={busy || Boolean(segment.pendingJobId)} onPress={() => {
+      <ChatComposer
+        text={text}
+        busy={busy}
+        speakDisabled={busy || Boolean(segment.pendingJobId)}
+        onSpeak={() => {
           timing.pause();
-          router.push({ pathname: "/(learning)/speech", params: { conversationSegmentId: segment.segmentId } });
-        }}/>
-        <Field
-          label="Message your tutor"
-          value={text}
-          editable={!busy}
-          multiline
-          maxLength={1000}
-          style={{ maxHeight: 100 }}
-          onChangeText={(value) => {
-            if (
-              /[ぁ-ゖァ-ヶ一-龯]/u.test(value) ||
-              /\b(?:kudasai|desu|suki|mizu|ocha|arigatou|konnichiwa)\b/iu.test(
-                value,
-              )
+          router.push({
+            pathname: "/(learning)/speech",
+            params: { conversationSegmentId: segment.segmentId },
+          });
+        }}
+        onChange={(value) => {
+          if (
+            /[ぁ-ゖァ-ヶ一-龯]/u.test(value) ||
+            /\b(?:kudasai|desu|suki|mizu|ocha|arigatou|konnichiwa)\b/iu.test(
+              value,
             )
-              timing.interact();
-            void study.saveDraft(draftKey, "chat-message", value);
-          }}
-        />
-        <Button
-          label="Send message"
-          busy={busy}
-          disabled={
-            !text.trim() ||
-            Boolean(segment.pendingJobId) ||
-            !connection.isWebSocketConnected
-          }
-          onPress={send}
-        />
-      </View>
+          )
+            timing.interact();
+          void study.saveDraft(draftKey, "chat-message", value);
+        }}
+        sendDisabled={
+          !text.trim() ||
+          Boolean(segment.pendingJobId) ||
+          !connection.isWebSocketConnected
+        }
+        onSend={send}
+      />
     ) : undefined;
   if (!validId || remote === null)
     return (
@@ -286,31 +303,40 @@ export default function Chat() {
     );
   return (
     <Screen
-      title="Your Japanese."
+      chat
+      title="Kiro"
       subtitle={data.conversation.title}
       footer={composer}
       scrollRef={scroll}
+      headerAside={
+        <ChatIcon
+          label="Conversation options"
+          icon="ellipsis-vertical"
+          onPress={() => setOptionsOpen((value) => !value)}
+        />
+      }
     >
-      <Panel>
-        <Body>Change the subject whenever you like.</Body>
-        {!capabilities?.culturalPersonalization && (
-          <Body>Cultural recommendations are unavailable right now.</Body>
-        )}
-        {segment.lessonSessionId && (
-          <Body>
-            Lesson conversation goal:{" "}
-            {goal === "independent"
-              ? "demonstrated independently"
-              : goal === "assisted"
-                ? "practised with support"
-                : goal === "awaitingAssessment"
-                  ? "awaiting assessment"
-                  : "not yet practised"}
-            .
-          </Body>
-        )}
-      </Panel>
-      {data.segments.length > 1 && (
+      {optionsOpen && (
+        <Panel>
+          {!capabilities?.culturalPersonalization && (
+            <Body>Cultural recommendations are unavailable right now.</Body>
+          )}
+          {segment.lessonSessionId && (
+            <Body>
+              Lesson conversation goal:{" "}
+              {goal === "independent"
+                ? "demonstrated independently"
+                : goal === "assisted"
+                  ? "practised with support"
+                  : goal === "awaitingAssessment"
+                    ? "awaiting assessment"
+                    : "not yet practised"}
+              .
+            </Body>
+          )}
+        </Panel>
+      )}
+      {optionsOpen && data.segments.length > 1 && (
         <Panel>
           <Button
             label={
@@ -341,87 +367,137 @@ export default function Chat() {
         </Panel>
       )}
       {messages.map((message) => (
-        <Panel key={message.messageId}>
-          <Body muted>{message.role === "user" ? "You" : "Tutor"}</Body>
+        <ChatBubble key={message.messageId} own={message.role === "user"}>
           {message.reply ? (
             <>
-              {phrase(message.reply)}
-              <CulturalContext
-                message={message}
-                canDiscuss={segment.state === "active"}
-                onTopic={(topic) => {
-                  void study.saveDraft(draftKey, "chat-message", topic);
-                  scroll.current?.scrollToEnd({ animated: true });
-                }}
-              />
+              <Body style={{ fontSize: 21, lineHeight: 31 }}>
+                {message.reply.japanese}
+              </Body>
+              {profile.translations && (
+                <Body muted>{message.reply.english}</Body>
+              )}
               <Button
-                label="Review this reply"
+                label={
+                  expandedMessages.includes(message.messageId)
+                    ? "Hide learning help"
+                    : "Learning help"
+                }
                 secondary
-                onPress={timing.interact}
+                onPress={() =>
+                  setExpandedMessages((previous) =>
+                    previous.includes(message.messageId)
+                      ? previous.filter((id) => id !== message.messageId)
+                      : [...previous, message.messageId],
+                  )
+                }
               />
-              {message.reply.corrections.map((correction, index) => (
-                <View key={index} style={{ gap: 6 }}>
-                  <Body>Your phrase: {correction.original}</Body>
-                  {phrase(correction.corrected)}
-                  <Body>{correction.explanation}</Body>
-                  <Button
-                    label={`Save correction ${index + 1}`}
-                    secondary
-                    disabled={busy || !connection.isWebSocketConnected}
-                    onPress={() => save(message.messageId, "correction", index)}
-                  />
-                </View>
-              ))}
-              {message.reply.usefulPhrases.map((value, index) => (
-                <View key={`useful-${index}`} style={{ gap: 8 }}>
-                  {phrase(value)}
-                  <Button
-                    label={`Save useful phrase ${index + 1}`}
-                    secondary
-                    disabled={busy || !connection.isWebSocketConnected}
-                    onPress={() => save(message.messageId, "useful", index)}
-                  />
-                </View>
-              ))}
-              {message.reply.hints.length > 0 &&
-                !openHints.includes(message.messageId) && (
-                  <Button
-                    label="Show reply hints"
-                    secondary
-                    disabled={busy || segment.state === "ended"}
-                    onPress={() => {
-                      recordHelp();
-                      setOpenHints((previous) => [
-                        ...previous,
-                        message.messageId,
-                      ]);
+              {expandedMessages.includes(message.messageId) && (
+                <>
+                  {profile.furigana && <Body>{message.reply.reading}</Body>}
+                  {profile.romaji && <Body muted>{message.reply.romaji}</Body>}
+                  {!profile.translations && (
+                    <Body>{message.reply.english}</Body>
+                  )}
+                  <CulturalContext
+                    message={message}
+                    canDiscuss={segment.state === "active"}
+                    onTopic={(topic) => {
+                      void study.saveDraft(draftKey, "chat-message", topic);
+                      scroll.current?.scrollToEnd({ animated: true });
                     }}
                   />
-                )}
-              {openHints.includes(message.messageId) &&
-                message.reply.hints.map((hint, index) => (
-                  <View key={index} style={{ gap: 8 }}>
-                    {phrase(hint)}
-                    <Button
-                      label={`Try this phrase ${index + 1}`}
-                      secondary
-                      disabled={busy || segment.state === "ended"}
-                      onPress={() => {
-                        recordHelp();
-                        void study.saveDraft(
-                          draftKey,
-                          "chat-message",
-                          hint.japanese,
-                        );
-                      }}
-                    />
-                  </View>
-                ))}
+                  <Button
+                    label="Review this reply"
+                    secondary
+                    onPress={timing.interact}
+                  />
+                  {message.reply.corrections.map((correction, index) => (
+                    <View key={index} style={{ gap: 6 }}>
+                      <Body>Your phrase: {correction.original}</Body>
+                      {phrase(correction.corrected)}
+                      <Body>{correction.explanation}</Body>
+                      <Button
+                        label={`Save correction ${index + 1}`}
+                        secondary
+                        disabled={busy || !connection.isWebSocketConnected}
+                        onPress={() =>
+                          save(message.messageId, "correction", index)
+                        }
+                      />
+                    </View>
+                  ))}
+                  {message.reply.usefulPhrases.map((value, index) => (
+                    <View key={`useful-${index}`} style={{ gap: 8 }}>
+                      {phrase(value)}
+                      <Button
+                        label={`Save useful phrase ${index + 1}`}
+                        secondary
+                        disabled={busy || !connection.isWebSocketConnected}
+                        onPress={() => save(message.messageId, "useful", index)}
+                      />
+                    </View>
+                  ))}
+                  {message.reply.hints.length > 0 &&
+                    !openHints.includes(message.messageId) && (
+                      <Button
+                        label="Show reply hints"
+                        secondary
+                        disabled={busy || segment.state === "ended"}
+                        onPress={() => {
+                          recordHelp();
+                          setOpenHints((previous) => [
+                            ...previous,
+                            message.messageId,
+                          ]);
+                        }}
+                      />
+                    )}
+                  {openHints.includes(message.messageId) &&
+                    message.reply.hints.map((hint, index) => (
+                      <View key={index} style={{ gap: 8 }}>
+                        {phrase(hint)}
+                        <Button
+                          label={`Try this phrase ${index + 1}`}
+                          secondary
+                          disabled={busy || segment.state === "ended"}
+                          onPress={() => {
+                            recordHelp();
+                            void study.saveDraft(
+                              draftKey,
+                              "chat-message",
+                              hint.japanese,
+                            );
+                          }}
+                        />
+                      </View>
+                    ))}
+                </>
+              )}
             </>
           ) : (
-            <Body>{message.text}</Body>
+            <Body
+              style={{
+                color:
+                  message.role === "user" ? colors.onPrimary : colors.onSurface,
+              }}
+            >
+              {message.text}
+            </Body>
           )}
-        </Panel>
+          <Body
+            style={{
+              alignSelf: "flex-end",
+              fontSize: 11,
+              lineHeight: 16,
+              color: message.role === "user" ? colors.onPrimary : colors.muted,
+            }}
+          >
+            {new Date(message.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </Body>
+        </ChatBubble>
       ))}
       {notice && (
         <Panel>
@@ -429,15 +505,12 @@ export default function Chat() {
         </Panel>
       )}
       {segment.state === "active" ? (
-        <Panel>
-          {segment.pendingJobId && (
-            <Body>Your message is saved. Preparing the next reply…</Body>
-          )}
-          {job &&
-            (job.status === "failed" ||
-              (job.status === "queued" && now - job.updatedAt >= 90_000) ||
-              (job.status === "running" &&
-                (job.leaseUntil ?? Infinity) <= now)) && (
+        (segment.pendingJobId || replyFailed || optionsOpen) && (
+          <Panel>
+            {segment.pendingJobId && (
+              <Body>Your message is saved. Preparing the next reply…</Body>
+            )}
+            {job && replyFailed && (
               <>
                 <Body>
                   The tutor reply is unavailable right now. Your message remains
@@ -457,29 +530,28 @@ export default function Chat() {
                 />
               </>
             )}
-          <Button
-            label="Finish conversation"
-            secondary
-            disabled={busy || !connection.isWebSocketConnected}
-            onPress={() =>
-              void operation(async () => {
-                timing.pause();
-                await finish({
-                  conversationId: conversationId as Id<"conversations">,
-                  segmentId: segment.segmentId,
-                  expectedRevision: segment.revision,
-                });
-              })
-            }
-          />
-        </Panel>
+            {optionsOpen && (
+              <Button
+                label="Finish conversation"
+                secondary
+                disabled={busy || !connection.isWebSocketConnected}
+                onPress={() =>
+                  void operation(async () => {
+                    timing.pause();
+                    await finish({
+                      conversationId: conversationId as Id<"conversations">,
+                      segmentId: segment.segmentId,
+                      expectedRevision: segment.revision,
+                    });
+                  })
+                }
+              />
+            )}
+          </Panel>
+        )
       ) : (
         <Panel>
           <Title>Practice saved.</Title>
-          <Body>
-            Conversation session completed. Your actual language evidence
-            remains separate from its lesson goal.
-          </Body>
           <Body>
             {recap?.recap ??
               "Your messages are saved. The recap is pending or unavailable; you can revisit the practice below."}
@@ -554,16 +626,20 @@ export default function Chat() {
           <Message>{error}</Message>
         </Panel>
       )}
-      <Button
-        label="Resume later"
-        secondary
-        onPress={() => router.replace("/(learning)/(tabs)/conversation")}
-      />
-      <Button
-        label="Continue studying"
-        secondary
-        onPress={() => router.replace("/(learning)/(tabs)")}
-      />
+      {optionsOpen && (
+        <>
+          <Button
+            label="Resume later"
+            secondary
+            onPress={() => router.replace("/(learning)/(tabs)/conversation")}
+          />
+          <Button
+            label="Continue studying"
+            secondary
+            onPress={() => router.replace("/(learning)/(tabs)")}
+          />
+        </>
+      )}
     </Screen>
   );
 }

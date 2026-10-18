@@ -3,6 +3,7 @@ import { View } from "react-native";
 import type { PracticeCounts, ProgressFacet } from "@packages/learning-core";
 import { useLearningProgress } from "../../features/profile/useLearningProgress";
 import { LearningTotals, SectionTitle } from "../../components/dashboard";
+import { ActivityChart } from "../../components/ActivityChart";
 import {
   Body,
   Button,
@@ -59,23 +60,7 @@ export default function Progress() {
           {progress.today.goalMet ? " · daily goal reached" : ""}
           {progress.today.meaningful ? " · streak day earned" : ""}
         </Body>
-        {progress.days.map((day) => (
-          <View key={day.day} style={{ gap: 4 }}>
-            <Body>
-              {new Date(`${day.day}T12:00:00Z`).toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-                timeZone: "UTC",
-              })}{" "}
-              · {minutes(day.milliseconds)} min
-            </Body>
-            <Body muted>
-              {day.meaningful ? "Study day earned" : "No study step yet"}
-              {day.goalMet ? " · time goal reached" : ""}
-            </Body>
-          </View>
-        ))}
+        <ActivityChart days={progress.days}/>
       </Panel>
       <Panel>
         <Title>Answers and support</Title>

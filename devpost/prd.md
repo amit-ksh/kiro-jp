@@ -144,6 +144,8 @@ Acceptance criteria:
 
 ### New Kanji and Active Recall
 
+October 18 learner revision: Lessons also offers a WaniKani-style browser of the seven implemented starter levels. Each level groups radicals, kanji and vocabulary. Kanji details explain recognizable components and the dictionary radical, label on’yomi and kun’yomi separately, and show the reading in a useful lesson word. A missing dictionary reading is stated honestly. Browsing does not award learning or mastery; existing lesson exercises remain the teaching and recall path.
+
 Source: `scope.md > The Core Loop`.
 
 - Teach first. Show a large kanji, its meaning and taught readings, a short mnemonic, useful words, and a highlighted everyday example. Offer audio for individual readings, words, and the whole sentence, plus optional readings, translation, and breakdown.

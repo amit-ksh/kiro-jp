@@ -26,6 +26,12 @@ Use a top context/title region and a comfortable scrollable content area. Contro
 
 ## Truth and unfinished states
 
+The October 18 revision uses a fixed chat header, incoming/outgoing message bubbles, timestamps and a compact microphone/message/send composer. Learning help expands inside the relevant reply; chat options hold secondary controls. Keep corrections, assistance recording and failure recovery available without filling the conversation with instructions.
+
+Lessons opens seven real starter levels, each with radical, kanji and vocabulary grids. Kanji details distinguish the dictionary radical from visible components, show on’yomi and kun’yomi with the current word reading, and retain source acknowledgements. Do not invent unimplemented levels, mastery or a complete historical derivation from a partial component list. Daily activity uses a selectable seven-day bar chart of actual non-overlapping study time, with accessible date/minute labels.
+
+Android Back follows detail and visited-tab history, with a parent fallback for direct entry. Only Home with no learning history offers an explicit close confirmation. Standard gesture Back is handled through the Android Back callback; the predictive animation is disabled for this compatibility build.
+
 Initial UI previews are labelled as build-in-progress where activities are not connected. Missing listening audio stays unassessed. Cloud-sync failures preserve local answers and expose retry/conflict actions. No invented Qloo responses, testimonials, mastery, provider success or installable release.
 
 ## Verification boundary
