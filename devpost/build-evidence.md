@@ -2,6 +2,8 @@
 
 ## Empty-chat entry and dictionary/component teaching — October 18 follow-up
 
+Checkpoint `bb39571` is submitted as one preview APK job **`1dc42422-0310-47af-8238-85700883c0e0`**, Kiro JP 0.2.7/code 9. [Current EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/1dc42422-0310-47af-8238-85700883c0e0). The 7.1 MB upload reused the existing signing identity; the durable local intent stores the ID. Follow this job rather than dispatching another while it compiles. Signed-artifact inspection and the phone retry remain separate gates.
+
 The learner reported 0.2.6 looked good generally but requested a different Conversation entry and a WaniKani-style learning experience backed by reusable dictionary facts. They explicitly approved an empty chat with a prompt, bottom composer, interest suggestions and history behind a button. Their later clarification keeps **kanji as the main learning track**, with lessons explaining which radicals/components appear inside it; no new radical unlock gates are introduced.
 
 Conversation now opens that empty view. Existing topic/pending-operation drafts, start IDs and backend idempotency remain in use; selecting a suggestion creates no conversation or learning credit. A native history modal loads owned cursor pages beyond the old twenty-chat limit, searches loaded pages, reopens the same chat UI and falls back to cached chats offline. Long titles are capped at two visible lines, learning help is a compact expandable action, and completed recaps/saved phrases expand on demand. Home's activity chart is unchanged. The first topic composer is typed; existing speech practice remains available inside a started conversation.
