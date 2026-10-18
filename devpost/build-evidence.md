@@ -2,6 +2,8 @@
 
 ## Level browser, conversation layout and Android Back revision — October 18
 
+The final 0.2.5/code-7 candidate from checkpoint `3f593e0` is job **`1e00a8e3-af46-4794-89ea-b709ff812a4d`**. [Current EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/1e00a8e3-af46-4794-89ea-b709ff812a4d). Its 7.1 MB archive uploaded successfully using the existing keystore and free capacity. Critical onboarding/navigation/detail/reference files in the audited archive are byte-identical to the final verified sources. The durable intent stores this ID; revalidate this job before any further build. Signed artifact inspection is pending separately.
+
 Final source review found that onboarding's saved steps are not navigation routes. The Android guard now shares the same ordered steps as the on-screen Back control, moves to the previous saved setup step and retains answers; keyboard dismissal takes precedence. Five navigation tests and all 257 tests pass, along with final native types/lint and a fresh 4.5 MB Hermes export `index-d8cf35d797815fed83d4ad650ce68bf3.hbc`. The final 0.2.5/code-7 archive contains 492 files / 11,264,872 bytes and passes private-file/secret/artwork checks. The superseded 0.2.4 job below was explicitly canceled before sharing an APK; it must not be presented as the final candidate.
 
 The preserved Android 15 gesture-navigation AVD booted with 1,536 MB guest RAM and retained the existing 0.2.0 test app, but host free RAM fell to about 350 MB. It was gracefully stopped without wiping userdata. No new gesture, layout, keyboard or native screenshot pass is claimed from that run; the phone retry remains required.
