@@ -12,7 +12,7 @@ export default function Level() {
       (level) => level.number === Number(params.level),
     ),
     progress = useLearningProgress();
-  const [kind, setKind] = useState<"radical" | "kanji" | "word">("radical");
+  const [kind, setKind] = useState<"radical" | "kanji" | "word">("kanji");
   if (!level)
     return (
       <Screen title="Level unavailable">
@@ -67,7 +67,7 @@ export default function Level() {
         />
       </Panel>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-        {(["radical", "kanji", "word"] as const).map((value) => (
+        {(["kanji", "word", "radical"] as const).map((value) => (
           <Choice
             key={value}
             label={

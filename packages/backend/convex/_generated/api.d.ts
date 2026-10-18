@@ -25,6 +25,7 @@ import type * as conversationValues from "../conversationValues.js";
 import type * as crons from "../crons.js";
 import type * as culture from "../culture.js";
 import type * as cultureValues from "../cultureValues.js";
+import type * as dictionary from "../dictionary.js";
 import type * as emailLimits from "../emailLimits.js";
 import type * as http from "../http.js";
 import type * as importValues from "../importValues.js";
@@ -84,6 +85,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   culture: typeof culture;
   cultureValues: typeof cultureValues;
+  dictionary: typeof dictionary;
   emailLimits: typeof emailLimits;
   http: typeof http;
   importValues: typeof importValues;

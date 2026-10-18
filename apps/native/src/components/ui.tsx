@@ -171,6 +171,8 @@ export function Screen({
         {chat ? (
           <Text
             accessibilityRole="header"
+            numberOfLines={2}
+            ellipsizeMode="tail"
             style={{
               fontSize: 22,
               fontWeight: "700",

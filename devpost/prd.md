@@ -144,6 +144,8 @@ Acceptance criteria:
 
 ### New Kanji and Active Recall
 
+October 18 follow-up: keep kanji as the main learning track, without introducing radical-based locks. Teach the radicals/components used inside each kanji through named shapes, variant forms, brief recognition lessons, linked kanji and original memory stories. Keep dictionary facts separate from original teaching content and existing graded answers. Vocabulary references link back to their known starter kanji. Reading a reference does not create mastery or change the review schedule.
+
 October 18 learner revision: Lessons also offers a WaniKani-style browser of the seven implemented starter levels. Each level groups radicals, kanji and vocabulary. Kanji details explain recognizable components and the dictionary radical, label on’yomi and kun’yomi separately, and show the reading in a useful lesson word. A missing dictionary reading is stated honestly. Browsing does not award learning or mastery; existing lesson exercises remain the teaching and recall path.
 
 Source: `scope.md > The Core Loop`.
@@ -198,6 +200,8 @@ Acceptance criteria:
 - **SPK-3:** Recognition uncertainty or service failure never lowers recall mastery as if the learner answered incorrectly.
 
 ### One Free-Conversation Mode
+
+October 18 phone feedback: the Conversation tab opens an empty chat with a short invitation, up to four interest suggestions and a bottom message box. History is available through a header action; older chats load in owned cursor pages and open the existing chat view. Learning help and completed recaps expand on demand. This replaces the always-visible topic form and repeated saved-chat cards. The Home activity chart remains unchanged.
 
 Source: `scope.md > The Unique Kernel`, `The Core Loop`, and `Explicitly Cut`.
 

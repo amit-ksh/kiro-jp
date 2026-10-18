@@ -1,0 +1,198 @@
+{
+  "description": "Reviewed starter vocabulary bindings. These dictionary senses are references, not automatic grading aliases.",
+  "entries": [
+    {
+      "word": "水",
+      "reading": "みず",
+      "entryId": "1371260",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "お茶",
+      "reading": "おちゃ",
+      "entryId": "1002430",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "本",
+      "reading": "ほん",
+      "entryId": "1522150",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "円",
+      "reading": "えん",
+      "entryId": "1175570",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "入口",
+      "reading": "いりぐち",
+      "entryId": "1582820",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "出口",
+      "reading": "でぐち",
+      "entryId": "1338850",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "右",
+      "reading": "みぎ",
+      "entryId": "1171010",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "左",
+      "reading": "ひだり",
+      "entryId": "1290800",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "日本",
+      "reading": "にほん",
+      "entryId": "1582710",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "音",
+      "reading": "おと",
+      "entryId": "1576900",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "音楽",
+      "reading": "おんがく",
+      "entryId": "1183720",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "店",
+      "reading": "みせ",
+      "entryId": "1582120",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "新しい",
+      "reading": "あたらしい",
+      "entryId": "1361490",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "古い",
+      "reading": "ふるい",
+      "entryId": "1265070",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "行く",
+      "reading": "いく",
+      "entryId": "1578850",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "見る",
+      "reading": "みる",
+      "entryId": "1259290",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "食べる",
+      "reading": "たべる",
+      "entryId": "1358280",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "飲む",
+      "reading": "のむ",
+      "entryId": "1169870",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "読む",
+      "reading": "よむ",
+      "entryId": "1456360",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "書く",
+      "reading": "かく",
+      "entryId": "1343950",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "話す",
+      "reading": "はなす",
+      "entryId": "1562350",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "聞く",
+      "reading": "きく",
+      "entryId": "1591110",
+      "senses": [
+        1,
+        2
+      ]
+    },
+    {
+      "word": "買う",
+      "reading": "かう",
+      "entryId": "1473740",
+      "senses": [
+        1
+      ]
+    },
+    {
+      "word": "作る",
+      "reading": "つくる",
+      "entryId": "1597890",
+      "senses": [
+        1
+      ]
+    }
+  ]
+}

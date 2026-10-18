@@ -3,6 +3,7 @@ import type { MutationCtx } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 import { ConvexError, v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
 import { requireUser } from "./lib/ownership";
 import { supportValue } from "./studyValues";
 import { practiceStampValue } from "./conversationValues";
@@ -474,6 +475,16 @@ export const list = query({
       .withIndex("by_user_updated", (q) => q.eq("userId", userId))
       .order("desc")
       .take(20);
+  },
+});
+export const history = query({
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    const userId = await requireUser(ctx);
+    return ctx.db.query("conversations")
+      .withIndex("by_user_updated", q => q.eq("userId", userId))
+      .order("desc")
+      .paginate({...args.paginationOpts, numItems:Math.min(30,Math.max(1,args.paginationOpts.numItems)),maximumRowsRead:100,maximumBytesRead:128_000});
   },
 });
 export const get = query({

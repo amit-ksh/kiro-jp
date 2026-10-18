@@ -1,16 +1,21 @@
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   starterLevels,
   starterRadicals,
-  kanjiRadical,
-  kanjiReadings,
+  dictionaryCatalog,
+  findDictionaryEntry,
   kanjiParts,
+  type DictionaryEntry,
+  componentLessons,
+  kanjiComponentStories,
+  componentPosition,
 } from "@packages/content";
 import {
   Body,
   Button,
+  Choice,
   Panel,
   Screen,
   Title,
@@ -21,16 +26,17 @@ import { ItemGrid } from "../../features/lessons/ItemGrid";
 import { SentenceView } from "../../features/lessons/SentenceView";
 export default function LearningItem() {
   const params = useLocalSearchParams<{
-    level: string;
-    kind: string;
-    id: string;
-  }>();
-  const level = starterLevels.find(
-    (item) => item.number === Number(params.level),
-  );
-  const colors = useColors();
-  const { profile } = useProfile();
-  const [allReadings, setAllReadings] = useState(false);
+      level: string;
+      kind: string;
+      id: string;
+    }>(),
+    level = starterLevels.find((item) => item.number === Number(params.level)),
+    colors = useColors(),
+    { profile } = useProfile();
+  const [section, setSection] = useState<
+      "meaning" | "readings" | "connections"
+    >("meaning"),
+    [details, setDetails] = useState(false);
   const radical =
     params.kind === "radical"
       ? level?.radicals.find((item) => item.number === Number(params.id))
@@ -44,7 +50,21 @@ export default function LearningItem() {
       ? item.id === params.id
       : kanji && item.kanji.includes(kanji),
   );
-  if (!level || (!radical && !word))
+  const entry = radical
+    ? dictionaryCatalog.entries.find(
+        (item) => item.key === `radical:${radical.number}`,
+      )
+    : kanji
+      ? findDictionaryEntry(dictionaryCatalog.entries, "kanji", kanji)
+      : word
+        ? findDictionaryEntry(
+            dictionaryCatalog.entries,
+            "vocabulary",
+            word.word,
+            word.reading,
+          )
+        : undefined;
+  if (!level || !entry)
     return (
       <Screen title="Item unavailable">
         <Button
@@ -53,184 +73,284 @@ export default function LearningItem() {
         />
       </Screen>
     );
-  const openKanji = (id: string) =>
-    router.push({
-      pathname: "/(learning)/item",
-      params: {
-        kind: "kanji",
-        id,
-        level: String(
-          starterLevels.find((item) => item.kanji.includes(id))!.number,
-        ),
-      },
-    });
-  const openRadical = (number: number) =>
-    router.push({
-      pathname: "/(learning)/item",
-      params: {
-        kind: "radical",
-        id: String(number),
-        level: String(
-          starterLevels.find((item) =>
-            item.radicals.some((radical) => radical.number === number),
-          )!.number,
-        ),
-      },
-    });
-  const dictionary = kanji
-    ? kanjiReadings[kanji as keyof typeof kanjiReadings]
-    : undefined;
+  const related = entry.relatedKeys.flatMap((key) => {
+    const item = dictionaryCatalog.entries.find((item) => item.key === key);
+    return item ? [item] : [];
+  });
+  const primaryRadical =
+    entry.kind === "kanji"
+      ? starterRadicals.find((item) => item.number === entry.radicalNumber)
+      : undefined;
   const parts = kanji ? kanjiParts[kanji as keyof typeof kanjiParts] : [];
-  const mainRadical =
-    dictionary &&
-    starterRadicals.find((item) => item.number === dictionary.radical);
-  const glyph = radical?.glyph ?? kanji ?? word!.word;
+  const open = (key: string) => {
+    const selected = dictionaryCatalog.entries.find((item) => item.key === key);
+    if (!selected) return;
+    const targetLevel = starterLevels.find((level) =>
+      selected.kind === "radical"
+        ? level.radicals.some((item) => item.number === selected.radicalNumber)
+        : selected.kind === "kanji"
+          ? level.kanji.includes(selected.characters)
+          : level.lesson.words.some(
+              (word) =>
+                word.word === selected.characters &&
+                selected.readings.includes(word.reading),
+            ),
+    );
+    if (!targetLevel) return;
+    const id =
+      selected.kind === "radical"
+        ? String(selected.radicalNumber)
+        : selected.kind === "kanji"
+          ? selected.characters
+          : targetLevel.lesson.words.find(
+              (word) =>
+                word.word === selected.characters &&
+                selected.readings.includes(word.reading),
+            )!.id;
+    router.push({
+      pathname: "/(learning)/item",
+      params: {
+        kind: selected.kind === "vocabulary" ? "word" : selected.kind,
+        id,
+        level: String(targetLevel.number),
+      },
+    });
+  };
+  const connections = (kind: DictionaryEntry["kind"]) =>
+    related
+      .filter((item) => item.kind === kind)
+      .map((item) => ({
+        id: item.key,
+        glyph: item.characters,
+        label: item.meanings[0],
+      }));
   return (
     <Screen
-      title={radical ? "Radical" : kanji ? "Kanji" : "Vocabulary"}
+      title={
+        entry.kind === "vocabulary"
+          ? "Vocabulary"
+          : entry.kind === "kanji"
+            ? "Kanji"
+            : "Radical"
+      }
       subtitle={`Level ${level.number}`}
     >
       <Panel>
         <Text
           style={{
-            fontSize: 72 * profile.textScale,
-            lineHeight: 100 * profile.textScale,
+            fontSize: 64 * profile.textScale,
+            lineHeight: 88 * profile.textScale,
             textAlign: "center",
             color: colors.onSurface,
           }}
         >
-          {glyph}
+          {entry.characters}
         </Text>
-        <Title>
-          {radical?.name ??
-            (kanji
-              ? word!.meaning
-              : (word!.vocabulary?.meaning ?? word!.meaning))}
-        </Title>
-        {radical ? (
-          <>
-            <Body muted>
-              Dictionary radical {radical.number}
-              {radical.glyph !== radical.canonical
-                ? ` · ${radical.canonical}`
-                : ""}
-            </Body>
-            <Body>
-              A shape used to group and look up kanji. Its English name is a
-              memory aid.
-            </Body>
-          </>
-        ) : (
-          <Body>{word!.mnemonic}</Body>
+        <Title>{entry.meanings[0]}</Title>
+        {entry.kind === "vocabulary" && (
+          <Body style={{ textAlign: "center", fontSize: 22 }}>
+            {entry.readings.join(" · ")}
+          </Body>
+        )}
+        {entry.strokeCount > 0 && (
+          <Body muted>{entry.strokeCount} strokes</Body>
         )}
       </Panel>
-      {dictionary && (
-        <Panel>
-          <Title>Readings</Title>
-          <Body muted>On’yomi · Chinese-derived</Body>
-          <Body style={{ fontSize: 23 }}>
-            {(allReadings ? dictionary.on : dictionary.on.slice(0, 3)).join(
-              " · ",
-            ) || "None listed"}
-          </Body>
-          <Body muted>Kun’yomi · Native Japanese</Body>
-          <Body style={{ fontSize: 23 }}>
-            {(allReadings ? dictionary.kun : dictionary.kun.slice(0, 3)).join(
-              " · ",
-            ) || "None listed"}
-          </Body>
-          {(dictionary.on.length > 3 || dictionary.kun.length > 3) && (
-            <Button
-              secondary
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+        {(["meaning", "readings", "connections"] as const)
+          .filter((value) => entry.kind !== "radical" || value !== "readings")
+          .map((value) => (
+            <Choice
+              key={value}
               label={
-                allReadings ? "Show fewer readings" : "All dictionary readings"
+                value === "meaning"
+                  ? "Meaning"
+                  : value === "readings"
+                    ? "Readings"
+                    : "Related items"
               }
-              onPress={() => setAllReadings((value) => !value)}
+              selected={section === value}
+              onPress={() => setSection(value)}
             />
+          ))}
+      </View>
+      {section === "meaning" && (
+        <>
+          <Panel>
+            <Title>Meaning</Title>
+            <Body>{entry.meanings.join(" · ")}</Body>
+            {word && (
+              <>
+                <Title>Memory aid</Title>
+                <Body>
+                  {kanji ? kanjiComponentStories[kanji] : word.mnemonic}
+                </Body>
+                {kanji && (
+                  <Body muted>
+                    Original memory story · not a historical origin
+                  </Body>
+                )}
+              </>
+            )}
+            {radical && (
+              <>
+                <Title>Recognize the shape</Title>
+                <Body>{componentLessons[radical.glyph]?.note}</Body>
+                <Body muted>
+                  Look for {radical.glyph}
+                  {radical.glyph !== radical.canonical
+                    ? ` (a form of ${radical.canonical})`
+                    : ""}{" "}
+                  in the kanji below. “{radical.name}” names the shape; it is
+                  not a word reading.
+                </Body>
+              </>
+            )}
+          </Panel>
+          {primaryRadical && (
+            <Panel>
+              <Title>Components</Title>
+              <Button
+                secondary
+                label={`${primaryRadical.glyph} · ${primaryRadical.name} radical`}
+                onPress={() => open(`radical:${primaryRadical.number}`)}
+              />
+              {parts.length ? (
+                <View style={{ gap: 12 }}>
+                  {parts.map((part, index) => (
+                    <Pressable
+                      key={`${part.glyph}-${index}`}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Learn component ${part.glyph}, ${componentLessons[part.glyph]?.name ?? "shape"}`}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/(learning)/component",
+                          params: { glyph: part.glyph },
+                        })
+                      }
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 16,
+                        minHeight: 64,
+                      }}
+                    >
+                      <Body style={{ fontSize: 36, lineHeight: 48 }}>
+                        {part.glyph}
+                      </Body>
+                      <Body style={{ flex: 1 }}>
+                        {[
+                          componentLessons[part.glyph]?.name,
+                          part.position && componentPosition(part.position),
+                          part.partial && "partial shape",
+                        ]
+                          .filter(Boolean)
+                          .join(" · ") || "Component"}
+                      </Body>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : (
+                <Body>
+                  {entry.characters} is itself the radical shown above.
+                </Body>
+              )}
+              <Button
+                secondary
+                label={
+                  details ? "Hide component lookup" : "More component details"
+                }
+                onPress={() => setDetails((value) => !value)}
+              />
+              {details && (
+                <>
+                  <Body>
+                    KRADFILE lookup elements: {entry.components.join(" · ")}
+                  </Body>
+                  <Body muted>
+                    These can include nested shapes or substitute glyphs. They
+                    describe visual lookup parts, not an equation or historical
+                    origin.
+                  </Body>
+                </>
+              )}
+            </Panel>
           )}
-          <Body muted>
-            A dot separates the kanji reading from its kana ending; a dash marks
-            an attached form.
-          </Body>
-        </Panel>
+          {radical && (
+            <Panel>
+              <Title>Used in kanji</Title>
+              <ItemGrid items={connections("kanji")} onPress={open} />
+            </Panel>
+          )}
+        </>
       )}
-      {mainRadical && (
+      {section === "readings" && (
         <Panel>
-          <Title>Parts to notice</Title>
-          <Button
-            secondary
-            label={`${mainRadical.glyph} · ${mainRadical.name} radical`}
-            onPress={() => openRadical(mainRadical.number)}
-          />
-          {parts.length ? (
-            <View style={{ gap: 12 }}>
-              {parts.map((part, index) => {
-                const name = starterRadicals.find(
-                  (item) =>
-                    item.glyph === part.glyph || item.canonical === part.glyph,
-                )?.name;
-                return (
-                  <View
-                    key={`${part.glyph}-${index}`}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 16,
-                    }}
-                  >
-                    <Body style={{ fontSize: 36, lineHeight: 48 }}>
-                      {part.glyph}
-                    </Body>
-                    <Body style={{ flex: 1 }}>
-                      {[
-                        name,
-                        part.position && part.position.replaceAll("-", " "),
-                        part.partial && "partial shape",
-                      ]
-                        .filter(Boolean)
-                        .join(" · ") || "Component"}
-                    </Body>
-                  </View>
-                );
-              })}
-            </View>
+          {entry.kind === "kanji" ? (
+            <>
+              <Title>On’yomi</Title>
+              <Body style={{ fontSize: 23 }}>
+                {entry.on.join(" · ") || "None listed"}
+              </Body>
+              <Body muted>Chinese-derived readings</Body>
+              <Title>Kun’yomi</Title>
+              <Body style={{ fontSize: 23 }}>
+                {entry.kun.join(" · ") || "None listed"}
+              </Body>
+              <Body muted>
+                Native Japanese readings. A dot separates the kanji reading from
+                its kana ending; a dash marks an attached form.
+              </Body>
+            </>
           ) : (
-            <Body>{glyph} is itself the radical shown above.</Body>
+            <>
+              <Title>Word reading</Title>
+              <Body style={{ fontSize: 26 }}>{entry.readings.join(" · ")}</Body>
+            </>
           )}
-          <Body muted>
-            Notice these shapes within {glyph}; other strokes may complete the
-            character.
-          </Body>
+          {word && (
+            <>
+              <Title>In this lesson</Title>
+              <Body style={{ fontSize: 24 }}>
+                {word.word} · {word.reading}
+              </Body>
+              <Body>{word.readingNote}</Body>
+            </>
+          )}
         </Panel>
       )}
-      {radical ? (
-        <Panel>
-          <Title>Kanji using this radical</Title>
-          <ItemGrid
-            items={starterLevels
-              .flatMap((item) => item.kanji)
-              .filter((item) => kanjiRadical[item] === radical.number)
-              .map((item) => ({ id: item, glyph: item, label: "Kanji" }))}
-            onPress={openKanji}
-          />
-        </Panel>
-      ) : (
-        <Panel>
-          <Title>In a useful word</Title>
-          <Body style={{ fontSize: 26 }}>
-            {word!.word} · {word!.reading}
-          </Body>
-          <Body>{word!.readingNote}</Body>
-          <SentenceView
-            sentence={word!.example}
-            romaji={profile.romaji}
-            readings={profile.furigana}
-            translation={profile.translations}
-          />
-        </Panel>
+      {section === "connections" && (
+        <>
+          {(["radical", "kanji", "vocabulary"] as const).map((kind) => {
+            const items = connections(kind);
+            return items.length ? (
+              <Panel key={kind}>
+                <Title>
+                  {kind === "radical"
+                    ? "Radicals"
+                    : kind === "kanji"
+                      ? "Kanji"
+                      : "Vocabulary"}
+                </Title>
+                <ItemGrid items={items} onPress={open} />
+              </Panel>
+            ) : null;
+          })}
+          {word && (
+            <Panel>
+              <Title>In a sentence</Title>
+              <SentenceView
+                sentence={word.example}
+                romaji={profile.romaji}
+                readings={profile.furigana}
+                translation={profile.translations}
+              />
+            </Panel>
+          )}
+        </>
       )}
       <Button
-        label="Practise in the lesson"
+        label="Learn & practise"
         onPress={() =>
           router.push({
             pathname: "/(learning)/session-preview",
@@ -239,7 +359,7 @@ export default function LearningItem() {
         }
       />
       <Button
-        label="Sources & reading guide"
+        label="Sources"
         secondary
         onPress={() => router.push("/(learning)/sources")}
       />

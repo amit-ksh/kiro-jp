@@ -31,10 +31,9 @@ import {
   Message,
   Panel,
   Screen,
-  Title,
   useColors,
 } from "../../components/ui";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 export default function Chat() {
   const { conversationId = "" } = useLocalSearchParams<{
     conversationId: string;
@@ -46,6 +45,7 @@ export default function Chat() {
   const [viewSegment, setViewSegment] = useState("");
   const [expandedMessages, setExpandedMessages] = useState<string[]>([]);
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [recapOpen, setRecapOpen] = useState(false);
   const colors = useColors();
   const validId = /^[a-z0-9]{20,40}$/u.test(conversationId);
   const remote = useQuery(
@@ -304,8 +304,8 @@ export default function Chat() {
   return (
     <Screen
       chat
-      title="Kiro"
-      subtitle={data.conversation.title}
+      title={data.conversation.title}
+      subtitle="Japanese practice"
       footer={composer}
       scrollRef={scroll}
       headerAside={
@@ -376,13 +376,17 @@ export default function Chat() {
               {profile.translations && (
                 <Body muted>{message.reply.english}</Body>
               )}
-              <Button
-                label={
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={
                   expandedMessages.includes(message.messageId)
                     ? "Hide learning help"
                     : "Learning help"
                 }
-                secondary
+                accessibilityState={{
+                  expanded: expandedMessages.includes(message.messageId),
+                }}
+                style={{ minHeight: 48, justifyContent: "center" }}
                 onPress={() =>
                   setExpandedMessages((previous) =>
                     previous.includes(message.messageId)
@@ -390,7 +394,13 @@ export default function Chat() {
                       : [...previous, message.messageId],
                   )
                 }
-              />
+              >
+                <Body muted style={{ fontSize: 13, fontWeight: "600" }}>
+                  {expandedMessages.includes(message.messageId)
+                    ? "Hide help"
+                    : "Learning help"}
+                </Body>
+              </Pressable>
               {expandedMessages.includes(message.messageId) && (
                 <>
                   {profile.furigana && <Body>{message.reply.reading}</Body>}
@@ -551,12 +561,18 @@ export default function Chat() {
         )
       ) : (
         <Panel>
-          <Title>Practice saved.</Title>
-          <Body>
-            {recap?.recap ??
-              "Your messages are saved. The recap is pending or unavailable; you can revisit the practice below."}
-          </Body>
-          {!recap && (
+          <Button
+            secondary
+            label={recapOpen ? "Hide recap" : "View recap"}
+            onPress={() => setRecapOpen((value) => !value)}
+          />
+          {recapOpen && (
+            <Body>
+              {recap?.recap ??
+                "Your messages are saved. The recap is pending or unavailable; you can revisit the practice below."}
+            </Body>
+          )}
+          {recapOpen && !recap && (
             <Button
               label="Prepare recap"
               secondary
@@ -571,7 +587,7 @@ export default function Chat() {
               }
             />
           )}
-          {recap?.status === "failed" && (
+          {recapOpen && recap?.status === "failed" && (
             <Button
               label="Retry recap"
               secondary
@@ -608,7 +624,7 @@ export default function Chat() {
           )}
         </Panel>
       )}
-      {segment.state === "ended" && (
+      {segment.state === "ended" && recapOpen && (
         <SavedPhrases
           sourceIds={messages.map((message) => message.messageId)}
         />

@@ -2,7 +2,9 @@
   "name": "japanese-learning-app",
   "private": true,
   "packageManager": "pnpm@10.33.4",
-  "engines": { "node": ">=22.16.0" },
+  "engines": {
+    "node": ">=22.16.0"
+  },
   "scripts": {
     "dev": "turbo run dev",
     "dev:android": "pnpm --filter native-app start",
@@ -18,8 +20,15 @@
     "prepare:lesson-audio": "node --experimental-strip-types scripts/prepare-lesson-audio.mjs",
     "check:ai-gateway": "node scripts/check-ai-gateway.mjs",
     "check:content": "node --experimental-strip-types scripts/check-content.ts",
+    "dictionary:check": "node --experimental-strip-types scripts/dictionary-catalog.mjs --check",
     "content:package": "node --experimental-strip-types scripts/content-package.mjs",
     "format": "prettier --write apps packages scripts tests"
   },
-  "devDependencies": { "prettier": "3.8.3", "turbo": "2.9.6", "typescript": "5.9.3", "@types/node": "^24.0.0" }
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@xmldom/xmldom": "0.8.13",
+    "prettier": "3.8.3",
+    "turbo": "2.9.6",
+    "typescript": "5.9.3"
+  }
 }

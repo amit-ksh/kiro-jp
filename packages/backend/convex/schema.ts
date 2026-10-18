@@ -10,6 +10,8 @@ import { culturalEntityValue, culturalTypeValue, culturalSnapshotValue } from ".
 import { speechSourceValue, speechStatusValue, speechSegmentValue } from "./speechValues";
 import { reviewAttemptValue, reviewReceiptValue, reviewTrackValue, reviewOpportunityValue, reviewChangeValue, reviewCardValue, reviewAssessmentResultValue } from "./reviewValues";
 export default defineSchema({
+  dictionaryEntries:defineTable({release:v.string(),key:v.string(),kind:v.union(v.literal("radical"),v.literal("kanji"),v.literal("vocabulary")),json:v.string()}).index("by_release_key",["release","key"]),
+  dictionaryReleases:defineTable({release:v.string(),count:v.number(),publishedAt:v.number()}).index("by_release",["release"]),
   wanikaniImports: defineTable({userId:v.id("users"),revision:v.number(),status:v.union(v.literal("running"),v.literal("ready"),v.literal("unavailable"),v.literal("empty")),leaseUntil:v.number(),updatedAt:v.number(),snapshot:v.optional(importSnapshotValue),errorCode:v.optional(importCodeValue)}).index("by_user",["userId"]),
   contentPackages: defineTable({lessonId:v.string(),version:v.number(),sha256:v.string(),files:v.array(v.object({assetId:v.string(),storageId:v.id("_storage")})),publishedAt:v.number()}).index("by_lesson_version",["lessonId","version"]),
   ...authTables,

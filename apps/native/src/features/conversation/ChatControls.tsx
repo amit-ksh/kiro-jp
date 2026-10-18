@@ -49,34 +49,42 @@ export function ChatComposer({
   busy,
   sendDisabled,
   speakDisabled,
+  maxLength = 1000,
+  inputLabel = "Message your tutor",
+  placeholder = "Message",
 }: {
   text: string;
   onChange: (value: string) => void;
   onSend: () => void;
-  onSpeak: () => void;
+  onSpeak?: () => void;
   busy: boolean;
   sendDisabled: boolean;
-  speakDisabled: boolean;
+  speakDisabled?: boolean;
+  maxLength?: number;
+  inputLabel?: string;
+  placeholder?: string;
 }) {
   const colors = useColors(),
     scale = useTextScale();
   return (
     <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 6 }}>
-      <ChatIcon
-        label="Speak a reply"
-        icon="mic-outline"
-        disabled={speakDisabled}
-        onPress={onSpeak}
-      />
+      {onSpeak && (
+        <ChatIcon
+          label="Speak a reply"
+          icon="mic-outline"
+          disabled={speakDisabled}
+          onPress={onSpeak}
+        />
+      )}
       <TextInput
-        accessibilityLabel="Message your tutor"
-        placeholder="Message"
+        accessibilityLabel={inputLabel}
+        placeholder={placeholder}
         placeholderTextColor={colors.muted}
         value={text}
         onChangeText={onChange}
         editable={!busy}
         multiline
-        maxLength={1000}
+        maxLength={maxLength}
         style={{
           flex: 1,
           minHeight: 48,

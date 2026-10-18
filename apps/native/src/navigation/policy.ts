@@ -56,7 +56,16 @@ export function learningFallback(segments: readonly string[]) {
     ].includes(last)
   )
     return "/(learning)/(tabs)/profile" as const;
-  if (["level", "item", "grammar", "[id]", "session-preview"].includes(last))
+  if (
+    [
+      "level",
+      "item",
+      "component",
+      "grammar",
+      "[id]",
+      "session-preview",
+    ].includes(last)
+  )
     return "/(learning)/(tabs)/lessons" as const;
   return "/(learning)/(tabs)" as const;
 }

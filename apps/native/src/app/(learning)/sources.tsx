@@ -4,12 +4,30 @@ export default function Sources() {
   return (
     <Screen title="Sources">
       <Panel>
-        <Title>Japanese readings</Title>
+        <Title>Japanese dictionary</Title>
         <Body>
-          KANJIDIC2 is the property of Jim Breen and the Electronic Dictionary
-          Research and Development Group. Its on’yomi, kun’yomi and
-          radical-number extract is used under CC BY-SA 4.0.
+          JMdict, KANJIDIC2 and KRADFILE are the property of Jim Breen and the
+          Electronic Dictionary Research and Development Group. Selected
+          vocabulary senses, kanji meanings/readings/stroke counts and component
+          lookup data are used under CC BY-SA 4.0. Teaching examples and memory
+          aids are separately authored.
         </Body>
+        <Button
+          label="JMdict documentation"
+          secondary
+          onPress={() =>
+            void Linking.openURL(
+              "https://www.edrdg.org/wiki/JMdict-EDICT_Dictionary_Project.html",
+            )
+          }
+        />
+        <Button
+          label="Component lookup documentation"
+          secondary
+          onPress={() =>
+            void Linking.openURL("https://www.edrdg.org/krad/kradinf.html")
+          }
+        />
         <Button
           label="KANJIDIC documentation"
           secondary
