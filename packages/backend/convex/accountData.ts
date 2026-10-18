@@ -36,6 +36,7 @@ export const exportPage = query({
       v.literal("speechAttempts"),
       v.literal("speechDeletions"),
       v.literal("readbackAssets"),
+      v.literal("dailyConversations"),
     ),
     cutoff: v.number(),
     cursor: v.union(v.string(), v.null()),
@@ -183,6 +184,12 @@ export const exportPage = query({
           return ctx.db
             .query("readbackAssets")
             .withIndex("by_user_phrase_voice", (q) => q.eq("userId", accountId))
+            .filter((q) => q.lte(q.field("_creationTime"), args.cutoff))
+            .paginate(options);
+        case "dailyConversations":
+          return ctx.db
+            .query("dailyConversations")
+            .withIndex("by_user_day", (q) => q.eq("userId", accountId))
             .filter((q) => q.lte(q.field("_creationTime"), args.cutoff))
             .paginate(options);
       }

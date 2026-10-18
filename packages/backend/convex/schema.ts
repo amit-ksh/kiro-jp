@@ -9,7 +9,9 @@ import { supportValue } from "./studyValues";
 import { culturalEntityValue, culturalTypeValue, culturalSnapshotValue } from "./cultureValues";
 import { speechSourceValue, speechStatusValue, speechSegmentValue } from "./speechValues";
 import { reviewAttemptValue, reviewReceiptValue, reviewTrackValue, reviewOpportunityValue, reviewChangeValue, reviewCardValue, reviewAssessmentResultValue } from "./reviewValues";
+import { dailySuggestionValue } from "./dailyConversationValues";
 export default defineSchema({
+  dailyConversations: defineTable({userId:v.id("users"),day:v.string(),key:v.string(),status:v.union(v.literal("pending"),v.literal("ready"),v.literal("unavailable"),v.literal("empty")),claim:v.number(),attempts:v.number(),updatedAt:v.number(),suggestion:v.optional(dailySuggestionValue)}).index("by_user_day",["userId","day"]),
   dictionaryEntries:defineTable({release:v.string(),key:v.string(),kind:v.union(v.literal("radical"),v.literal("kanji"),v.literal("vocabulary")),json:v.string()}).index("by_release_key",["release","key"]),
   dictionaryReleases:defineTable({release:v.string(),count:v.number(),publishedAt:v.number()}).index("by_release",["release"]),
   wanikaniImports: defineTable({userId:v.id("users"),revision:v.number(),status:v.union(v.literal("running"),v.literal("ready"),v.literal("unavailable"),v.literal("empty")),leaseUntil:v.number(),updatedAt:v.number(),snapshot:v.optional(importSnapshotValue),errorCode:v.optional(importCodeValue)}).index("by_user",["userId"]),

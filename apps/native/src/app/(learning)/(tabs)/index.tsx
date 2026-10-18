@@ -17,6 +17,7 @@ import { useContent } from "../../../data/ContentProvider";
 import { useLearningProgress } from "../../../features/profile/useLearningProgress";
 import { ReminderOffer } from "../../../features/reminders/ReminderSettings";
 import { ActivityChart } from "../../../components/ActivityChart";
+import { DailyConversation } from "../../../features/conversation/DailyConversation";
 import {
   Body,
   Button,
@@ -207,6 +208,8 @@ export default function Home() {
           onPress={() => router.push("/(learning)/(tabs)/lessons")}
         />
       </Panel>
+
+      <DailyConversation />
 
       {(unfinished || unfinishedChat) && (
         <Panel style={{ padding: 20, gap: 4 }}>

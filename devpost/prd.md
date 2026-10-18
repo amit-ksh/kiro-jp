@@ -110,6 +110,8 @@ Acceptance criteria:
 
 ### Home and Daily Plan
 
+October 18 learner addition: show one **Today’s conversation** recommendation based on saved interests, using real Qloo results. Rotate its subject each local calendar day where results allow, otherwise vary the conversation angle. Keep it stable through refresh/restart on that day; changing interests or disliking the topic can replace it. A secondary Start chat action opens the existing level-aware free conversation without requiring a lesson or overwriting another topic draft. Optional details explain the interest/source and allow Not interested or Edit interests. Empty interests, offline access and unavailable Qloo results retain a useful choose-your-own-topic/settings action. A recommendation, click or initial English topic does not earn study credit, streak or mastery.
+
 Source: `scope.md > The Core Loop` and `What "Working" Looks Like`.
 
 - Make Start today's session the main action. The recommended journey connects reviews, new language, grammar, pronunciation, and conversation.

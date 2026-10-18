@@ -16,6 +16,8 @@ The launcher uses an original white 日 mark with an orange conversation tail on
 
 Home has one main Start today's session action. Session title, target kanji, one pattern and a useful outcome lead; review counts, continuation and progress are secondary. Onboarding advances through saved steps with Back/Continue. Full sentences, adjustable readings and English meanings are distinct elements. Fixed-answer practice must hide the answer being tested; revealing it records assistance.
 
+Home also offers one compact Today’s conversation panel below the study plan: a daily Qloo-informed topic, the saved interest behind it and a secondary Start chat action. Why this topic expands source inputs/date, Not interested and Edit interests. Keep the main study action dominant, avoid extra explanatory paragraphs, and show a useful choose-your-own-topic fallback when a new suggestion is unavailable. Daily suggestions rotate by the learner’s local date without changing during ordinary refreshes.
+
 The learner's October 16 hands-on feedback calls for less explanatory text after login. Home uses compact daily-goal, distinct kanji/word/pattern totals and a short session checklist; detailed progress and settings open from clear rows. Profile leads with actual learning totals. Interests are broad selectable chips (Food, Culture, Places, Anime, Manga, Music, Travel, Daily life), with typed custom interests and preserved existing selections. Keep the reference palette and real study evidence.
 
 ## Layout and interaction

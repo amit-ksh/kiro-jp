@@ -3,7 +3,7 @@ import type { Id } from "../_generated/dataModel";
 
 // Fixed owner indexes only. Shared content and spending/quota ledgers are never
 // deleted or refunded. Batches stay bounded even for years of study history.
-export const deletionCollections = ["conversationJobs","lessonAssessments","reviewAssessments","speechAttempts","readbackAssets","speechDeletions","wanikaniImports","qlooContextCache","culturalSelections","conversationMessages","conversationSegments","conversations","lessonConversationGoals","savedPhrases","reviewAttempts","reviewOpportunities","reviewTracks","reviewChanges","reviewCursors","studyEvents","studySessions","studyCursors","conversationLimits","learnerProfiles"] as const;
+export const deletionCollections = ["conversationJobs","lessonAssessments","reviewAssessments","speechAttempts","readbackAssets","speechDeletions","wanikaniImports","qlooContextCache","culturalSelections","conversationMessages","conversationSegments","conversations","lessonConversationGoals","savedPhrases","reviewAttempts","reviewOpportunities","reviewTracks","reviewChanges","reviewCursors","studyEvents","studySessions","studyCursors","conversationLimits","learnerProfiles","dailyConversations"] as const;
 const batchSize = 25;
 export async function deleteLearningBatch(ctx: MutationCtx, userId: Id<"users">, phase: number) {
   const rows = await (async () => {
@@ -32,6 +32,7 @@ export async function deleteLearningBatch(ctx: MutationCtx, userId: Id<"users">,
       case "studyCursors": return ctx.db.query("studyCursors").withIndex("by_user", q => q.eq("userId", userId)).take(batchSize);
       case "conversationLimits": return ctx.db.query("conversationLimits").withIndex("by_user", q => q.eq("userId", userId)).take(batchSize);
       case "learnerProfiles": return ctx.db.query("learnerProfiles").withIndex("by_user", q => q.eq("userId", userId)).take(batchSize);
+      case "dailyConversations": return ctx.db.query("dailyConversations").withIndex("by_user_day", q => q.eq("userId", userId)).take(batchSize);
       default: return [];
     }
   })();

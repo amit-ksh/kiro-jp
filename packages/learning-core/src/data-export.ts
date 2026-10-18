@@ -27,6 +27,7 @@ export const exportCollections = [
   "speechAttempts",
   "speechDeletions",
   "readbackAssets",
+  "dailyConversations",
 ] as const;
 export type ExportCollection = (typeof exportCollections)[number];
 const privateFields = new Set([

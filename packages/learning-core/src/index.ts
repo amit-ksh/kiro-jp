@@ -8,6 +8,7 @@ export * from "./conversation.ts";
 export * from "./readings.ts";
 export * from "./sentence-assessment.ts";
 export * from "./culture.ts";
+export * from "./daily-conversation.ts";
 export * from "./recording.ts";
 export * from "./wave.ts";
 export * from "./reviews.ts";
