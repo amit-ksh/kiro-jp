@@ -10,7 +10,9 @@ Use indigo headers and background, rounded white learning panels, orange primary
 
 The reference anchors are `#37469E`, `#313790`, `#FF5C00`, `#F05722` and white. `packages/design-tokens/src/index.ts` maps them to primary/secondary/surface roles and supplies legible ink/secondary-text/error colors and a dark scheme. Orange actions use dark text. Normal Japanese and English appear on calm solid panels; do not substitute decoration for learning content or display invented progress.
 
-The launcher uses an original white 日 mark with an orange conversation tail on indigo. The editable vector and opaque/transparent/monochrome PNG exports live in `apps/native/assets/branding`. Android applies its own circular or rounded mask; the artwork remains within the adaptive-icon safe circle. The icon introduces no additional text or decoration inside learning screens.
+The launcher uses an original white open-book mark, with an orange lower page and speech/ribbon accent on indigo. Eight rounded strokes share exact geometry between the editable SVG and native mark. Opaque, transparent, monochrome and native splash PNG exports live in `apps/native/assets/branding`, with source hashes/provenance. Android applies its own circular or rounded mask; the artwork remains within the adaptive-icon safe circle.
+
+Cold startup has one bounded authored moment: 日 reshapes into 本, then opens into the book/conversation logo. Native splash and the React overlay share the first Japanese frame, size and indigo background. The morph runs once per root mount for 960 ms with a 160 ms exit; it does not restart during ordinary navigation. Android reduced motion skips it, backgrounding dismisses it, and an 1.8-second watchdog prevents a stuck overlay. Account/network initialization runs underneath independently. Routine loading views use the static final mark and the actual state label, without repeating the startup choreography. Welcome and the static landing use the same final logo.
 
 ## Main hierarchy
 

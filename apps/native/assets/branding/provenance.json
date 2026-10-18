@@ -1,0 +1,20 @@
+{
+  "author": "Original Kiro JP project artwork",
+  "method": "Authored vector stroke geometry; deterministic SVG-to-PNG rasterization using sharp",
+  "source": "packages/design-tokens/src/brand.ts",
+  "sourceSha256": "dbf51cc84892dcae9baf42771b685d2f46f94b008eaed4626258dab4e1caccbf",
+  "canvas": 1024,
+  "colors": [
+    "#37469E",
+    "#FFFFFF",
+    "#FF5C00"
+  ],
+  "generatedAt": "2026-10-18",
+  "files": {
+    "kiro-mark.svg": "31d18884898de5fffd08ad248954749bb0d5803c2aa3b1c436fbaaaa76d06208",
+    "adaptive-foreground.png": "d8dedcabfc0ddafd8ac99022de03e091489e02f3e29d6c5b282fd1ab4b49902b",
+    "adaptive-monochrome.png": "81d54675ed4253eb76dc70d881d9a957bdfb55b6546ec8715d3388a2bc5ea4b9",
+    "icon.png": "ef7992b54c0e95bba40d09f7afb6fe13d73d69a244f2d69b1c1f35e93d25f7b9",
+    "splash-start.png": "afc3711d39ac37bce96abdebbbca565dd96c36d612dffbae5c4a12073d0250c9"
+  }
+}

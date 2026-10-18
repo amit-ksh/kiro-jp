@@ -5,11 +5,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   return {
     ...config,
     name: "Kiro JP", slug: "japanese-learning-app", owner: "amit-ksh", scheme: "japanesestudy",
-    version: "0.2.8", orientation: "portrait", userInterfaceStyle: "automatic",
+    version: "0.2.9", orientation: "portrait", userInterfaceStyle: "automatic",
     icon: "./assets/branding/icon.png",
     android: {
       package: process.env.ANDROID_PACKAGE_ID ?? "com.kiro.japanesestudy",
-      versionCode: 10,
+      versionCode: 11,
       adaptiveIcon: {
         foregroundImage: "./assets/branding/adaptive-foreground.png",
         backgroundColor: "#37469E",
@@ -18,7 +18,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       predictiveBackGestureEnabled: false,
       ...(host ? { intentFilters: [{ action: "VIEW", autoVerify: true, category: ["BROWSABLE", "DEFAULT"], data: [{ scheme: "https", host, pathPrefix: "/auth/reset" }] }] } : {}),
     },
-    plugins: [["expo-router", { root: "./src/app" }], "expo-secure-store", "expo-sqlite", "expo-asset", "expo-font", ["expo-notifications", { color: "#37469E" }], ["expo-audio", { microphonePermission: "Allow Kiro JP to record your speaking practice.",enableBackgroundRecording:false,enableBackgroundPlayback:false }]],
+    plugins: [["expo-router", { root: "./src/app" }], ["expo-splash-screen", {backgroundColor:"#37469E",image:"./assets/branding/splash-start.png",imageWidth:220,resizeMode:"contain"}], "expo-secure-store", "expo-sqlite", "expo-asset", "expo-font", ["expo-notifications", { color: "#37469E" }], ["expo-audio", { microphonePermission: "Allow Kiro JP to record your speaking practice.",enableBackgroundRecording:false,enableBackgroundPlayback:false }]],
     experiments: { typedRoutes: false },
     extra: { eas: { projectId: "48bd39bd-9a50-4802-a67a-63eeda132992" } },
   };

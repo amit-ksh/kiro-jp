@@ -1,4 +1,5 @@
 const shared = { primary: "#37469E", primaryDeep: "#313790", secondary: "#FF5C00", secondaryWarm: "#F05722", onPrimary: "#FFFFFF", onSecondary: "#201A16" };
+export * from "./brand.ts";
 export const lightColors = { ...shared, navigationActive: shared.primary, background: "#37469E", surface: "#FFFFFF", surfaceVariant: "#EDF0FF", onSurface: "#17204B", muted: "#566080", outline: "#C9CEE4", error: "#A32029", onError: "#FFFFFF", success: "#216644" };
 export const darkColors = { ...shared, navigationActive: "#FF9B66", background: "#171C3C", surface: "#252D54", surfaceVariant: "#333F70", onSurface: "#F7F8FF", muted: "#CFD4EE", outline: "#6974A5", error: "#FFB3BA", onError: "#52161D", success: "#9DDABC" };
 export type AppColors = { [K in keyof typeof lightColors]: string };

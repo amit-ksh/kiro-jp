@@ -1,10 +1,7 @@
-# Kiro JP launcher artwork
+# Kiro JP artwork
 
-The original vector mark combines 日 (Japanese text) with a conversation tail. Its white and orange artwork uses the app's reference palette on an indigo background. It contains no font or external artwork dependencies.
+Original vector artwork authored for this project. No external icon, font outline or generated-image asset is used. Source geometry is `packages/design-tokens/src/brand.ts`; the SVG and PNGs are deterministic renders of its eight rounded strokes. `provenance.json` records raster/source hashes.
 
-- `kiro-mark.svg`: editable transparent vector master.
-- `icon.png`: opaque 1024 × 1024 launcher/project icon, indigo `#37469E` background.
-- `adaptive-foreground.png`: transparent 1024 × 1024 Android foreground.
-- `adaptive-monochrome.png`: the same alpha silhouette in white for Android themed icons.
+The white open book has an orange lower page and speech/ribbon accent. `icon.png` is opaque; adaptive foreground and monochrome images retain transparency. `splash-start.png` is the 日 starting frame, matching the native morph view. The animation's 本 frame is a visual transition, not instructional stroke-order content or a historical derivation.
 
-The foreground stays within Android's central 66/108 safe circle. Do not bake rounded corners or a device frame into these assets; the launcher applies its own mask.
+Keep all exports aligned with the source geometry. Verify 1024-pixel assets, matching alpha for adaptive/monochrome exports and the Android 66/108 safe circle before replacing the installed icon.

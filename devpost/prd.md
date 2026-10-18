@@ -58,6 +58,8 @@ Describe the app and provide access to the Android experience, following the est
 
 ## Look and Feel
 
+October 18 learner revision: improve the Kiro JP logo while retaining indigo/orange/white branding, and add a brief app startup/loading experience that morphs Japanese character shapes into the new logo. Keep the icon, welcome and static landing consistent. Startup animation must respect reduced motion, remain bounded and never depend on network availability or interfere with account progress/navigation. Routine loading states retain useful state labels without replaying the launch animation.
+
 Source: `scope.md > Inspiration & Identity`.
 
 Use the same palette and overall layout direction as `references/j-image-main.webp`: indigo surfaces, orange primary actions/emphasis, rounded white panels, pill-shaped controls, white bottom navigation, Japanese pattern accents, and bold typography adapted to learning content.

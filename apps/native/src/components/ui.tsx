@@ -31,6 +31,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSegments } from "expo-router";
 import { useAppBack } from "../navigation/useAppBack";
+import { KiroMark } from "./KiroMark";
 const Scale = createContext(1);
 export const TextScaleProvider = Scale.Provider;
 export function useTextScale() {
@@ -397,10 +398,10 @@ export function Loading({
   const colors = useColors();
   return (
     <Screen title="Kiro JP">
-      <Panel>
-        <ActivityIndicator color={colors.primary} />
-        <Body>{label}</Body>
-      </Panel>
+      <View style={{flex:1,alignItems:"center",justifyContent:"center",paddingVertical:40,gap:16}} accessibilityRole="progressbar" accessibilityLabel={label}>
+        <KiroMark size={150}/>
+        <Text style={{color:colors.onPrimary,textAlign:"center",fontSize:16,lineHeight:24}}>{label}</Text>
+      </View>
     </Screen>
   );
 }

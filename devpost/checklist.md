@@ -94,6 +94,8 @@ In learn mode, perform each slice's learner check before its commit. In fast mod
 
 ## Final Review
 
+- [ ] October 18 logo/loading revision retried by learner — install 0.2.9 over the existing app, inspect the launcher icon and cold-start 日 → 本 → book/conversation morph. Confirm welcome and loading states use the new mark, ordinary navigation does not replay startup, and Android reduced-motion/offline starts still reach the saved app. Mechanical native/artifact evidence does not replace this learner check.
+
 - [ ] October 18 daily conversation recommendation retried by learner — Home shows one Qloo-informed topic from saved interests, with Start chat, optional source details and Not interested. Open it in the same chat UI, confirm the Japanese matches the saved level, and verify the topic can change freely. Retry offline/unavailable states and change interests; ordinary refresh keeps today’s suggestion stable while the next local day rotates its subject or angle. Mechanical/live Qloo evidence is separate from this phone acceptance.
 
 - [ ] October 18 follow-up retried by learner — Conversation should open an empty chat with interest suggestions and a bottom composer; History opens older chats in the same view. Inspect collapsed reply help/recaps, offline saved-chat reading and keyboard behavior. Levels should default to kanji; open a kanji's named parts and tap one to learn its shape, variants and related kanji. The learner clarified kanji remains the main track, so no radical unlock gates are added. The prior 0.2.6 feedback said the app looked good generally but requested these revisions; it did not accept these new screens or the whole MVP.
