@@ -1,4 +1,15 @@
 export const learningStackOptions = { initialRouteName: "(tabs)" } as const;
+export const onboardingSteps = [
+  "setup",
+  "import",
+  "placement",
+  "interests",
+  "preview",
+] as const;
+export function previousOnboardingStep(step: string) {
+  const index = onboardingSteps.findIndex((item) => item === step);
+  return index > 0 ? onboardingSteps[index - 1] : undefined;
+}
 export const learningTabOptions = {
   initialRouteName: "index",
   backBehavior: "history",

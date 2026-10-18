@@ -5,6 +5,7 @@ import { placementAudio } from "./placement-audio";
 import { WaniKaniImport } from "../imports/WaniKaniImport";
 import { placementBank, recommendFirstLesson } from "@packages/content";
 import { InterestPicker } from "../profile/InterestPicker";
+import { onboardingSteps as steps } from "../../navigation/policy";
 import {
   bandLabel,
   recommendLevel,
@@ -31,13 +32,6 @@ import {
   styles,
 } from "../../components/ui";
 
-const steps: OnboardingStep[] = [
-  "setup",
-  "import",
-  "placement",
-  "interests",
-  "preview",
-];
 function PlacementAudio({
   audioId,
   onReady,
@@ -99,7 +93,7 @@ export function Onboarding() {
   const [heard, setHeard] = useState(false);
   const onHeard = useCallback(() => setHeard(true), []);
   const currentStep = profile.onboardingStep;
-  const index = steps.indexOf(currentStep);
+  const index = steps.findIndex((step) => step === currentStep);
   const starter = placementBank.filter((q) => q.phase === "starter");
   const questions: readonly PlacementQuestion[] = shouldOfferFollowups(
     placementBank,

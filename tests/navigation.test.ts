@@ -10,12 +10,21 @@ import {
   learningFallback,
   learningTabOptions,
   learningStackOptions,
+  previousOnboardingStep,
 } from "../apps/native/src/navigation/policy.ts";
 const tabOptions = {
   routeNames: ["index", "lessons", "review", "conversation", "profile"],
   routeParamList: {},
   routeGetIdList: {},
 };
+test("gesture Back can follow saved onboarding steps without changing answers", () => {
+  assert.equal(previousOnboardingStep("preview"), "interests");
+  assert.equal(previousOnboardingStep("interests"), "placement");
+  assert.equal(previousOnboardingStep("placement"), "import");
+  assert.equal(previousOnboardingStep("import"), "setup");
+  assert.equal(previousOnboardingStep("setup"), undefined);
+  assert.equal(previousOnboardingStep("complete"), undefined);
+});
 test("Back retraces visited study tabs", () => {
   const router = TabRouter(learningTabOptions);
   let state = router.getInitialState(tabOptions);

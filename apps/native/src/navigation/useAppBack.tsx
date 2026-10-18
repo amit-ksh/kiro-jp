@@ -1,7 +1,12 @@
 import { useCallback, useEffect } from "react";
 import { Alert, BackHandler, Keyboard, Platform } from "react-native";
 import { router, useNavigationContainerRef, useSegments } from "expo-router";
-import { learningBackAction, learningFallback } from "./policy";
+import {
+  learningBackAction,
+  learningFallback,
+  previousOnboardingStep,
+} from "./policy";
+import { useProfile } from "../data/ProfileProvider";
 export function useAppBack() {
   const navigation = useNavigationContainerRef(),
     segments = useSegments();
@@ -24,17 +29,31 @@ export function useAppBack() {
 }
 export function LearningBackGuard() {
   const back = useAppBack();
+  const segments = useSegments();
+  const { profile, update } = useProfile();
   useEffect(() => {
     if (Platform.OS !== "android") return;
     const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
         if (Keyboard.isVisible()) Keyboard.dismiss();
-        else back();
+        else {
+          const previous =
+            segments.includes("(tabs)") &&
+            previousOnboardingStep(profile.onboardingStep);
+          if (previous)
+            void update({ onboardingStep: previous }).catch(() =>
+              Alert.alert(
+                "Couldn't go back",
+                "Your answers are saved. Please try again.",
+              ),
+            );
+          else back();
+        }
         return true;
       },
     );
     return () => subscription.remove();
-  }, [back]);
+  }, [back, profile.onboardingStep, segments, update]);
   return null;
 }
