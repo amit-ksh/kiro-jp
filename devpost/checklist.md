@@ -94,7 +94,9 @@ In learn mode, perform each slice's learner check before its commit. In fast mod
 
 ## Final Review
 
-- [ ] October 18 logo/loading revision retried by learner — the learner approved the 0.2.9 logo but reported the animation was too fast and the first character looked odd. Preserve the approved logo. Install the revised 0.2.10 and check its cleaner opening 日, slower 2.5-second sequence and saved-screen handoff. Ordinary navigation must not replay startup; reduced-motion/offline checks remain open. Mechanical artifact evidence does not replace this learner check.
+- [x] October 18 logo/animation visual refinement — the learner approved the 0.2.9 logo, requested slower motion and a cleaner opening character, then replied “ok” to the focused 0.2.10 cleaner 日 / 2.5-second animation check. Record that visual acceptance only; do not infer full MVP or unreported reliability coverage.
+
+- [ ] Additional startup reliability — explicitly check reduced-motion/offline starts, saved-screen handoff and no startup replay during ordinary navigation. Artifact checks and the focused visual approval above do not establish these remaining behaviors.
 
 - [ ] October 18 daily conversation recommendation retried by learner — Home shows one Qloo-informed topic from saved interests, with Start chat, optional source details and Not interested. Open it in the same chat UI, confirm the Japanese matches the saved level, and verify the topic can change freely. Retry offline/unavailable states and change interests; ordinary refresh keeps today’s suggestion stable while the next local day rotates its subject or angle. Mechanical/live Qloo evidence is separate from this phone acceptance.
 
