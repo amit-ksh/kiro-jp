@@ -12,7 +12,7 @@ export function previousOnboardingStep(step: string) {
 }
 export const learningTabOptions = {
   initialRouteName: "index",
-  backBehavior: "history",
+  backBehavior: "fullHistory",
 } as const;
 type State = {
   type?: string;

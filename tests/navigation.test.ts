@@ -43,6 +43,25 @@ test("Back retraces visited study tabs", () => {
     assert.equal(state.routes[state.index].name, expected);
   }
 });
+test("Back retains repeated Home visits and eventually reaches a root exit", () => {
+  const tab = TabRouter(learningTabOptions);
+  let state = tab.getInitialState(tabOptions);
+  for (const name of ["lessons", "index", "conversation"])
+    state = tab.getStateForAction(
+      state,
+      CommonActions.navigate(name),
+      tabOptions,
+    )!;
+  for (const expected of ["index", "lessons", "index"]) {
+    state = tab.getStateForAction(state, CommonActions.goBack(), tabOptions)!;
+    assert(state, "A repeated visit must not discard the root Home entry");
+    assert.equal(state.routes[state.index].name, expected);
+  }
+  assert.equal(
+    tab.getStateForAction(state, CommonActions.goBack(), tabOptions),
+    null,
+  );
+});
 test("detail Back returns through speech, chat and its retained tab", () => {
   const router = StackRouter(learningStackOptions),
     options = {
