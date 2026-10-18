@@ -1,4 +1,4 @@
-import { Animated, View } from "react-native";
+import { Animated, Image, View } from "react-native";
 import {
   brandAccent,
   brandFrames,
@@ -12,9 +12,11 @@ import {
 export function KiroMark({
   size = 180,
   progress,
+  onOpeningReady,
 }: {
   size?: number;
   progress?: Animated.Value;
+  onOpeningReady?: () => void;
 }) {
   const scale = size / 256;
   return (
@@ -23,48 +25,88 @@ export function KiroMark({
       accessible={false}
       importantForAccessibility="no-hide-descendants"
     >
-      {brandFrames[2]!.map((stroke, index) => {
-        const poses = brandFrames.map((frame) => strokePose(frame[index]!));
-        const final = strokePose(stroke);
-        const interpolate = (values: number[]) =>
-          progress
+      {progress && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            width: size,
+            height: size,
+            opacity: progress.interpolate({
+              inputRange: [0, 0.04, 0.18, 2],
+              outputRange: [1, 1, 0, 0],
+              extrapolate: "clamp",
+            }),
+          }}
+        >
+          <Image
+            source={require("../../assets/branding/splash-start.png")}
+            style={{ width: size, height: size }}
+            resizeMode="contain"
+            fadeDuration={0}
+            onLoad={onOpeningReady}
+            onError={onOpeningReady}
+          />
+        </Animated.View>
+      )}
+      <Animated.View
+        style={{
+          position: "absolute",
+          width: size,
+          height: size,
+          opacity: progress
             ? progress.interpolate({
-                inputRange: [0, 1, 2],
-                outputRange: values,
+                inputRange: [0, 0.04, 0.18, 2],
+                outputRange: [0, 0, 1, 1],
                 extrapolate: "clamp",
               })
-            : values[2]!;
-        const rotation = progress
-          ? progress.interpolate({
-              inputRange: [0, 1, 2],
-              outputRange: poses.map((p) => `${p.angle}deg`),
-              extrapolate: "clamp",
-            })
-          : `${final.angle}deg`;
-        return (
-          <Animated.View
-            key={index}
-            style={{
-              position: "absolute",
-              left: size / 2 - 50 * scale,
-              top: size / 2 - (brandStrokeWidth * scale) / 2,
-              width: 100 * scale,
-              height: brandStrokeWidth * scale,
-              borderRadius: (brandStrokeWidth * scale) / 2,
-              backgroundColor: index >= 6 ? brandAccent : brandInk,
-              opacity: interpolate(
-                brandFrames.map((_, frame) => brandStrokeOpacity(frame, index)),
-              ),
-              transform: [
-                { translateX: interpolate(poses.map((p) => p.x * scale)) },
-                { translateY: interpolate(poses.map((p) => p.y * scale)) },
-                { rotate: rotation },
-                { scaleX: interpolate(poses.map((p) => p.length / 100)) },
-              ],
-            }}
-          />
-        );
-      })}
+            : 1,
+        }}
+      >
+        {brandFrames[2]!.map((stroke, index) => {
+          const poses = brandFrames.map((frame) => strokePose(frame[index]!));
+          const final = strokePose(stroke);
+          const interpolate = (values: number[]) =>
+            progress
+              ? progress.interpolate({
+                  inputRange: [0, 1, 2],
+                  outputRange: values,
+                  extrapolate: "clamp",
+                })
+              : values[2]!;
+          const rotation = progress
+            ? progress.interpolate({
+                inputRange: [0, 1, 2],
+                outputRange: poses.map((p) => `${p.angle}deg`),
+                extrapolate: "clamp",
+              })
+            : `${final.angle}deg`;
+          return (
+            <Animated.View
+              key={index}
+              style={{
+                position: "absolute",
+                left: size / 2 - 50 * scale,
+                top: size / 2 - (brandStrokeWidth * scale) / 2,
+                width: 100 * scale,
+                height: brandStrokeWidth * scale,
+                borderRadius: (brandStrokeWidth * scale) / 2,
+                backgroundColor: index >= 6 ? brandAccent : brandInk,
+                opacity: interpolate(
+                  brandFrames.map((_, frame) =>
+                    brandStrokeOpacity(frame, index),
+                  ),
+                ),
+                transform: [
+                  { translateX: interpolate(poses.map((p) => p.x * scale)) },
+                  { translateY: interpolate(poses.map((p) => p.y * scale)) },
+                  { rotate: rotation },
+                  { scaleX: interpolate(poses.map((p) => p.length / 100)) },
+                ],
+              }}
+            />
+          );
+        })}
+      </Animated.View>
     </View>
   );
 }

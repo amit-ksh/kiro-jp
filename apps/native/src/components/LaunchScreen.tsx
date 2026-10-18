@@ -18,6 +18,7 @@ void SplashScreen.preventAutoHideAsync().catch(() => {});
 export function LaunchScreen() {
   const [visible, setVisible] = useState(true),
     [laidOut, setLaidOut] = useState(false),
+    [openingReady, setOpeningReady] = useState(false),
     [reduced, setReduced] = useState<boolean | null>(null);
   const progress = useRef(new Animated.Value(0)).current,
     opacity = useRef(new Animated.Value(1)).current;
@@ -51,7 +52,7 @@ export function LaunchScreen() {
       if (value !== "active") finish();
     });
     // Cosmetic startup never waits for authentication, network or an animation callback.
-    const watchdog = setTimeout(finish, 1800);
+    const watchdog = setTimeout(finish, 3600);
     return () => {
       mounted.current = false;
       clearTimeout(watchdog);
@@ -62,28 +63,33 @@ export function LaunchScreen() {
     };
   }, [finish, progress, opacity]);
   useEffect(() => {
-    if (!laidOut || reduced === null || finished.current) return;
+    if (!laidOut || !openingReady || reduced === null || finished.current)
+      return;
     if (reduced) {
       progress.setValue(2);
       finish();
       return;
     }
+    void SplashScreen.hideAsync().catch(() => {});
     const animation = Animated.sequence([
+      Animated.delay(320),
       Animated.timing(progress, {
         toValue: 1,
-        duration: 420,
+        duration: 760,
         easing: Easing.inOut(Easing.cubic),
         useNativeDriver: true,
       }),
+      Animated.delay(180),
       Animated.timing(progress, {
         toValue: 2,
-        duration: 540,
+        duration: 840,
         easing: Easing.bezier(0.16, 1, 0.3, 1),
         useNativeDriver: true,
       }),
+      Animated.delay(180),
       Animated.timing(opacity, {
         toValue: 0,
-        duration: 160,
+        duration: 220,
         useNativeDriver: true,
       }),
     ]);
@@ -91,12 +97,11 @@ export function LaunchScreen() {
       if (complete) finish();
     });
     return () => animation.stop();
-  }, [laidOut, reduced, progress, opacity, finish]);
+  }, [laidOut, openingReady, reduced, progress, opacity, finish]);
   if (!visible) return null;
   return (
     <Animated.View
       onLayout={() => {
-        void SplashScreen.hideAsync().catch(() => {});
         setLaidOut(true);
       }}
       style={[
@@ -112,7 +117,11 @@ export function LaunchScreen() {
       accessible={false}
       importantForAccessibility="no-hide-descendants"
     >
-      <KiroMark size={220} progress={progress} />
+      <KiroMark
+        size={220}
+        progress={progress}
+        onOpeningReady={() => setOpeningReady(true)}
+      />
       <View
         style={{
           position: "absolute",

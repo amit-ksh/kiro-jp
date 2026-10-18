@@ -1,5 +1,13 @@
 # Build evidence — 2026-10-13
 
+## Slower startup and cleaner opening character — October 18 learner feedback
+
+The learner approved the 0.2.9 logo, then reported the animation was too fast and its first character looked odd. The approved SVG, opaque icon and both adaptive assets remain byte-identical to `291dd11`. Only the opening 日 silhouette is redrawn with clean joined corners. The native starting image softly blends into the existing morph strokes, avoiding the protruding rounded end-caps. Native splash now waits for layout plus the bundled image’s load/error event before the sequence; no network wait is introduced.
+
+The revised sequence holds 日 for 320 ms, morphs to 本 over 760 ms, holds 180 ms, morphs to the logo over 840 ms, holds 180 ms and exits over 220 ms: 2.5 seconds total, compared with 1.12 seconds before. Reduced motion still skips the cosmetic sequence; backgrounding dismisses it and the watchdog is extended to 3.6 seconds. Final workspace/native types and lint pass, and all 270 regression tests pass. The static three-stage preview was inspected with the cleaner opening shape. The phone retry remains open; prior emulator RAM limitations are not being relabelled as a new native runtime pass.
+
+Fresh Android export passes with 4.5 MB Hermes `index-cc9deec2abbc03679a881ca9f475bb81.hbc`. Version 0.2.10/code 12 keeps the existing package/project/signature configuration. No backend deployment or model inference is needed. Before dispatch, Expo reports nine of thirty free builds used and no overage; live inventory contains no existing 0.2.10 job.
+
 ## New logo and Japanese-to-logo startup — October 18
 
 Source checkpoint `291dd11` finished as preview APK job **`2f9e16d4-9b48-4aa1-80f9-0f194f44a547`**, Kiro JP 0.2.9/code 11, at **08:24:55 UTC**. [Current EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/2f9e16d4-9b48-4aa1-80f9-0f194f44a547). No duplicate was dispatched. The audited upload contains 514 files / 11,441,208 bytes, excludes private paths/configured secret bytes and matches the checked logo, animation, splash and provenance files. Existing signing identity/free allowance are reused; eight of thirty builds were reported used before dispatch, with no overage.

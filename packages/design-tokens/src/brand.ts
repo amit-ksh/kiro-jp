@@ -4,6 +4,9 @@ export const brandInk = "#FFFFFF";
 export const brandAccent = "#FF5C00";
 export const brandBackground = "#37469E";
 export const brandStrokeWidth = 10;
+// A clean, joined 日 silhouette avoids the capsule end-caps protruding at its corners.
+export const brandOpeningPath =
+  "M-39-49H39V47H-39Z M-29-39V-6H29V-39Z M-29 4V37H29V4Z";
 export const brandFrames: readonly (readonly BrandStroke[])[] = [
   // 日 — Japanese/day. Extra segments remain hidden until the next shape.
   [
