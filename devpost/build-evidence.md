@@ -2,6 +2,8 @@
 
 ## Slower startup and cleaner opening character — October 18 learner feedback
 
+Source checkpoint `9c43ec6` is submitted as one preview APK job **`0f665858-0aae-4596-b2d7-1daca3608577`**, Kiro JP 0.2.10/code 12. [Current EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/0f665858-0aae-4596-b2d7-1daca3608577). Follow this existing job rather than dispatching a duplicate. The audited archive contains 514 files / 11,442,404 bytes, excludes private paths/configured secret bytes and matches the final animation/splash source. The approved logo remains unchanged.
+
 The learner approved the 0.2.9 logo, then reported the animation was too fast and its first character looked odd. The approved SVG, opaque icon and both adaptive assets remain byte-identical to `291dd11`. Only the opening 日 silhouette is redrawn with clean joined corners. The native starting image softly blends into the existing morph strokes, avoiding the protruding rounded end-caps. Native splash now waits for layout plus the bundled image’s load/error event before the sequence; no network wait is introduced.
 
 The revised sequence holds 日 for 320 ms, morphs to 本 over 760 ms, holds 180 ms, morphs to the logo over 840 ms, holds 180 ms and exits over 220 ms: 2.5 seconds total, compared with 1.12 seconds before. Reduced motion still skips the cosmetic sequence; backgrounding dismisses it and the watchdog is extended to 3.6 seconds. Final workspace/native types and lint pass, and all 270 regression tests pass. The static three-stage preview was inspected with the cleaner opening shape. The phone retry remains open; prior emulator RAM limitations are not being relabelled as a new native runtime pass.
