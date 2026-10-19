@@ -1,7 +1,51 @@
-import Image from "next/image";
-// Keep the verified download available when the hosting build has no override.
-const apk = process.env.NEXT_PUBLIC_APK_URL?.trim() ||
+"use client";
+
+import { Navbar } from "@/components/Navbar";
+import { Hero } from "@/components/Hero";
+import { MarqueeTicker } from "@/components/MarqueeTicker";
+import { MethodBento } from "@/components/MethodBento";
+import { LessonPreview } from "@/components/LessonPreview";
+import { CurriculumSection } from "@/components/CurriculumSection";
+import { DownloadHub } from "@/components/DownloadHub";
+import { FAQSection } from "@/components/FAQSection";
+import { Footer } from "@/components/Footer";
+
+const APK_URL =
+  process.env.NEXT_PUBLIC_APK_URL?.trim() ||
   "https://expo.dev/artifacts/eas/5tkdHBwpkv302R-B5_0UQzQzQ3SdmQ1yJerLyKdDwqI.apk";
-export default function Landing() {
-  return <main><nav><a href="#top" style={{display:"inline-flex",alignItems:"center",gap:8}}><Image src="/kiro-mark.svg" alt="" width={64} height={64} unoptimized/>Kiro JP</a><a href="#android">Android access</a></nav><section className="hero" id="top"><div><h1>Remember it.<br/>Understand it.<br/>Use it.</h1><p>Japanese through kanji, grammar and conversations connected to your interests.</p><a className="action" href="#android">Explore the Android app</a></div><div className="japanese" aria-hidden="true"><span>学ぶ</span><span>話す</span><span>覚える</span></div></section><section className="learning"><h2>A little language.<br/>A useful conversation.</h2><div className="example"><span lang="ja" className="sentence">水をください。</span><p lang="ja">みずをください</p><p>Water, please.</p></div><div className="description"><p>Learn a small set of kanji and useful words. Understand one grammar pattern, practise the words and sentences, and take them into a conversation.</p><p>Choose food, culture, places, anime or manga—or add a favorite of your own. Your chosen chat topic comes first.</p><p>Then return for spaced reviews. Completing a session begins learning; consistent recall builds mastery over time.</p></div></section><section className="access" id="android"><h2>Made for Android.</h2><p>Beginner support includes kana readings, optional romaji, English explanations and a typed fallback for speaking practice. Prepared study is designed to remain useful offline.</p>{apk ? <a className="action" href={apk}>Download the Android APK</a> : <p className="availability">The app is currently being built. An installable APK will appear here after the signed release has been verified.</p>}<p className="small">The web page is a landing page. Lessons, conversation and learning progress live in the Android app.</p></section><footer><span>Kiro JP</span><span>Learn · Use · Return</span></footer></main>;
+
+export default function LandingPage() {
+  return (
+    <div className="app-landing-root">
+      {/* Top Floating Glass Navigation */}
+      <Navbar apkUrl={APK_URL} />
+
+      {/* Main Page Flow */}
+      <main id="main-content">
+        {/* Hero Section with clean 3D phone mockup */}
+        <Hero apkUrl={APK_URL} />
+
+        {/* Dual Infinite Kinetic Marquee with real curriculum items */}
+        <MarqueeTicker />
+
+        {/* The Kiro Method: 3 Pillars (Radicals, Cultural Context via Qloo, Spaced Review & Offline) */}
+        <MethodBento />
+
+        {/* Authentic Starter Level 1 Sample Lesson */}
+        <LessonPreview />
+
+        {/* Actual 7-Level Starter Inventory */}
+        <CurriculumSection />
+
+        {/* Download Hub: Verified APK v0.2.10, QR Scanner, 3-step guide & iOS disabled status */}
+        <DownloadHub apkUrl={APK_URL} />
+
+        {/* Grounded FAQ Accordion */}
+        <FAQSection />
+      </main>
+
+      {/* Kiro JP Footer */}
+      <Footer apkUrl={APK_URL} />
+    </div>
+  );
 }
