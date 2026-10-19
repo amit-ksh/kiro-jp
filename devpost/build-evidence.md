@@ -1,5 +1,11 @@
 # Build evidence — 2026-10-13
 
+## Landing APK download without hosting configuration — October 19
+
+The learner confirmed the landing is deployed at `https://kiro-jp.vercel.app`. Browser inspection of `/#android` reproduced the old “currently being built” message and missing download action. The page previously depended entirely on `NEXT_PUBLIC_APK_URL` at static build time. It now defaults to the already verified Kiro JP 0.2.10 artifact when that setting is absent or blank; a nonblank hosting override still takes priority. App code, private configuration and the existing landing design are unchanged.
+
+A fresh production Next.js static export with a blank APK setting and web ESLint both pass. The actual exported HTML includes the exact verified artifact and download action and excludes the old placeholder. Browser inspection of the served export shows the working APK anchor in the Android section. A live HEAD request follows redirects and returns HTTP 200, `application/octet-stream`, and the expected 102,743,930-byte length. The first sandbox build failed on denied reads of existing dependency files; the approved elevated verification passed without changing dependencies or disabling checks. Publication and live-site confirmation are recorded separately after deployment.
+
 ## Slower startup and cleaner opening character — October 18 learner feedback
 
 Source checkpoint `9c43ec6` finished as preview APK job **`0f665858-0aae-4596-b2d7-1daca3608577`**, Kiro JP 0.2.10/code 12, at **08:45:31 UTC**. [Current EAS build](https://expo.dev/accounts/amit-ksh/projects/japanese-learning-app/builds/0f665858-0aae-4596-b2d7-1daca3608577). No duplicate was dispatched. The audited archive contains 514 files / 11,442,404 bytes, excludes private paths/configured secret bytes and matches the final animation/splash source. The approved logo remains unchanged.
