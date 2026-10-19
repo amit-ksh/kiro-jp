@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource/lexend/400.css";
+import "@fontsource/lexend/500.css";
 import "@fontsource/lexend/600.css";
 import "@fontsource/lexend/700.css";
-import "@fontsource/lexend/800.css";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -34,7 +34,6 @@ export const metadata: Metadata = {
     title: "Kiro JP — Learn, Understand, Use",
     description:
       "Japanese learning through kanji components, grammar context, and interest-led conversations.",
-    images: ["/media/j-image-main.webp"],
     type: "website",
   },
 };
@@ -46,14 +45,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Syne:wght@700;800;900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
       <body>{children}</body>
     </html>
   );

@@ -1,5 +1,15 @@
 # Build evidence — 2026-10-13
 
+## Cleaner, product-accurate landing page — October 19
+
+Implemented the learner-approved landing review: local Lexend typography, a single-line mobile header, concise Learn / Practise / Review copy, a shared platform download disclosure, collapsed curriculum/install/FAQ details and a compact footer. Preserved the approved indigo/orange palette and logo. Removed fabricated progress, manual Hard/Good/Easy controls, the iPhone cutout, duplicated mock learning screens, forced radical-first progression, unverified provider attribution and placeholder social/legal links. Removed the replaced unused components. Unused QR dependencies absent from the committed lockfile were removed from the web manifest; no dependency installation or upgrade was required.
+
+The hero uses the existing native Android grammar-reference capture as a labelled screen detail. Its practical outcome, explanation and register panels still match `apps/native/src/app/(learning)/grammar/[id].tsx` and the checked requests content. This capture does not claim a new native verification or represent the current Home screen. Website lesson titles, outcomes, kanji, sample sentence and all seven patterns derive directly from `packages/content/src/curriculum.ts`. Directions correctly displays `[place] + はどこですか`.
+
+Production static exports and TypeScript pass with app-local Next.js 16.4.2 and, independently, lockfile Next.js 16.2.4 in an ignored isolated verification directory. An initial mixed-version build failed with a Next workStore invariant; user dependencies and the running dev server were preserved. Web ESLint passes. Browser checks covered 1280 px desktop, 390 px and 320 px mobile, font family, loaded images, internal anchors, curriculum expansion, disabled iOS, Android artifact URL, initial focus, Escape/focus return and outside dismissal. No horizontal overflow or browser errors were found. The final pass corrected footer-logo contrast. The reset handoff still renders its invalid-link state. APK HEAD returns 200, `application/octet-stream`, 102,743,930 bytes. Final captures are in ignored `.android-runtime/landing-clean-desktop.png` and `landing-clean-mobile.png`.
+
+The user's existing generated `next-env.d.ts` modification and unrelated video/reference/planning files remain excluded from the checkpoint. No native, backend, auth or AI behavior changes, inference calls or account operations are part of this website task.
+
 ## Landing APK download without hosting configuration — October 19
 
 The learner confirmed the landing is deployed at `https://kiro-jp.vercel.app`. Browser inspection of `/#android` reproduced the old “currently being built” message and missing download action. The page previously depended entirely on `NEXT_PUBLIC_APK_URL` at static build time. It now defaults to the already verified Kiro JP 0.2.10 artifact when that setting is absent or blank; a nonblank hosting override still takes priority. App code, private configuration and the existing landing design are unchanged.
