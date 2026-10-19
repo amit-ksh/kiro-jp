@@ -1,5 +1,13 @@
 # Build evidence — 2026-10-13
 
+## Unused repository assets and temporary build cleanup — October 19
+
+Removed four unreferenced copies from `apps/web/public/media`: the reference video, two UI reference images and the original palette reference (20,207,769 bytes total). The originals remain in `references/`. The real Android grammar capture, logo and Android association file remain in the landing export. Removed the empty root Expo `app.json` stub; Android configuration remains in `apps/native/app.config.ts`. Removed unused web `canvas-confetti`, its types and `framer-motion`; an offline, script-free lockfile refresh only removes those packages and their now-unused motion dependencies, with no version upgrades.
+
+Deleted the ignored, task-created `landing-verify` directory after verifying its absolute workspace boundary and absence of links (108,381,796 bytes). Source audio, native assets, private environment configuration, current APK/evidence, design references and the ongoing Remotion project are preserved. This reduces tracked working-file size from about 53.4 MB to 33.2 MB; it does not rewrite Git history or claim that existing Git blobs are reclaimed.
+
+The production Next.js build, TypeScript/static export, web ESLint, staged private-file/secret audit and diff whitespace check pass. The resulting `out/media` contains only the real app capture; exported HTML retains the verified Android artifact and has no references to the deleted assets. The user's generated development type settings are restored after verification. No app behavior, content, account data or provider calls changed.
+
 ## Cleaner, product-accurate landing page — October 19
 
 Implemented the learner-approved landing review: local Lexend typography, a single-line mobile header, concise Learn / Practise / Review copy, a shared platform download disclosure, collapsed curriculum/install/FAQ details and a compact footer. Preserved the approved indigo/orange palette and logo. Removed fabricated progress, manual Hard/Good/Easy controls, the iPhone cutout, duplicated mock learning screens, forced radical-first progression, unverified provider attribution and placeholder social/legal links. Removed the replaced unused components. Unused QR dependencies absent from the committed lockfile were removed from the web manifest; no dependency installation or upgrade was required.
