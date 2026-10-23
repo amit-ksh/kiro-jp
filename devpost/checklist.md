@@ -128,6 +128,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- [ ] October 23 hands-free voice calls — from an active chat, open the phone action, start the call, speak and pause, hear the AI reply and inspect the transcript. Try mute/unmute, pause/resume, silence, permission denial, Back/background, dropped connection and text fallback. Verify no late auto-send or microphone restart after leaving, retained chat/drafts and separate speaking/listening evidence. This learner-authorized revision extends the original discrete recording scope; full-duplex streaming is not included. Mechanical, Gateway and actual spoken phone evidence must be recorded separately.
+
 - October 17: The learner requested an installed app icon matching the interface. Add the original indigo/white/orange Kiro JP mark with adaptive and themed Android layers, verify its native resources/mask safety, and ship version 0.2.3/code 5 using the same package/signing identity. Confirm its appearance during the remaining phone retry; this asset change does not accept the full build.
 
 - October 16: The learner chose **Kiro JP** as the app name. Apply it to Android display branding, welcome/loading screens and the static landing page while retaining the existing package, EAS project, signing identity and progress storage. Version 0.2.2/code 4 succeeds the already-submitted compact-UI 0.2.1 candidate. This naming revision does not close the remaining native or learner checkpoints.

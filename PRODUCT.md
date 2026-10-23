@@ -28,7 +28,7 @@ Short daily sessions on Android, with partial effort preserved and prepared stud
 
 ## Capabilities and Constraints
 
-The approved spec and checklist define one complete shared MVP for both events. Initial content is a focused seven-template N5/N4 inventory, not a complete JLPT course. The learner approved a US$10 total Gemini development/demo budget, enforced by reservations. Other providers remain free-only, with no automatic paid fallback. Higher levels, full mock tests, continuous voice, pitch-accent scoring, subscriptions, iOS and social login are deferred. Hosted reset links and public distribution remain pending.
+The approved spec and checklist define one complete shared MVP for both events. Initial content is a focused seven-template N5/N4 inventory, not a complete JLPT course. The learner approved a US$10 total Gemini development/demo budget, enforced by reservations. Other providers remain free-only, with no automatic paid fallback. The October 23 revision adds a hands-free voice-call mode inside Chat: spoken turns, automatic transcription, audible AI replies, transcripts and pause/mute controls using the existing bounded Gateway services. Simultaneous talking/interruptible streaming audio remains deferred, along with higher levels, full mock tests, pitch-accent scoring, subscriptions, iOS and social login.
 
 ## Brand Commitments
 

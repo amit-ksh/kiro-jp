@@ -574,7 +574,7 @@ This is the evidence `5-build` must produce, not a claim that checks already pas
 ## What Was Simplified and Why
 
 - Focused immutable starter content and a small fixed placement bank; expand the curriculum later. Cultural personalization changes checked examples/context and conversation, while teaching remains traceable.
-- One chat with bounded text/discrete spoken turns and a small read-only tool loop. No continuous voice or scenario builder.
+- One chat with bounded text/spoken turns and a small read-only tool loop. The October 23 revision adds hands-free call orchestration: metered foreground recording ends after speech followed by silence, owned Whisper transcription feeds the existing immutable chat submission, and reply readback reuses Gateway TTS plus the independent audio check. The microphone stays off during playback. Pause, blur, background and disconnection fence late callbacks. Full-duplex streaming and a separate scenario builder remain deferred.
 - Versioned stage scheduling, immutable server review closures, and provisional offline replay using shared TypeScript. No extra scheduling service, generic collaborative document sync, or AI-calculated mastery.
 - One verified email reset path also serves Settings password changes. No custom current-password change action or unsupported cross-flow locking scheme.
 - Foreground/start/reconnect synchronization and local reminders. No promise of reliable always-running background workers on Android.

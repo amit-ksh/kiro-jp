@@ -31,7 +31,15 @@ export interface LocalRecording {
   durationMillis: number;
   bytes: number;
   createdAt: number;
-  recognitionStatus: "pending" | "uploading" | "queued" | "running" | "unavailable" | "ready" | "empty" | "deleted";
+  recognitionStatus:
+    | "pending"
+    | "uploading"
+    | "queued"
+    | "running"
+    | "unavailable"
+    | "ready"
+    | "empty"
+    | "deleted";
   recognitionRequested?: boolean;
   remoteUpdatedAt?: number;
   attempt?: number;
@@ -55,10 +63,15 @@ type State = {
   recordings: LocalRecording[];
   recording: boolean;
   durationMillis: number;
+  metering: number | undefined;
   loading: boolean;
   error: string;
   permissionDenied: boolean;
-  start: (sessionId: string, cueId: string, conversationSegmentId?: string) => Promise<void>;
+  start: (
+    sessionId: string,
+    cueId: string,
+    conversationSegmentId?: string,
+  ) => Promise<string | undefined>;
   stop: () => Promise<void>;
   remove: (id: string) => Promise<void>;
   recognize: (id: string) => Promise<void>;
@@ -72,6 +85,7 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
   const [recordings, setRecordings] = useState<LocalRecording[]>([]),
     [recording, setRecording] = useState(false),
     [durationMillis, setDuration] = useState(0),
+    [metering, setMetering] = useState<number | undefined>(undefined),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
     [permissionDenied, setDenied] = useState(false);
@@ -125,7 +139,9 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
         const record: LocalRecording = {
           id: owned.id,
           sessionId: owned.sessionId,
-          ...(owned.conversationSegmentId ? { conversationSegmentId: owned.conversationSegmentId } : {}),
+          ...(owned.conversationSegmentId
+            ? { conversationSegmentId: owned.conversationSegmentId }
+            : {}),
           cueId: owned.cueId,
           uri: destination.uri,
           durationMillis: media.durationMillis,
@@ -150,6 +166,7 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
         if (mounted.current) {
           setRecording(false);
           setDuration(0);
+          setMetering(undefined);
         }
         await setAudioModeAsync({
           allowsRecording: false,
@@ -204,7 +221,9 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
       mounted.current = false;
       directoryRef.current = null;
       dbRef.current = null;
-      void stop().then(drainRecognition).finally(() => ownedDb?.closeAsync());
+      void stop()
+        .then(drainRecognition)
+        .finally(() => ownedDb?.closeAsync());
     };
   }, [accountId, refresh, stop, drainRecognition]);
   useEffect(() => {
@@ -217,7 +236,10 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
           owned.durationMillis,
           status.durationMillis,
         );
-        if (mounted.current) setDuration(owned.durationMillis);
+        if (mounted.current) {
+          setDuration(owned.durationMillis);
+          setMetering(status.metering);
+        }
         if (!status.isRecording || owned.durationMillis >= 29000) void stop();
       } catch {
         void stop();
@@ -231,96 +253,106 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
       listener.remove();
     };
   }, [stop]);
-  const start = useCallback(async (sessionId: string, cueId: string, conversationSegmentId?: string) => {
-    if (starting.current || current.current || ending.current) return;
-    const turn = epoch.current;
-    const request = ++requestVersion.current;
-    starting.current = true;
-    setError("");
-    try {
-      const db = dbRef.current,
-        directory = directoryRef.current;
-      if (!db || !directory) throw new Error("Storage unavailable.");
-      const permission = await AudioModule.requestRecordingPermissionsAsync();
-      if (!permission.granted) {
-        setDenied(true);
-        return;
-      }
-      setDenied(false);
-      if (
-        !mounted.current ||
-        epoch.current !== turn ||
-        requestVersion.current !== request ||
-        AppState.currentState !== "active"
-      )
-        return;
-      stopAudioPlayers();
-      await setAudioModeAsync({
-        playsInSilentMode: true,
-        allowsRecording: true,
-        shouldPlayInBackground: false,
-        interruptionMode: "doNotMix",
-      });
-      const options = {
-        ...RecordingPresets.HIGH_QUALITY,
-        numberOfChannels: 1,
-        android: {
-          ...RecordingPresets.HIGH_QUALITY.android,
-          maxFileSize: 2 * 1024 * 1024,
-        },
-      };
-      // Own this native resource until stop/copy finishes, including route exit.
-      // Installed Expo AudioModule.types declares this native constructor;
-      // eslint's namespace resolver does not follow NativeAudioModule members.
-      // eslint-disable-next-line import/namespace
-      const { AudioRecorder: NativeRecorder } = AudioModule;
-      const recorder = new NativeRecorder({
-        ...options,
-        ...options.android,
-      });
+  const start = useCallback(
+    async (
+      sessionId: string,
+      cueId: string,
+      conversationSegmentId?: string,
+    ) => {
+      if (starting.current || current.current || ending.current) return;
+      const turn = epoch.current;
+      const request = ++requestVersion.current;
+      starting.current = true;
+      setError("");
       try {
-        await recorder.prepareToRecordAsync(options);
+        const db = dbRef.current,
+          directory = directoryRef.current;
+        if (!db || !directory) throw new Error("Storage unavailable.");
+        const permission = await AudioModule.requestRecordingPermissionsAsync();
+        if (!permission.granted) {
+          setDenied(true);
+          return;
+        }
+        setDenied(false);
         if (
           !mounted.current ||
           epoch.current !== turn ||
           requestVersion.current !== request ||
           AppState.currentState !== "active"
-        ) {
-          recorder.release();
+        )
           return;
-        }
-        current.current = {
-          recorder,
-          id: Crypto.randomUUID(),
-          sessionId,
-          conversationSegmentId,
-          cueId,
-          db,
-          directory,
-          durationMillis: 0,
-        };
-        recorder.record({ forDuration: 29 });
-        setRecording(true);
-        setDuration(0);
-      } catch {
-        current.current = null;
-        recorder.release();
-        throw new Error("Microphone unavailable.");
-      }
-    } catch {
-      if (mounted.current)
-        setError(
-          "Recording is unavailable. Continue with model audio or type instead; speaking wasn't assessed.",
-        );
-    } finally {
-      starting.current = false;
-      if (!current.current)
+        stopAudioPlayers();
         await setAudioModeAsync({
-          allowsRecording: false,
+          playsInSilentMode: true,
+          allowsRecording: true,
           shouldPlayInBackground: false,
-        }).catch(() => {});
-    }
-  }, []);
+          interruptionMode: "doNotMix",
+        });
+        const options = {
+          ...RecordingPresets.HIGH_QUALITY,
+          isMeteringEnabled: true,
+          numberOfChannels: 1,
+          android: {
+            ...RecordingPresets.HIGH_QUALITY.android,
+            maxFileSize: 2 * 1024 * 1024,
+          },
+        };
+        // Own this native resource until stop/copy finishes, including route exit.
+        // Installed Expo AudioModule.types declares this native constructor;
+        // eslint's namespace resolver does not follow NativeAudioModule members.
+        // eslint-disable-next-line import/namespace
+        const { AudioRecorder: NativeRecorder } = AudioModule;
+        const recorder = new NativeRecorder({
+          ...options,
+          ...options.android,
+        });
+        try {
+          await recorder.prepareToRecordAsync(options);
+          if (
+            !mounted.current ||
+            epoch.current !== turn ||
+            requestVersion.current !== request ||
+            AppState.currentState !== "active"
+          ) {
+            recorder.release();
+            return;
+          }
+          current.current = {
+            recorder,
+            id: Crypto.randomUUID(),
+            sessionId,
+            conversationSegmentId,
+            cueId,
+            db,
+            directory,
+            durationMillis: 0,
+          };
+          recorder.record({ forDuration: 29 });
+          setRecording(true);
+          setDuration(0);
+          setMetering(undefined);
+          return current.current.id;
+        } catch {
+          current.current = null;
+          recorder.release();
+          throw new Error("Microphone unavailable.");
+        }
+      } catch {
+        if (mounted.current)
+          setError(
+            "Recording is unavailable. Continue with model audio or type instead; speaking wasn't assessed.",
+          );
+      } finally {
+        starting.current = false;
+        if (!current.current)
+          await setAudioModeAsync({
+            allowsRecording: false,
+            shouldPlayInBackground: false,
+          }).catch(() => {});
+      }
+    },
+    [],
+  );
   const remove = useCallback(
     async (id: string) => {
       const db = dbRef.current,
@@ -331,7 +363,11 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
         `recording:${id}`,
       );
       if (!row) return;
-      await db.runAsync("INSERT OR IGNORE INTO study_metadata(key,value) VALUES(?,?)", `recording-delete:${id}`, "pending");
+      await db.runAsync(
+        "INSERT OR IGNORE INTO study_metadata(key,value) VALUES(?,?)",
+        `recording-delete:${id}`,
+        "pending",
+      );
       stopAudioPlayers();
       const file = new File(directory, `${id}.m4a`);
       if (file.exists) file.delete();
@@ -349,6 +385,7 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
         recordings,
         recording,
         durationMillis,
+        metering,
         loading,
         error,
         permissionDenied,

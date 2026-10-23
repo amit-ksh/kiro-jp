@@ -309,11 +309,27 @@ export default function Chat() {
       footer={composer}
       scrollRef={scroll}
       headerAside={
-        <ChatIcon
-          label="Conversation options"
-          icon="ellipsis-vertical"
-          onPress={() => setOptionsOpen((value) => !value)}
-        />
+        <View style={{ flexDirection: "row", gap: 4 }}>
+          {segment.state === "active" && (
+            <ChatIcon
+              label="Start voice call"
+              icon="call-outline"
+              disabled={busy || !connection.isWebSocketConnected}
+              onPress={() => {
+                timing.pause();
+                router.push({
+                  pathname: "/(learning)/voice-call",
+                  params: { conversationId },
+                });
+              }}
+            />
+          )}
+          <ChatIcon
+            label="Conversation options"
+            icon="ellipsis-vertical"
+            onPress={() => setOptionsOpen((value) => !value)}
+          />
+        </View>
       }
     >
       {optionsOpen && (

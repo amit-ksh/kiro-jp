@@ -326,7 +326,7 @@ Preserve the scope's real integration proof, including real Qloo results, workin
 ## Deferred From the MVP
 
 - Higher-level JLPT courses and full mock exams: the accepted boundary is focused starter content.
-- Continuous voice conversations, specialized pitch-accent scoring, and richer voices: use discrete speech input, playback, and recognized-text feedback first.
+- Full-duplex streaming conversations, specialized pitch-accent scoring, and richer voices remain later work. The October 23 learner-authorized revision adds hands-free call mode over bounded recorded turns: speech, automatic transcript submission, audible AI replies and pause/mute controls. The transcript stays visible, unclear/empty recognition pauses without marking an answer wrong, and text chat remains available.
 - Subscriptions and iOS: explicitly deferred by the learner.
 - Social sign-in: email/password is the chosen MVP account experience.
 - Broader original-wishlist features beyond this defined journey need a separate scope decision; they are not implicit acceptance criteria here.

@@ -46,4 +46,6 @@ Initial UI previews are labelled as build-in-progress where activities are not c
 
 ## Verification boundary
 
+Chat's phone action opens a focused voice-call view in the established indigo/white/orange system. Keep the Kiro mark, one clear live status, optional Japanese/English transcript and reachable Mute, Pause/Resume and End call controls. Start call explains automatic transcription/submission once before arming the microphone. Listening, transcribing, preparing reply, speaking and paused are actual states. No decorative ringing or invented connection status. End call returns to the same saved text chat; hints, corrections and finishing the conversation stay there. Record only detected speaking and real playback as practice time. Silence, denied access, unavailable audio and network loss pause with text fallback and never fabricate a successful turn.
+
 Native screenshot evidence must come from an actual Android device or emulator, including font scaling and dark theme. The task-local Android 15 emulator and early signed APK are configured; account/onboarding/Home evidence is recorded in devpost/build-evidence.md. Each later learning surface needs its own native check. Browser checks validate the separate landing only and cannot establish native layout/storage/speech correctness.

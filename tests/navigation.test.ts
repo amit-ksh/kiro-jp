@@ -128,3 +128,13 @@ test("Home exit is explicit and does not return through authentication", () => {
     "home",
   );
 });
+test("direct voice-call entry falls back to Conversation instead of exiting", () => {
+  assert.equal(
+    learningBackAction(undefined, ["(learning)", "voice-call"]),
+    "fallback",
+  );
+  assert.equal(
+    learningFallback(["(learning)", "voice-call"]),
+    "/(learning)/(tabs)/conversation",
+  );
+});

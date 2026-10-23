@@ -43,7 +43,7 @@ export function learningBackAction(
 }
 export function learningFallback(segments: readonly string[]) {
   const last = segments.at(-1) ?? "";
-  if (["chat", "saved-phrases"].includes(last))
+  if (["chat", "voice-call", "saved-phrases"].includes(last))
     return "/(learning)/(tabs)/conversation" as const;
   if (
     [

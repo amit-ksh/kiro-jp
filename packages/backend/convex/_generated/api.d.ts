@@ -45,6 +45,7 @@ import type * as lib_email from "../lib/email.js";
 import type * as lib_ownership from "../lib/ownership.js";
 import type * as lib_qloo from "../lib/qloo.js";
 import type * as lib_qlooContext from "../lib/qlooContext.js";
+import type * as lib_readbackSource from "../lib/readbackSource.js";
 import type * as lib_speechContract from "../lib/speechContract.js";
 import type * as lib_wanikani from "../lib/wanikani.js";
 import type * as profile from "../profile.js";
@@ -109,6 +110,7 @@ declare const fullApi: ApiFromModules<{
   "lib/ownership": typeof lib_ownership;
   "lib/qloo": typeof lib_qloo;
   "lib/qlooContext": typeof lib_qlooContext;
+  "lib/readbackSource": typeof lib_readbackSource;
   "lib/speechContract": typeof lib_speechContract;
   "lib/wanikani": typeof lib_wanikani;
   profile: typeof profile;

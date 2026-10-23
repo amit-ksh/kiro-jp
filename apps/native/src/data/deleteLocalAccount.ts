@@ -44,6 +44,14 @@ export async function deleteLocalAccount(accountId: string) {
       throw new Error("Invalid local cleanup path.");
     if (directory.exists) directory.delete();
   }
+  const callAudioParent = new Directory(Paths.cache, "conversation-audio"),
+    callAudio = new Directory(callAudioParent, namespace);
+  if (
+    callAudio.uri.replace(/\/$/, "") !==
+    `${callAudioParent.uri.replace(/\/$/, "")}/${namespace}`
+  )
+    throw new Error("Invalid call audio cleanup path.");
+  if (callAudio.exists) callAudio.delete();
   const root = SQLite.defaultDatabaseDirectory;
   if (!root) throw new Error("Local database directory unavailable.");
   const name = `learning-${namespace}.db`,
