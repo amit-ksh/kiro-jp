@@ -14,6 +14,8 @@ The same job finished at 10:18:05 UTC. Its signed APK is 102,751,534 bytes, SHA-
 
 Expo Doctor reported duplicate `@expo/log-box` versions, an existing `@expo/metro-runtime` mismatch and newer Expo/dev-client patches during the remote build. Compilation still finished successfully. Dependencies were kept unchanged for this narrowly reproduced receiver fix; Doctor is not claimed green.
 
+After the learner reconnected the phone and opened Kiro JP, native inspection confirmed 0.2.13/code 15 in the foreground on Home, all five accessible tabs and no sign-in screen. The original force-stop/reopen reproduction then passed: live process, no new keyboard crash and signed-in tabs visible after 16 seconds. Actual tab taps selected Lessons, Review, Conversation, Profile and Home in sequence; the process stayed alive and no new fatal exception appeared. The phone was left on Home. Reports are retained in ignored `login-recovery-phone.json` and `login-tabs-phone.json`. This closes the reproduced post-login/remembered-session tab-mount crash; a new password entry, full lesson journey, gesture Back and visual acceptance are not inferred from these checks.
+
 ## Floating navigation and reference-inspired word teaching — October 23
 
 Implemented the learner's two new image references. The five destinations now use an inset rounded icon bar over the existing indigo background, with selected orange filled icons, muted outline icons, accessible tab labels/selection, normal tab press/long-press events and unchanged Back history. The bar participates in layout, reserves safe-area space and hides with the keyboard. Tab screens with a composer no longer reserve the bottom safe inset twice. No reference shopping/cart behavior or invented notification badge was copied.
