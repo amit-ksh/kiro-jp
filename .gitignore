@@ -15,3 +15,5 @@ out/
 /.android-runtime/
 .claude
 bun.lock*
+# Personal learning profile, kept local
+/devpost/learner-profile.md
