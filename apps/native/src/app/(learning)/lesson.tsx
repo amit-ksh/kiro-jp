@@ -30,6 +30,7 @@ import { SentenceFeedback } from "../../features/lessons/SentenceFeedback";
 import { AudioPlay } from "../../features/speech/AudioPlay";
 import { preparedLessonAudio } from "../../features/speech/lesson-audio";
 import { useSpeech } from "../../features/speech/SpeechProvider";
+import { WordStudyScreen } from "../../features/lessons/WordStudyScreen";
 
 export default function Lesson() {
   const { sessionId = "" } = useLocalSearchParams<{ sessionId: string }>();
@@ -208,6 +209,12 @@ function LessonSession({ sessionId, lesson }: { sessionId: string; lesson: Prepa
       />
     </View>
   );
+  if (step.kind === "word" && word) return <WordStudyScreen
+    key={`${sessionId}:${word.id}`} lesson={lesson} word={word} sessionId={sessionId}
+    audio={lessonAudio} settings={settings} busy={busy} error={error} onInteract={time.interact}
+    onContinue={() => { time.interact(); advance(); }}
+    onSpeak={() => { time.pause(); router.push({pathname: "/(learning)/speech", params: {sessionId, cueId: `word-${word.id}`}}); }}
+  />;
   return (
     <Screen
       title={lesson.title}
@@ -247,47 +254,6 @@ function LessonSession({ sessionId, lesson }: { sessionId: string; lesson: Prepa
               </>}
               <Button
                 label="Begin learning"
-                onPress={() => {
-                  time.interact();
-                  advance();
-                }}
-                disabled={busy}
-              />
-            </>
-          )}
-          {step.kind === "word" && word && (
-            <>
-              <Text style={[styles.kanji, { color: colors.onSurface }]}>
-                {word.kanji}
-              </Text>
-              <Title>{word.meaning}</Title>
-              {word.vocabulary && <Body>Word: {word.word} — {word.vocabulary.meaning}</Body>}
-              <Body>
-                {word.word} · {word.reading}
-                {settings.romaji ? ` · ${word.romaji[0]}` : ""}
-              </Body>
-              <Body>{word.readingNote}</Body>
-              <Body>{word.mnemonic}</Body>
-              <Body muted>Memory aid; not an etymology.</Body>
-              <AudioPlay
-                source={lessonAudio[`word-${word.id}`]}
-                sessionId={sessionId}
-                label={word.word}
-              />
-              {sentence(word.example)}
-              <Button
-                label="Practise this word aloud"
-                secondary
-                onPress={() => {
-                  time.pause();
-                  router.push({
-                    pathname: "/(learning)/speech",
-                    params: { sessionId, cueId: `word-${word.id}` },
-                  });
-                }}
-              />
-              <Button
-                label="I studied this word"
                 onPress={() => {
                   time.interact();
                   advance();

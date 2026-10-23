@@ -202,7 +202,7 @@ export function Screen({
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.background }}
       edges={
-        footer ? ["top", "left", "right", "bottom"] : ["top", "left", "right"]
+        footer && !segments.includes("(tabs)") ? ["top", "left", "right", "bottom"] : ["top", "left", "right"]
       }
     >
       <View

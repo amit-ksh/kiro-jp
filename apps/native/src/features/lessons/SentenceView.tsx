@@ -3,21 +3,30 @@ import { Pressable, Text, View } from "react-native";
 import type { CheckedSentence } from "@packages/learning-core";
 import { grammarReferences } from "@packages/content";
 import { router } from "expo-router";
-import { Body, Button, useColors } from "../../components/ui";
+import { Body, Button, useColors, useTextScale } from "../../components/ui";
 export function SentenceView({
   sentence,
   romaji,
   readings,
   translation,
   grammarLinks = true,
+  compact = false,
 }: {
   sentence: CheckedSentence;
   romaji: boolean;
   readings: boolean;
   translation: boolean;
   grammarLinks?: boolean;
+  compact?: boolean;
 }) {
-  const colors = useColors();
+  const palette = useColors(),
+    scale = useTextScale();
+  const colors = compact
+    ? { ...palette, onSurface: palette.studyInk, muted: palette.studyMuted }
+    : palette;
+  const supportStyle = compact
+    ? { color: colors.muted, fontSize: 14 * scale, lineHeight: 22 * scale }
+    : undefined;
   const [expanded, setExpanded] = useState(false);
   const grammar = grammarLinks
     ? grammarReferences.filter((entry) =>
@@ -38,23 +47,30 @@ export function SentenceView({
         <Text
           style={{
             color: colors.onSurface,
-            fontSize: 25,
-            lineHeight: 38,
-            fontWeight: "600",
+            fontSize: compact ? 18 * scale : 25,
+            lineHeight: compact ? 29 * scale : 38,
+            fontWeight: compact ? "400" : "600",
           }}
         >
           {sentence.text}
         </Text>
       </Pressable>
-      {readings && <Body>{sentence.reading}</Body>}
-      {romaji && <Body muted>{sentence.romaji}</Body>}
-      {translation && <Body>{sentence.meaning}</Body>}
+      {readings && <Body style={supportStyle}>{sentence.reading}</Body>}
+      {romaji && (
+        <Body muted style={supportStyle}>
+          {sentence.romaji}
+        </Body>
+      )}
+      {translation && <Body style={supportStyle}>{sentence.meaning}</Body>}
       {expanded && (
         <View style={{ gap: 8 }}>
           {sentence.segments
             .filter((segment) => segment.text !== "。")
             .map((segment, index) => (
-              <Body key={index}>
+              <Body
+                key={index}
+                style={compact ? { color: colors.onSurface } : undefined}
+              >
                 {segment.text} · {segment.reading} · {segment.meaning}
               </Body>
             ))}

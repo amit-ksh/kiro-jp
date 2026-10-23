@@ -24,6 +24,10 @@ The learner's October 16 hands-on feedback calls for less explanatory text after
 
 ## Layout and interaction
 
+The October 23 supplied navigation reference replaces the full-width labelled bar with an inset rounded surface over the indigo background. Retain all five destinations as real accessible tabs, selected filled orange icons, 48dp minimum controls, standard tab events and the existing Back history. The bar participates in layout, so it does not cover content, reserves the system bottom inset and hides while typing.
+
+The second October 23 reference applies to word teaching: neutral light/charcoal backgrounds and white/dark-gray cards, oversized regular-weight Japanese, a clear English gloss, adjustable readings/romaji, a compact checked example and orange circular audio controls. A small word strip and actual per-lesson word count provide context; do not copy the reference's invented 248/500. Word and sentence audio, slower playback, sentence breakdowns and pronunciation practice remain available. Memory aids and word-specific reading notes expand on demand. Keep recall exercises separate, with answers hidden, and preserve study timing/saving and lesson advancement.
+
 Everyday screens show live values, concise labels and actions. Remove always-visible helper paragraphs; keep teaching explanations inside learning activities and relevant feedback/errors. Download controls belong beside their lesson, without a second list of duplicate lesson panels.
 
 Use a top context/title region and a comfortable scrollable content area. Controls remain reachable above the keyboard. Five phone destinations: Home, Lessons, Review, Conversation, Profile. No web learning/account UI. The reset landing is only a secure app-opening handoff; it does not change a password.
