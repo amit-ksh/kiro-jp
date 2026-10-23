@@ -6,8 +6,9 @@ import { ConvexError, v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { requireUser } from "./lib/ownership";
 import { supportValue } from "./studyValues";
-import { practiceStampValue } from "./conversationValues";
+import { practiceStampValue, conversationCategoryValue } from "./conversationValues";
 import { curriculum } from "@packages/content";
+import { categoryTopic } from "@packages/learning-core";
 const uuid = (value: string) => {
   if (!/^[a-zA-Z0-9_-]{8,100}$/u.test(value))
     throw new ConvexError("Invalid conversation identifier.");
@@ -102,12 +103,15 @@ export const start = mutation({
     clientId: v.string(),
     segmentId: v.string(),
     topic: v.string(),
+    category: v.optional(conversationCategoryValue),
     lessonSessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
     uuid(args.clientId);
     uuid(args.segmentId);
+    if (args.category && args.topic.trim() !== categoryTopic(args.category))
+      throw new ConvexError("Choose a category or write your own topic.");
     const previous = await ctx.db
       .query("conversations")
       .withIndex("by_user_client", (q) =>
@@ -124,7 +128,8 @@ export const start = mutation({
       if (
         !original ||
         original.conversationId !== previous._id ||
-        original.text !== args.topic.trim()
+        original.text !== args.topic.trim() ||
+        original.category !== args.category
       )
         throw new ConvexError(
           "A saved conversation request cannot be replaced with another topic.",
@@ -185,6 +190,7 @@ export const start = mutation({
       text: args.topic.trim(),
       createdAt: now,
       intent: "topic",
+      category: args.category,
       support: [],
       stale: false,
     });

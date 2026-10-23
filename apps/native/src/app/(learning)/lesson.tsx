@@ -619,13 +619,9 @@ function LessonSession({ sessionId, lesson }: { sessionId: string; lesson: Prepa
           router.replace("/(learning)/(tabs)");
         }}
       />
-      {study.pending > 0 && (
+      {study.error && (
         <Panel>
-          <Body>
-            Saved on this phone · {study.pending} activities awaiting
-            synchronization.
-          </Body>
-          {study.error && <Body>{study.error}</Body>}
+          <Body>{study.error}</Body>
           <Button label="Retry sync" secondary onPress={study.retry} />
         </Panel>
       )}

@@ -473,7 +473,7 @@ export function ReviewProvider({
       .catch(() => {
         if (generation === epoch.current)
           setError(
-            "Reviews are saved on this phone. Reconnect or retry to synchronize.",
+            "Review progress is safe. Reconnect or retry to synchronize.",
           );
       })
       .finally(() => {

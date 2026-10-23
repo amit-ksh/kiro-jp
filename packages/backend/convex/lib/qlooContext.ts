@@ -37,6 +37,7 @@ export function selectInterestSignals(
   // similarly spelled dish or an anime music tag is not a media signal.
   return items
     .filter((item) => label(item.name) === label(query))
+    .filter((item) => !item.parentTypes || item.parentTypes.includes(type))
     .filter((item) => namespaces.some((prefix) => item.id.startsWith(prefix)))
     .sort(
       (a, b) =>

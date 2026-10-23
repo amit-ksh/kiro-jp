@@ -5,11 +5,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   return {
     ...config,
     name: "Kiro JP", slug: "japanese-learning-app", owner: "amit-ksh", scheme: "japanesestudy",
-    version: "0.2.10", orientation: "portrait", userInterfaceStyle: "automatic",
+    version: "0.2.11", orientation: "portrait", userInterfaceStyle: "automatic",
     icon: "./assets/branding/icon.png",
     android: {
       package: process.env.ANDROID_PACKAGE_ID ?? "com.kiro.japanesestudy",
-      versionCode: 12,
+      versionCode: 13,
       adaptiveIcon: {
         foregroundImage: "./assets/branding/adaptive-foreground.png",
         backgroundColor: "#37469E",

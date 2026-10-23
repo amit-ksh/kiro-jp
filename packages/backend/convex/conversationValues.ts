@@ -1,4 +1,7 @@
 import { v } from "convex/values";
+export const conversationCategoryValue = v.union(
+  v.literal("places"), v.literal("anime-manga"), v.literal("food"), v.literal("daily-life"),
+);
 export const practiceStampValue = v.object({
   occurredAt: v.number(),
   offsetMinutes: v.number(),

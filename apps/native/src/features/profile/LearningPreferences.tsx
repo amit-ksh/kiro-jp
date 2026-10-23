@@ -136,7 +136,7 @@ export function LearningPreferences() {
         )}
         {dateSaved && (
           <Body muted>
-            {profile.examDate ? "Exam date saved on this phone." : "No exam date set. This choice is saved on this phone."} Changes synchronize when you&apos;re connected.
+            {profile.examDate ? "Exam date saved." : "Exam date removed."}
           </Body>
         )}
         {error && <Message>{error}</Message>}

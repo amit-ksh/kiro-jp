@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -18,6 +19,11 @@ import {
   useConvexConnectionState,
 } from "convex/react";
 import { api } from "@packages/backend/convex/_generated/api";
+import {
+  categoryTopic,
+  conversationCategories,
+  type ConversationCategory,
+} from "@packages/learning-core";
 import { useProfile } from "../../../data/ProfileProvider";
 import { useStudy } from "../../../data/StudyProvider";
 import {
@@ -49,28 +55,42 @@ export default function Conversation() {
     [historyOpen, setHistoryOpen] = useState(false),
     [search, setSearch] = useState("");
   const topic = study.drafts["conversation-create:topic"] ?? "";
-  const ids = useRef({
-    clientId: Crypto.randomUUID(),
-    segmentId: Crypto.randomUUID(),
-  });
   const active = useRef(true);
+  const starting = useRef(false);
+  const [selectedCategory, setSelectedCategory] =
+    useState<ConversationCategory | null>(null);
   useEffect(() => {
     active.current = true;
     return () => {
       active.current = false;
     };
   }, []);
-  const begin = async () => {
-    if (busy || !topic.trim()) return;
+  const begin = async (category?: ConversationCategory) => {
+    const chosenTopic = category ? categoryTopic(category) : topic;
+    if (
+      starting.current ||
+      !chosenTopic.trim() ||
+      !auth.isAuthenticated ||
+      !connection.isWebSocketConnected
+    )
+      return;
+    starting.current = true;
     setBusy(true);
+    setSelectedCategory(category ?? null);
     setError("");
     try {
-      let intent = { ...ids.current, topic };
+      let intent = {
+        clientId: Crypto.randomUUID(),
+        segmentId: Crypto.randomUUID(),
+        topic: chosenTopic,
+        ...(category ? { category } : {}),
+      };
       try {
         const saved = JSON.parse(
           study.drafts["conversation-create:chat-pending"] ?? "null",
         ) as typeof intent | null;
-        if (saved?.topic === topic) intent = saved;
+        if (saved?.topic === chosenTopic && saved.category === category)
+          intent = saved;
       } catch {
         /* Preserve the visible draft. */
       }
@@ -83,10 +103,6 @@ export default function Conversation() {
       await study.saveDraft("conversation-create", "chat-pending", "");
       await study.saveDraft("conversation-create", "topic", "");
       if (!active.current) return;
-      ids.current = {
-        clientId: Crypto.randomUUID(),
-        segmentId: Crypto.randomUUID(),
-      };
       router.push({
         pathname: "/(learning)/chat",
         params: { conversationId: result.conversationId },
@@ -97,7 +113,11 @@ export default function Conversation() {
           "Couldn't start the chat. Your message is saved. Please try again.",
         );
     } finally {
-      if (active.current) setBusy(false);
+      starting.current = false;
+      if (active.current) {
+        setBusy(false);
+        setSelectedCategory(null);
+      }
     }
   };
   const available =
@@ -110,9 +130,12 @@ export default function Conversation() {
   const filtered = available.filter((chat) =>
     chat.title.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()),
   );
-  const suggestions = [
-    ...new Set([...profile.interests, ...profile.favorites]),
-  ].slice(0, 4);
+  const categoryIcons = {
+    places: "location-outline",
+    "anime-manga": "book-outline",
+    food: "restaurant-outline",
+    "daily-life": "sunny-outline",
+  } as const;
   return (
     <>
       <Screen
@@ -133,7 +156,11 @@ export default function Conversation() {
             }
             onSend={() => void begin()}
             busy={busy}
-            sendDisabled={!topic.trim() || !connection.isWebSocketConnected}
+            sendDisabled={
+              !topic.trim() ||
+              !auth.isAuthenticated ||
+              !connection.isWebSocketConnected
+            }
             maxLength={500}
             inputLabel="Start a Japanese conversation"
             placeholder="What would you like to talk about?"
@@ -158,43 +185,71 @@ export default function Conversation() {
             <Title>What would you like to talk about?</Title>
             <Body muted>Practise Japanese, one conversation at a time.</Body>
           </View>
-          {suggestions.length > 0 && (
-            <View style={{ gap: 8 }}>
-              {suggestions.map((interest) => (
-                <Pressable
-                  key={interest}
-                  accessibilityRole="button"
-                  disabled={busy}
-                  accessibilityLabel={`Talk about ${interest}`}
-                  onPress={() =>
-                    void study.saveDraft(
-                      "conversation-create",
-                      "topic",
-                      `Let's talk about ${interest}.`,
-                    )
-                  }
-                  style={({ pressed }) => ({
-                    minHeight: 48,
-                    paddingVertical: 12,
-                    paddingHorizontal: 16,
-                    borderRadius: 12,
-                    backgroundColor: colors.surface,
-                    flexDirection: "row",
-                    gap: 12,
-                    alignItems: "center",
-                    opacity: pressed ? 0.7 : 1,
-                  })}
-                >
-                  <Body style={{ flex: 1 }}>{interest}</Body>
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gap: 12,
+              maxWidth: 420,
+              width: "100%",
+              alignSelf: "center",
+            }}
+          >
+            {conversationCategories.map((category) => (
+              <Pressable
+                key={category.id}
+                accessibilityRole="button"
+                disabled={
+                  busy ||
+                  !auth.isAuthenticated ||
+                  !connection.isWebSocketConnected
+                }
+                accessibilityState={{
+                  disabled:
+                    busy ||
+                    !auth.isAuthenticated ||
+                    !connection.isWebSocketConnected,
+                  busy: busy && selectedCategory === category.id,
+                }}
+                accessibilityLabel={`Start a conversation about ${category.label}`}
+                accessibilityHint="Chooses a topic with Qloo and starts your chat"
+                onPress={() => void begin(category.id)}
+                style={({ pressed }) => ({
+                  width: "47.5%",
+                  aspectRatio: 1,
+                  minHeight: 144,
+                  padding: 16,
+                  borderRadius: 16,
+                  backgroundColor: colors.surface,
+                  gap: 16,
+                  justifyContent: "center",
+                  opacity:
+                    pressed || (busy && selectedCategory !== category.id)
+                      ? 0.65
+                      : 1,
+                })}
+              >
+                {busy && selectedCategory === category.id ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
                   <Ionicons
-                    name="arrow-up-outline"
-                    size={18}
-                    color={colors.muted}
+                    name={categoryIcons[category.id]}
+                    size={30}
+                    color={colors.navigationActive}
                   />
-                </Pressable>
-              ))}
-            </View>
-          )}
+                )}
+                <Body
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 16 * profile.textScale,
+                    lineHeight: 23 * profile.textScale,
+                  }}
+                >
+                  {category.label}
+                </Body>
+              </Pressable>
+            ))}
+          </View>
         </View>
         {!connection.isWebSocketConnected && (
           <Body muted>Offline · your draft is saved</Body>
@@ -245,11 +300,7 @@ export default function Conversation() {
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={{ gap: 4, paddingBottom: 24 }}
             >
-              <Body muted>
-                {connection.isWebSocketConnected
-                  ? "Your chats"
-                  : "Chats saved on this phone"}
-              </Body>
+              <Body muted>Your chats</Body>
               {filtered.map((chat) => (
                 <Pressable
                   key={chat._id}

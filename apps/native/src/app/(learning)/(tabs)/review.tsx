@@ -224,7 +224,7 @@ export default function Review() {
       )}
       {reviews.loading ? (
         <Panel>
-          <Body>Opening reviews saved on this phone…</Body>
+          <Body>Opening reviews…</Body>
         </Panel>
       ) : run && !done && question && track ? (
         <>
@@ -352,7 +352,7 @@ export default function Review() {
                 </Body>
                 <Body>
                   {receipt?.assessment.explanation ??
-                    "Saved on this phone; review feedback is loading."}
+                    "Review feedback is loading."}
                 </Body>
                 {track.card.exercise.kind === "sentence" && (
                   <ReviewFeedback
@@ -510,12 +510,10 @@ export default function Review() {
           </Body>
         </Panel>
       )}
-      {(reviews.pending > 0 || reviews.error || error) && (
+      {(reviews.error || error) && (
         <Panel>
           <Body>
-            {error ||
-              reviews.error ||
-              `${reviews.pending} attempts saved on this phone, awaiting synchronized schedules.`}
+            {error || reviews.error}
           </Body>
           <Button
             label="Retry review synchronization"

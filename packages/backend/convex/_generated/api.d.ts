@@ -40,6 +40,7 @@ import type * as lib_ai_recap from "../lib/ai/recap.js";
 import type * as lib_ai_sentence from "../lib/ai/sentence.js";
 import type * as lib_ai_service from "../lib/ai/service.js";
 import type * as lib_ai_speech from "../lib/ai/speech.js";
+import type * as lib_categoryContext from "../lib/categoryContext.js";
 import type * as lib_email from "../lib/email.js";
 import type * as lib_ownership from "../lib/ownership.js";
 import type * as lib_qloo from "../lib/qloo.js";
@@ -103,6 +104,7 @@ declare const fullApi: ApiFromModules<{
   "lib/ai/sentence": typeof lib_ai_sentence;
   "lib/ai/service": typeof lib_ai_service;
   "lib/ai/speech": typeof lib_ai_speech;
+  "lib/categoryContext": typeof lib_categoryContext;
   "lib/email": typeof lib_email;
   "lib/ownership": typeof lib_ownership;
   "lib/qloo": typeof lib_qloo;

@@ -278,9 +278,9 @@ export default function Home() {
           />
         </Panel>
       ) : (
-        (syncState === "pending" || error) && (
+        error && (
           <Panel>
-            <Body>{error || "Saved on this phone. Sync pending."}</Body>
+            <Body>{error}</Body>
             <Button label="Retry synchronization" secondary onPress={retry} />
           </Panel>
         )

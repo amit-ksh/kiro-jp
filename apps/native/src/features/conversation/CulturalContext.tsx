@@ -118,7 +118,7 @@ export function CulturalContext({
                     }))
                       .then(() =>
                         setNotice(
-                          "Dislike saved on this phone. It will apply online after synchronization.",
+                          "Preference saved. Recommendations will update when you reconnect.",
                         ),
                       )
                       .catch(() =>

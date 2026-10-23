@@ -12,6 +12,7 @@ export type CulturalEntity = Entity;
 export interface InterestTag {
   id: string;
   name: string;
+  parentTypes?: CulturalType[];
 }
 export interface QlooConfig {
   baseUrl: string;
@@ -92,7 +93,7 @@ export function decodeTags(
     return typeof id === "string" &&
       /^urn:tag:[a-zA-Z0-9:_-]{1,200}$/u.test(id) &&
       typeof row.name === "string"
-      ? [{ id, name: row.name.slice(0, 160) }]
+      ? [{ id, name: row.name.slice(0, 160), ...(Array.isArray(row.parents) ? {parentTypes: row.parents.map(parent => record(parent).type).filter((type): type is CulturalType => (culturalTypes as readonly unknown[]).includes(type))} : {}) }]
       : [];
   });
 }
@@ -136,7 +137,7 @@ export function createQlooSession(
       return { status: "notConfigured", items: [], inputs };
     const cacheKey = cache?.key(
       JSON.stringify([
-        "decoded-context-v3",
+        "decoded-context-v4",
         root,
         operation,
         config.tagIdField ?? "",
@@ -304,12 +305,15 @@ export function createQlooSession(
       entityIds: string[],
       tagIds: string[],
       dislikes: readonly string[] = [],
+      filterTagIds: readonly string[] = [],
     ) {
       if (
         !culturalTypes.includes(type) ||
         entityIds.length + tagIds.length > 10 ||
         entityIds.some((id) => !entities.has(id)) ||
         tagIds.some((id) => !tags.has(id)) ||
+        filterTagIds.length > 10 ||
+        filterTagIds.some((id) => !tags.has(id)) ||
         (!entityIds.length && !tagIds.length)
       )
         throw new Error("Resolve real Qloo signals before recommending.");
@@ -321,6 +325,7 @@ export function createQlooSession(
       if (entityIds.length)
         params["signal.interests.entities"] = entityIds.join(",");
       if (tagIds.length) params["signal.interests.tags"] = tagIds.join(",");
+      if (filterTagIds.length) params["filter.tags"] = filterTagIds.join(",");
       if (type === "urn:entity:place")
         params["filter.geocode.country_code"] = "JP";
       const result = await request(

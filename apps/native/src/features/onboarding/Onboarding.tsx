@@ -404,10 +404,10 @@ export function Onboarding() {
           />
         )}
       </Panel>
-      {(syncState === "pending" || storageError) && (
+      {storageError && (
         <Panel>
           <Body>
-            {storageError || "Saved on this phone. Synchronization is pending."}
+            {storageError}
           </Body>
           <Button label="Retry sync" secondary onPress={retry} />
         </Panel>

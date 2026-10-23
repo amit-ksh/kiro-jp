@@ -94,6 +94,8 @@ In learn mode, perform each slice's learner check before its commit. In fast mod
 
 ## Final Review
 
+- [ ] October 23 Chat category cards and quiet saving retried by learner — check the four square icon cards (Places, Anime & Manga, Food, Daily Life), one-tap Qloo-selected conversation, retries, offline disabled state, History and typed topics. Routine saved-on-phone/pending-sync panels should be absent from Home, onboarding, lessons and reviews; storage, conflict and failure recovery remain available. Mechanical and live service evidence is separate from native visual/phone acceptance.
+
 - [x] October 18 logo/animation visual refinement — the learner approved the 0.2.9 logo, requested slower motion and a cleaner opening character, then replied “ok” to the focused 0.2.10 cleaner 日 / 2.5-second animation check. Record that visual acceptance only; do not infer full MVP or unreported reliability coverage.
 
 - [ ] Additional startup reliability — explicitly check reduced-motion/offline starts, saved-screen handoff and no startup replay during ordinary navigation. Artifact checks and the focused visual approval above do not establish these remaining behaviors.

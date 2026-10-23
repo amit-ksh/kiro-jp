@@ -129,7 +129,7 @@ export function StudyProvider({ accountId, cloudReady, children }: { accountId: 
         await accountTransaction(db, async tx => { for (const receipt of receipts) await tx.runAsync("UPDATE study_events SET acknowledged=1 WHERE event_id=?", receipt.eventId); });
         await refresh(db, epoch); setError("");
       });
-    })().catch(() => { if (epoch === epochRef.current) setError("Saved on this phone. Study synchronization will retry when you reconnect."); }).finally(() => { if (epoch === epochRef.current) { syncing.current = false; } });
+    })().catch(() => { if (epoch === epochRef.current) setError("Progress is safe. Synchronization will retry automatically."); }).finally(() => { if (epoch === epochRef.current) { syncing.current = false; } });
   }, [cloudReady, loading, pending, retryCount, events, enqueue, refresh, push]);
   useEffect(() => { const timer = setInterval(() => setRetryCount(count => count + 1), 30_000); return () => clearInterval(timer); }, []);
   return <Context.Provider value={{ accountId,events, sentenceFeedback, checked, phrases, chats, cacheChat, drafts, saveDraft, loading, pending, error, append, retry: () => setRetryCount(count => count + 1) }}>{children}</Context.Provider>;

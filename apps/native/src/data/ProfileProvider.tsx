@@ -225,7 +225,7 @@ export function ProfileProvider({
         } else {
           setSyncState("pending");
           setError(
-            "Saved on this phone. Cloud sync will retry when you reconnect.",
+            "Progress is safe. Synchronization will retry automatically.",
           );
         }
       } finally {
