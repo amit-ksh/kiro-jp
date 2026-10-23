@@ -1,5 +1,13 @@
 # Build evidence — 2026-10-13
 
+## Post-login crash fix — October 23
+
+The learner reported that 0.2.12 closes after signing in. The connected Moto G32 runs 0.2.12/code 14; its Android crash buffer names `FloatingTabBar`, `Keyboard.isVisible`, `mountStateImpl` and `Cannot read property '_currentlyShowing' of undefined`. A retained-launch reproduction force-stopped and reopened the existing app without clearing data: after 16 seconds the process was absent and the same new crash was captured. The initial capture helper used an invalid split logcat timestamp; the corrected helper filters epoch timestamps and checks command failures.
+
+The tab bar passed `Keyboard.isVisible` directly as a lazy React state initializer, losing the receiver required by the installed React Native implementation. It now uses `() => Keyboard.isVisible()`. Two component-mount regressions load the real installed Keyboard implementation with only its native event bridge stubbed: both failed with the exact receiver error before the fix, and both pass afterward for a hidden or already-visible login keyboard. Rendering stubs replace native elements; these tests do not claim Android UI coverage.
+
+All 277 tests, native TypeScript and native ESLint pass. Android export passes with Hermes `index-3c2c4dcf7cc97b5ce0a27c0b2aa039f0.hbc` (4.5 MB). Version 0.2.13/code 15 retains package/signing identity. The exact upload archive passes private-path/configured-secret/source-match checks (522 files, 11,764,844 bytes). Expo's free plan reports 12/30 builds used and zero reported overage; no 0.2.13 job exists before submission. The corrected standalone APK and the original phone reproduction remain pending. No auth, learning-data migration, backend deployment, provider inference or quota changes are part of this fix.
+
 ## Floating navigation and reference-inspired word teaching — October 23
 
 Implemented the learner's two new image references. The five destinations now use an inset rounded icon bar over the existing indigo background, with selected orange filled icons, muted outline icons, accessible tab labels/selection, normal tab press/long-press events and unchanged Back history. The bar participates in layout, reserves safe-area space and hides with the keyboard. Tab screens with a composer no longer reserve the bottom safe inset twice. No reference shopping/cart behavior or invented notification badge was copied.

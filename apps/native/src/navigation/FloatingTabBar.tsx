@@ -20,7 +20,7 @@ export function FloatingTabBar({
 }: BottomTabBarProps) {
   const colors = useColors(),
     insets = useSafeAreaInsets();
-  const [keyboardOpen, setKeyboardOpen] = useState(Keyboard.isVisible);
+  const [keyboardOpen, setKeyboardOpen] = useState(() => Keyboard.isVisible());
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
       setKeyboardOpen(true),
