@@ -1,5 +1,11 @@
 # Build evidence — 2026-10-13
 
+## Landing page Android download update — October 23
+
+The landing page's three shared Download actions now default to the completed, phone-verified 0.2.13/code 15 APK. The install section displays v0.2.13 and the correctly rounded 102.8 MB size; Android popovers show the same size. The new artifact URL returns HTTP 200, `application/octet-stream`, and exactly 102,751,534 bytes, matching the verified download. No new APK build was requested.
+
+The first page build exposed the disappearance of all 320 tracked shared-package files during this task. The learner confirmed it was accidental and authorized restoration from Git. Shared sources now match HEAD, and three missing internal workspace dependency junctions were restored locally without dependency version changes. After restoration, production compilation, TypeScript, static export and targeted web ESLint pass. Exported HTML contains all three new download targets, the new version/size and no old release link. Generated development type imports are restored to their pre-build values. Only the two download UI files and this evidence record belong in the checkpoint; no shared-package deletion is included.
+
 ## Post-login crash fix — October 23
 
 The learner reported that 0.2.12 closes after signing in. The connected Moto G32 runs 0.2.12/code 14; its Android crash buffer names `FloatingTabBar`, `Keyboard.isVisible`, `mountStateImpl` and `Cannot read property '_currentlyShowing' of undefined`. A retained-launch reproduction force-stopped and reopened the existing app without clearing data: after 16 seconds the process was absent and the same new crash was captured. The initial capture helper used an invalid split logcat timestamp; the corrected helper filters epoch timestamps and checks command failures.

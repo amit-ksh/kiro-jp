@@ -64,7 +64,7 @@ export function DownloadButton({
             <Smartphone size={22} aria-hidden="true" />
             <span>
               <strong>Android</strong>
-              <small>Download APK · 102.7 MB</small>
+              <small>Download APK · 102.8 MB</small>
             </span>
             <ArrowDownToLine size={18} aria-hidden="true" />
           </a>

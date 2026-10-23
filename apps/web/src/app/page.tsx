@@ -5,7 +5,7 @@ import { preparedLessons } from "../../../../packages/content/src/curriculum";
 
 const APK_URL =
   process.env.NEXT_PUBLIC_APK_URL?.trim() ||
-  "https://expo.dev/artifacts/eas/5tkdHBwpkv302R-B5_0UQzQzQ3SdmQ1yJerLyKdDwqI.apk";
+  "https://expo.dev/artifacts/eas/LKKOEmX-vqBfe9Dll7xiDFMV-OSbdRi51oOH-wSubI0.apk";
 const firstLesson = preparedLessons[0];
 const example = firstLesson.grammar.examples[0];
 
@@ -187,7 +187,7 @@ export default function LandingPage() {
           </div>
           <div className="install-area">
             <DownloadButton apkUrl={APK_URL} />
-            <p className="download-note">v0.2.10 · APK · 102.7 MB</p>
+            <p className="download-note">v0.2.13 · APK · 102.8 MB</p>
             <details className="install-help">
               <summary>How do I install the APK?</summary>
               <ol>
