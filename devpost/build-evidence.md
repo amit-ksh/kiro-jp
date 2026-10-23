@@ -1,5 +1,11 @@
 # Build evidence — 2026-10-13
 
+## Audited local repository cleanup — October 23
+
+Removed 68 ignored, inspected generated-output/cache targets: 13,366 files totalling 984,104,682 bytes. These were superseded Android exports and upload archives, extracted native icon/splash resources, empty inspection folders, Turbo/Next build caches, the redundant native `dist`, the old 0.2.10 APK, duplicate untracked web Bun lockfile, incremental TypeScript cache and a temporary Expo configuration snapshot. The pnpm lockfile remains authoritative.
+
+Before deletion, each absolute target was checked inside this workspace, excluded tracked files/reparse points, and matched its inspected file count/size. Private environment files, databases, emulator images and signing material were excluded. The latest 0.2.13 APK, its export/archive, SDK/emulator data, active dependencies, test reports, design references, planning documents and demo source remain. Private configuration and latest APK hashes are unchanged; all tracked app/package/script/test/reference/demo/skill sources still match HEAD. Only this record and the README's stale release link/summary change. The cleanup report remains in ignored `.android-runtime/repo-cleanup-report.json`; Git history was not rewritten and no new inference/build was requested.
+
 ## Landing page Android download update — October 23
 
 The landing page's three shared Download actions now default to the completed, phone-verified 0.2.13/code 15 APK. The install section displays v0.2.13 and the correctly rounded 102.8 MB size; Android popovers show the same size. The new artifact URL returns HTTP 200, `application/octet-stream`, and exactly 102,751,534 bytes, matching the verified download. No new APK build was requested.
