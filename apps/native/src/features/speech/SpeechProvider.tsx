@@ -268,7 +268,19 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
         const db = dbRef.current,
           directory = directoryRef.current;
         if (!db || !directory) throw new Error("Storage unavailable.");
-        const permission = await AudioModule.requestRecordingPermissionsAsync();
+        // Android may launch a permission activity even when RECORD_AUDIO is
+        // already granted. That activity backgrounds us and correctly cancels
+        // this start, so check existing access before requesting it again.
+        let permission = await AudioModule.getRecordingPermissionsAsync();
+        if (
+          !mounted.current ||
+          epoch.current !== turn ||
+          requestVersion.current !== request ||
+          AppState.currentState !== "active"
+        )
+          return;
+        if (!permission.granted)
+          permission = await AudioModule.requestRecordingPermissionsAsync();
         if (!permission.granted) {
           setDenied(true);
           return;

@@ -35,6 +35,13 @@ export type CallPhase =
   | "speaking"
   | "paused";
 const cancelled = new Error("CALL_PAUSED");
+const callMessages = {
+  offline: "Connection lost. Reconnect, then resume or return to text chat.",
+  unfocused: "Return to this call screen, then resume when you're ready.",
+  background: "Keep Kiro JP open for voice practice, then tap Resume.",
+  loading:
+    "The microphone is getting ready. Try Resume in a moment or use text chat.",
+};
 
 export function useVoiceCall(
   conversationId: string,
@@ -134,7 +141,7 @@ export function useVoiceCall(
     const owner = runtime.current;
     owner.mounted = true;
     const listener = AppState.addEventListener("change", (state) => {
-      if (state !== "active") pause();
+      if (state !== "active") pause(callMessages.background);
     });
     return () => {
       owner.mounted = false;
@@ -149,19 +156,28 @@ export function useVoiceCall(
     )
       pause(
         !online
-          ? "Connection lost. Reconnect, then resume or return to text chat."
-          : "",
+          ? callMessages.offline
+          : !focused
+            ? callMessages.unfocused
+            : "This conversation has ended. Return to chat to continue it.",
       );
   }, [online, focused, segment?.state, pause]);
 
   const resume = useCallback(() => {
-    if (
-      runtime.current.running ||
-      !latest.current.online ||
-      !latest.current.focused ||
-      latest.current.speech.loading
-    )
+    if (runtime.current.running) return;
+    const availabilityMessage = () => {
+      const current = latest.current;
+      if (!current.online) return callMessages.offline;
+      if (!current.focused) return callMessages.unfocused;
+      if (AppState.currentState !== "active") return callMessages.background;
+      if (current.speech.loading) return callMessages.loading;
+      return "";
+    };
+    const unavailable = availabilityMessage();
+    if (unavailable) {
+      pause(unavailable);
       return;
+    }
     const owner = runtime.current;
     const epoch = ++owner.epoch;
     owner.running = true;
@@ -500,11 +516,17 @@ export function useVoiceCall(
       }
     })()
       .catch((failure) => {
-        if (failure !== cancelled && owner.epoch === epoch && owner.mounted)
+        // A superseded run must never stop or rewrite its replacement. If this
+        // run itself lost foreground/focus/connectivity, cancellation still
+        // owns native resources and must release them with a useful next step.
+        if (owner.epoch === epoch && owner.mounted)
           pause(
-            failure instanceof Error
-              ? failure.message
-              : "The call paused. Your conversation is saved.",
+            failure === cancelled
+              ? availabilityMessage() ||
+                  "The call paused. Resume when you're ready."
+              : failure instanceof Error
+                ? failure.message
+                : "The call paused. Your conversation is saved.",
           );
       })
       .finally(() => {
