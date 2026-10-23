@@ -2,6 +2,23 @@
 import { createHash } from "node:crypto";
 import { inspectModelWave, normalizeJapanese } from "@packages/learning-core";
 export const readbackVersion = "kore-v1";
+const failureCodes = new Set([
+  "KANA_SCRIPT_REQUIRED",
+  "READBACK_NOT_CONFIGURED",
+  "READBACK_CAPACITY_UNAVAILABLE",
+  "READBACK_GATEWAY_UNAVAILABLE",
+  "INVALID_READBACK_RESPONSE",
+  "INVALID_MODEL_AUDIO",
+  "INVALID_READBACK_CHECK_RESPONSE",
+  "READBACK_TRANSCRIPT_MISMATCH",
+]);
+// Persist only an exact internal code. Provider exceptions may contain private
+// request text or credentials and must never be copied into diagnostic traces.
+export function readbackFailureCode(error: unknown): string {
+  return error instanceof Error && failureCodes.has(error.message)
+    ? error.message
+    : "READBACK_UNEXPECTED_FAILURE";
+}
 export type ReadbackModel = "gemini-3.8-flash-lite-tts" | "gemini-3.8-flash";
 export interface ReadbackReceipt {
   operationId: string;
@@ -200,23 +217,36 @@ export async function prepareReadback(
     },
     65536,
   );
-  const answer = JSON.parse(
-    checked.candidates?.[0]?.content?.parts
-      ?.filter((part) => !part.thought)
-      .map((part) => part.text ?? "")
-      .join("") ?? "",
-  );
+  let answer: unknown;
+  try {
+    answer = JSON.parse(
+      checked.candidates?.[0]?.content?.parts
+        ?.filter((part) => !part.thought)
+        .map((part) => part.text ?? "")
+        .join("") ?? "",
+    );
+  } catch {
+    throw new Error("INVALID_READBACK_CHECK_RESPONSE");
+  }
   if (
-    typeof answer.kana !== "string" ||
-    answer.kana.length > 240 ||
-    !/^[-ーぁ-ゖ\s。、！？!?]*$/u.test(answer.kana) ||
-    normalizeJapanese(answer.kana) !== normalizeJapanese(reading)
+    !answer ||
+    typeof answer !== "object" ||
+    Array.isArray(answer) ||
+    !("kana" in answer) ||
+    typeof answer.kana !== "string"
+  )
+    throw new Error("INVALID_READBACK_CHECK_RESPONSE");
+  const kana = answer.kana;
+  if (
+    kana.length > 240 ||
+    !/^[-ーぁ-ゖ\s。、！？!?]*$/u.test(kana) ||
+    normalizeJapanese(kana) !== normalizeJapanese(reading)
   )
     throw new Error("READBACK_TRANSCRIPT_MISMATCH");
   return {
     bytes,
     sha256: createHash("sha256").update(bytes).digest("hex"),
     durationMillis: media.durationMillis,
-    checkedKana: answer.kana,
+    checkedKana: kana,
   };
 }

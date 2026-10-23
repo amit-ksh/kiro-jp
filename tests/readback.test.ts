@@ -4,6 +4,7 @@ import fs from "node:fs";
 import { inspectModelWave } from "../packages/learning-core/src/wave.ts";
 import {
   prepareReadback,
+  readbackFailureCode,
   type ReadbackControl,
 } from "../packages/backend/convex/lib/ai/readback.ts";
 const bytes = fs.readFileSync(
@@ -211,4 +212,66 @@ test("a second-stage budget rejection retains the candidate privately and sends 
   );
   assert.equal(calls, 1);
   assert.equal(reserved, 2);
+});
+test("private readback diagnostics allow only known codes, never raw exception text", () => {
+  assert.equal(
+    readbackFailureCode(new Error("READBACK_TRANSCRIPT_MISMATCH")),
+    "READBACK_TRANSCRIPT_MISMATCH",
+  );
+  for (const value of [
+    new Error("private source text and https://provider.invalid/?key=secret"),
+    new Error("READBACK_TRANSCRIPT_MISMATCH: private transcript"),
+    "READBACK_TRANSCRIPT_MISMATCH",
+    { message: "READBACK_TRANSCRIPT_MISMATCH" },
+    null,
+  ])
+    assert.equal(readbackFailureCode(value), "READBACK_UNEXPECTED_FAILURE");
+});
+test("malformed, missing or non-object check JSON has a stable private failure code", async () => {
+  for (const text of ["", "not JSON", "null", "[]", "{}", '{"kana":12}']) {
+    let calls = 0;
+    await assert.rejects(
+      prepareReadback(
+        "みずをください",
+        config,
+        "fixture.diagnostic",
+        {
+          reserve: async () => true,
+          settle: async () => {},
+          record: () => {},
+        },
+        (async () =>
+          ++calls === 1
+            ? audio()
+            : Response.json(
+                { candidates: [{ content: { parts: [{ text }] } }] },
+                { headers: { "cf-aig-log-id": "fixture-check" } },
+              )) as typeof fetch,
+      ),
+      (error) =>
+        readbackFailureCode(error) === "INVALID_READBACK_CHECK_RESPONSE",
+    );
+    assert.equal(calls, 2);
+  }
+});
+test("readback diagnostics retain strict spoken-kana equality for proper names", async () => {
+  let calls = 0;
+  await assert.rejects(
+    prepareReadback(
+      "つうてんかくにいきたいですか",
+      config,
+      "fixture.propername",
+      {
+        reserve: async () => true,
+        settle: async () => {},
+        record: () => {},
+      },
+      (async () =>
+        ++calls === 1
+          ? audio()
+          : check("つーてんかくにいきたいですか")) as typeof fetch,
+    ),
+    (error) => readbackFailureCode(error) === "READBACK_TRANSCRIPT_MISMATCH",
+  );
+  assert.equal(calls, 2);
 });

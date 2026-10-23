@@ -2,7 +2,11 @@
 import { v } from "convex/values";
 import { internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { prepareReadback, type ReadbackReceipt } from "./lib/ai/readback";
+import {
+  prepareReadback,
+  readbackFailureCode,
+  type ReadbackReceipt,
+} from "./lib/ai/readback";
 export const run = internalAction({
   args: { id: v.id("readbackAssets") },
   handler: async (ctx, args): Promise<void> => {
@@ -70,12 +74,15 @@ export const run = internalAction({
         trace: JSON.stringify({ receipts }),
       });
       orphan = undefined;
-    } catch {
+    } catch (error) {
       if (orphan) await ctx.storage.delete(orphan);
       await ctx.runMutation(internal.readback.settle, {
         ...args,
         claim: row.claim,
-        trace: JSON.stringify({ receipts }),
+        trace: JSON.stringify({
+          receipts,
+          failureCode: readbackFailureCode(error),
+        }),
       });
     }
   },
