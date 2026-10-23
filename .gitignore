@@ -17,3 +17,7 @@ out/
 bun.lock*
 # Personal learning profile, kept local
 /devpost/learner-profile.md
+
+# Demo production workspace, kept local
+/videos/
+/devpost/demo/
