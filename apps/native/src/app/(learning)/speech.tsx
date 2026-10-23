@@ -152,7 +152,7 @@ export default function Speech() {
           ? "Record, check, then return to your conversation."
           : cue.id === "own-sentence"
             ? "Practise a sentence of your own."
-          : "Word by word, then a complete sentence."
+            : "Word by word, then a complete sentence."
       }
     >
       <Panel>
@@ -180,7 +180,7 @@ export default function Speech() {
             ? "Record your reply, replay it, then check the text before sending. A transcript is a recognition aid, never a pronunciation score."
             : cue.id === "own-sentence"
               ? "Record your sentence, replay it and check the recognized text. You can correct the transcript before submitting."
-            : "Listen, repeat, then compare through playback. A transcript is a recognition aid, never a pronunciation score."}
+              : "Listen, repeat, then compare through playback. A transcript is a recognition aid, never a pronunciation score."}
         </Body>
         {speech.recording ? (
           <>
@@ -246,8 +246,7 @@ export default function Speech() {
           <View key={record.id} style={{ gap: 8 }}>
             <Body>
               Attempt {records.length - index} ·{" "}
-              {(record.durationMillis / 1000).toFixed(1)} seconds · saved on
-              this phone
+              {(record.durationMillis / 1000).toFixed(1)} seconds
             </Body>
             <AudioPlay
               source={{ uri: record.uri }}

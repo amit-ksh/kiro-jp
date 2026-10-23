@@ -128,6 +128,8 @@ Activity mode: Pending; prefer a focused alternative for this experienced develo
 
 ## Revisions
 
+- [ ] October 23 inline push-to-talk refinement — the text-chat microphone must immediately start recording in the composer, showing timer, Stop and Cancel. Stop produces an editable transcript, Use transcript preserves existing typed text, and Send remains explicit. Check granted/denied/first permission, Cancel/Back/background, offline and empty recognition, draft/assistance preservation and no late handoff after changing chat/account. Native and learner acceptance remain separate from the controller tests.
+
 - [ ] October 23 hands-free voice calls — from an active chat, open the phone action, start the call, speak and pause, hear the AI reply and inspect the transcript. Try mute/unmute, pause/resume, silence, permission denial, Back/background, dropped connection and text fallback. Verify no late auto-send or microphone restart after leaving, retained chat/drafts and separate speaking/listening evidence. This learner-authorized revision extends the original discrete recording scope; full-duplex streaming is not included. Mechanical, Gateway and actual spoken phone evidence must be recorded separately.
 
 - October 17: The learner requested an installed app icon matching the interface. Add the original indigo/white/orange Kiro JP mark with adaptive and themed Android layers, verify its native resources/mask safety, and ship version 0.2.3/code 5 using the same package/signing identity. Confirm its appearance during the remaining phone retry; this asset change does not accept the full build.

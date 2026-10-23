@@ -189,6 +189,8 @@ Acceptance criteria:
 
 ### Pronunciation and Spoken Input
 
+October 23 chat refinement: tapping the text-chat microphone starts recording in place with a timer, Stop and Cancel. Stop requests recognition and presents an editable transcript in the composer area. Use transcript adds confirmed text to any existing draft; only Send submits it to the tutor. No second recording screen or extra start tap is required when permission is already granted. Initial permission interruption, offline/empty recognition, backgrounding and cancellation retain safe recovery without sending a message.
+
 Source: `scope.md > The Core Loop` and `The MVP Boundary`.
 
 - Hear and practise the relevant word individually, then in a complete sentence. Record an attempt, replay it, view recognized text/feedback, and retry.

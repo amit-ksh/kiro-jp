@@ -70,7 +70,7 @@ export function ChatComposer({
     <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 6 }}>
       {onSpeak && (
         <ChatIcon
-          label="Speak a reply"
+          label="Record a reply"
           icon="mic-outline"
           disabled={speakDisabled}
           onPress={onSpeak}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
 import * as Crypto from "expo-crypto";
 import {
   useMutation,
@@ -19,6 +20,9 @@ import { useStudy } from "../../data/StudyProvider";
 import { useStudyTime } from "../../features/lessons/useStudyTime";
 import { SavedPhrases } from "../../features/conversation/SavedPhrases";
 import { CulturalContext } from "../../features/conversation/CulturalContext";
+import { ChatVoiceInput } from "../../features/conversation/ChatVoiceInput";
+import { useChatVoiceInput } from "../../features/conversation/useChatVoiceInput";
+import { applyChatVoiceTranscript } from "../../features/conversation/applyChatVoiceTranscript";
 import {
   ChatBubble,
   ChatComposer,
@@ -33,7 +37,7 @@ import {
   Screen,
   useColors,
 } from "../../components/ui";
-import { Pressable, ScrollView, View } from "react-native";
+import { AppState, Keyboard, Pressable, ScrollView, View } from "react-native";
 export default function Chat() {
   const { conversationId = "" } = useLocalSearchParams<{
     conversationId: string;
@@ -42,6 +46,7 @@ export default function Chat() {
     study = useStudy(),
     auth = useConvexAuth(),
     connection = useConvexConnectionState();
+  const focused = useIsFocused();
   const [viewSegment, setViewSegment] = useState("");
   const [expandedMessages, setExpandedMessages] = useState<string[]>([]);
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -105,6 +110,24 @@ export default function Chat() {
   );
   const draftKey = segment?.segmentId ?? conversationId;
   const text = study.drafts[`${draftKey}:chat-message`] ?? "";
+  const voice = useChatVoiceInput({
+    segmentId: segment?.segmentId,
+    enabled: segment?.state === "active" && !busy && !segment.pendingJobId,
+  });
+  const voiceTarget = useRef({
+    accountId: study.accountId,
+    draftKey,
+    text,
+    eligible: false,
+  });
+  voiceTarget.current = {
+    accountId: study.accountId,
+    draftKey,
+    text,
+    eligible:
+      focused && segment?.state === "active" && !busy && !segment.pendingJobId,
+  };
+  const applyingVoice = useRef(false);
   const savedSupport: SupportFlag[] = (() => {
     try {
       const flags = JSON.parse(
@@ -123,6 +146,8 @@ export default function Chat() {
       return [];
     }
   })();
+  const voiceSupport = useRef<SupportFlag[]>([]);
+  voiceSupport.current = [...new Set([...support, ...savedSupport])];
   const recordHelp = () => {
     timing.interact();
     const flags = [
@@ -130,6 +155,42 @@ export default function Chat() {
     ];
     setSupport(flags);
     void study.saveDraft(draftKey, "chat-support", JSON.stringify(flags));
+  };
+  const useVoiceTranscript = async (value: string, edited: boolean) => {
+    const recordingId = voice.recordingId;
+    if (applyingVoice.current || !segment || !recordingId || !value.trim())
+      return;
+    const owner = { accountId: study.accountId, draftKey };
+    const current = () =>
+      active.current &&
+      AppState.currentState === "active" &&
+      voice.isCurrentRecording(recordingId) &&
+      voiceTarget.current.eligible &&
+      voiceTarget.current.accountId === owner.accountId &&
+      voiceTarget.current.draftKey === owner.draftKey;
+    applyingVoice.current = true;
+    try {
+      const result = await applyChatVoiceTranscript(
+        {
+          text: value,
+          edited: edited || value.trim() !== voice.transcript.trim(),
+        },
+        {
+          isCurrent: current,
+          confirm: voice.useTranscript,
+          readDraft: () => voiceTarget.current.text,
+          readSupport: () => voiceSupport.current,
+          saveDraft: (step, input) =>
+            study.saveDraft(owner.draftKey, step, input),
+        },
+      );
+      if (!result || !current()) return;
+      setSupport(result.support);
+      voice.cancel();
+      timing.interact();
+    } finally {
+      applyingVoice.current = false;
+    }
   };
   const messages =
     data?.messages.filter(
@@ -230,34 +291,41 @@ export default function Chat() {
     });
   const composer =
     segment?.state === "active" ? (
-      <ChatComposer
-        text={text}
-        busy={busy}
-        speakDisabled={busy || Boolean(segment.pendingJobId)}
-        onSpeak={() => {
-          timing.pause();
-          router.push({
-            pathname: "/(learning)/speech",
-            params: { conversationSegmentId: segment.segmentId },
-          });
-        }}
-        onChange={(value) => {
-          if (
-            /[ぁ-ゖァ-ヶ一-龯]/u.test(value) ||
-            /\b(?:kudasai|desu|suki|mizu|ocha|arigatou|konnichiwa)\b/iu.test(
-              value,
+      voice.status !== "idle" ? (
+        <ChatVoiceInput
+          voice={voice}
+          onUse={useVoiceTranscript}
+          onPractice={timing.interact}
+          onPause={timing.pause}
+        />
+      ) : (
+        <ChatComposer
+          text={text}
+          busy={busy}
+          speakDisabled={busy || Boolean(segment.pendingJobId)}
+          onSpeak={() => {
+            timing.pause();
+            Keyboard.dismiss();
+            void voice.start();
+          }}
+          onChange={(value) => {
+            if (
+              /[ぁ-ゖァ-ヶ一-龯]/u.test(value) ||
+              /\b(?:kudasai|desu|suki|mizu|ocha|arigatou|konnichiwa)\b/iu.test(
+                value,
+              )
             )
-          )
-            timing.interact();
-          void study.saveDraft(draftKey, "chat-message", value);
-        }}
-        sendDisabled={
-          !text.trim() ||
-          Boolean(segment.pendingJobId) ||
-          !connection.isWebSocketConnected
-        }
-        onSend={send}
-      />
+              timing.interact();
+            void study.saveDraft(draftKey, "chat-message", value);
+          }}
+          sendDisabled={
+            !text.trim() ||
+            Boolean(segment.pendingJobId) ||
+            !connection.isWebSocketConnected
+          }
+          onSend={send}
+        />
+      )
     ) : undefined;
   if (!validId || remote === null)
     return (
@@ -314,7 +382,11 @@ export default function Chat() {
             <ChatIcon
               label="Start voice call"
               icon="call-outline"
-              disabled={busy || !connection.isWebSocketConnected}
+              disabled={
+                busy ||
+                voice.status !== "idle" ||
+                !connection.isWebSocketConnected
+              }
               onPress={() => {
                 timing.pause();
                 router.push({
@@ -426,7 +498,9 @@ export default function Chat() {
                   )}
                   <CulturalContext
                     message={message}
-                    canDiscuss={segment.state === "active"}
+                    canDiscuss={
+                      segment.state === "active" && voice.status === "idle"
+                    }
                     onTopic={(topic) => {
                       void study.saveDraft(draftKey, "chat-message", topic);
                       scroll.current?.scrollToEnd({ animated: true });
@@ -468,7 +542,11 @@ export default function Chat() {
                       <Button
                         label="Show reply hints"
                         secondary
-                        disabled={busy || segment.state === "ended"}
+                        disabled={
+                          busy ||
+                          segment.state === "ended" ||
+                          voice.status !== "idle"
+                        }
                         onPress={() => {
                           recordHelp();
                           setOpenHints((previous) => [
@@ -485,7 +563,11 @@ export default function Chat() {
                         <Button
                           label={`Try this phrase ${index + 1}`}
                           secondary
-                          disabled={busy || segment.state === "ended"}
+                          disabled={
+                            busy ||
+                            segment.state === "ended" ||
+                            voice.status !== "idle"
+                          }
                           onPress={() => {
                             recordHelp();
                             void study.saveDraft(

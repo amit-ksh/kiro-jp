@@ -240,6 +240,8 @@ The implemented grammar-review feedback job snapshots the owned immutable review
 
 ### Speech Recording, Transcription, and Model Audio
 
+The text-chat dictation refinement uses the existing account-scoped SpeechProvider in a foreground/segment-bound controller. The first microphone tap calls recording startup directly; explicit Stop saves and requests transcription. The inline composer shows actual starting/recording/transcribing/ready/error state, an editable preview and typed fallback. Confirmation returns text without dispatching chat. A synchronous recording-ID/lifecycle fence protects asynchronous draft handoff; merge the latest draft immediately before its write and keep assistance flags before enabling Send. Permission prompting occurs only when access is absent, and a prompt interrupted by Android backgrounding requires an explained explicit retry. No new provider, upload protocol, backend schema or automatic chat submission is introduced.
+
 Implements `prd.md > Pronunciation and Spoken Input` (SPK-1–SPK-3) and its microphone/transcript/audio failure states.
 
 Expo Audio supplies individual-word/sentence playback, slower playback where the tested platform supports it, recording, replay, stop, and retry controls. Save retained recordings/downloaded audio in the documents directory, not temporary cache. Request permission at the first recording. Permission denied offers Type instead, Enable microphone, and listening. Stop/release recording when leaving the activity/backgrounding; continuous background voice is out of scope.
